@@ -1,0 +1,395 @@
+Cmp-Mod V01 Created by CvPcb (2013-june-11)-stable date = Sat 05 Aug 2017 16:06:01 EDT
+
+BeginCmp
+TimeStamp = /597FCB0C;
+Reference = C1;
+ValeurCmp = .1 uf;
+IdModule  = C1;
+EndCmp
+
+BeginCmp
+TimeStamp = /597FCB1B;
+Reference = C2;
+ValeurCmp = .1 uf;
+IdModule  = C1;
+EndCmp
+
+BeginCmp
+TimeStamp = /597FA27E;
+Reference = DSP1;
+ValeurCmp = 7_SEGMENT_DIGIT;
+IdModule  = ;
+EndCmp
+
+BeginCmp
+TimeStamp = /597E414B;
+Reference = K1;
+ValeurCmp = Throttle;
+IdModule  = ;
+EndCmp
+
+BeginCmp
+TimeStamp = /597E4314;
+Reference = K2;
+ValeurCmp = Auto Brake;
+IdModule  = ;
+EndCmp
+
+BeginCmp
+TimeStamp = /597E451B;
+Reference = K3;
+ValeurCmp = Ind. Brake;
+IdModule  = ;
+EndCmp
+
+BeginCmp
+TimeStamp = /597E412E;
+Reference = K4;
+ValeurCmp = Throttle;
+IdModule  = PIN_ARRAY_3X1;
+EndCmp
+
+BeginCmp
+TimeStamp = /597E4300;
+Reference = K5;
+ValeurCmp = Auto Brake;
+IdModule  = PIN_ARRAY_3X1;
+EndCmp
+
+BeginCmp
+TimeStamp = /597E4507;
+Reference = K6;
+ValeurCmp = Ind. Brake;
+IdModule  = PIN_ARRAY_3X1;
+EndCmp
+
+BeginCmp
+TimeStamp = /597F6FA0;
+Reference = K7;
+ValeurCmp = Unit Selector;
+IdModule  = ;
+EndCmp
+
+BeginCmp
+TimeStamp = /597F6F8C;
+Reference = K8;
+ValeurCmp = Unit Selector;
+IdModule  = PIN_ARRAY_3X1;
+EndCmp
+
+BeginCmp
+TimeStamp = /56D70129;
+Reference = P1;
+ValeurCmp = Power;
+IdModule  = Socket_Arduino_Uno:Socket_Strip_Arduino_1x08;
+EndCmp
+
+BeginCmp
+TimeStamp = /56D70DD8;
+Reference = P2;
+ValeurCmp = Analog;
+IdModule  = Socket_Arduino_Uno:Socket_Strip_Arduino_1x06;
+EndCmp
+
+BeginCmp
+TimeStamp = /56D721E0;
+Reference = P3;
+ValeurCmp = Digital;
+IdModule  = Socket_Arduino_Uno:Socket_Strip_Arduino_1x10;
+EndCmp
+
+BeginCmp
+TimeStamp = /56D7164F;
+Reference = P4;
+ValeurCmp = Digital;
+IdModule  = Socket_Arduino_Uno:Socket_Strip_Arduino_1x08;
+EndCmp
+
+BeginCmp
+TimeStamp = /56D71177;
+Reference = P5;
+ValeurCmp = CONN_01X01;
+IdModule  = Socket_Arduino_Uno:Arduino_1pin;
+EndCmp
+
+BeginCmp
+TimeStamp = /56D71274;
+Reference = P6;
+ValeurCmp = CONN_01X01;
+IdModule  = Socket_Arduino_Uno:Arduino_1pin;
+EndCmp
+
+BeginCmp
+TimeStamp = /56D712A8;
+Reference = P7;
+ValeurCmp = CONN_01X01;
+IdModule  = Socket_Arduino_Uno:Arduino_1pin;
+EndCmp
+
+BeginCmp
+TimeStamp = /56D712DB;
+Reference = P8;
+ValeurCmp = CONN_01X01;
+IdModule  = Socket_Arduino_Uno:Arduino_1pin;
+EndCmp
+
+BeginCmp
+TimeStamp = /597E4708;
+Reference = P9;
+ValeurCmp = Reverser;
+IdModule  = ;
+EndCmp
+
+BeginCmp
+TimeStamp = /597E46F9;
+Reference = P10;
+ValeurCmp = Reverser;
+IdModule  = PIN_ARRAY_4x1;
+EndCmp
+
+BeginCmp
+TimeStamp = /597F8464;
+Reference = P11;
+ValeurCmp = Horn;
+IdModule  = ;
+EndCmp
+
+BeginCmp
+TimeStamp = /597F8455;
+Reference = P12;
+ValeurCmp = Horn;
+IdModule  = PIN_ARRAY_2X1;
+EndCmp
+
+BeginCmp
+TimeStamp = /597F920D;
+Reference = P13;
+ValeurCmp = Unit Select Display;
+IdModule  = pin_array_4x2;
+EndCmp
+
+BeginCmp
+TimeStamp = /597F9AAA;
+Reference = P14;
+ValeurCmp = Unit Select Display;
+IdModule  = ;
+EndCmp
+
+BeginCmp
+TimeStamp = /59862206;
+Reference = P15;
+ValeurCmp = Aux LED Indicators;
+IdModule  = PIN_ARRAY_5x2;
+EndCmp
+
+BeginCmp
+TimeStamp = /59862215;
+Reference = P16;
+ValeurCmp = Aux LED Indicators;
+IdModule  = ;
+EndCmp
+
+BeginCmp
+TimeStamp = /59862487;
+Reference = P17;
+ValeurCmp = Misc Switches;
+IdModule  = ;
+EndCmp
+
+BeginCmp
+TimeStamp = /59862478;
+Reference = P18;
+ValeurCmp = Misc Switches;
+IdModule  = pin_array_4x2;
+EndCmp
+
+BeginCmp
+TimeStamp = /597E47C9;
+Reference = R1;
+ValeurCmp = 500K Ohms;
+IdModule  = R4;
+EndCmp
+
+BeginCmp
+TimeStamp = /597E47D8;
+Reference = R2;
+ValeurCmp = 500K Ohms;
+IdModule  = R4;
+EndCmp
+
+BeginCmp
+TimeStamp = /597F9074;
+Reference = R3;
+ValeurCmp = 10K Ohms;
+IdModule  = R4;
+EndCmp
+
+BeginCmp
+TimeStamp = /597F92AC;
+Reference = R4;
+ValeurCmp = 150 Ohms;
+IdModule  = R4;
+EndCmp
+
+BeginCmp
+TimeStamp = /597F929D;
+Reference = R5;
+ValeurCmp = 150 Ohms;
+IdModule  = R4;
+EndCmp
+
+BeginCmp
+TimeStamp = /597F928E;
+Reference = R6;
+ValeurCmp = 150 Ohms;
+IdModule  = R4;
+EndCmp
+
+BeginCmp
+TimeStamp = /597F927F;
+Reference = R7;
+ValeurCmp = 150 Ohms;
+IdModule  = R4;
+EndCmp
+
+BeginCmp
+TimeStamp = /597F9270;
+Reference = R8;
+ValeurCmp = 150 Ohms;
+IdModule  = R4;
+EndCmp
+
+BeginCmp
+TimeStamp = /597F9261;
+Reference = R9;
+ValeurCmp = 150 Ohms;
+IdModule  = R4;
+EndCmp
+
+BeginCmp
+TimeStamp = /597F922F;
+Reference = R10;
+ValeurCmp = 150 Ohms;
+IdModule  = R4;
+EndCmp
+
+BeginCmp
+TimeStamp = /597FC8D4;
+Reference = R11;
+ValeurCmp = 10K Ohms;
+IdModule  = R4;
+EndCmp
+
+BeginCmp
+TimeStamp = /5986224C;
+Reference = R12;
+ValeurCmp = 220 Ohms;
+IdModule  = R1;
+EndCmp
+
+BeginCmp
+TimeStamp = /5986225B;
+Reference = R13;
+ValeurCmp = 220 Ohms;
+IdModule  = R1;
+EndCmp
+
+BeginCmp
+TimeStamp = /5986226A;
+Reference = R14;
+ValeurCmp = 220 Ohms;
+IdModule  = R1;
+EndCmp
+
+BeginCmp
+TimeStamp = /59862288;
+Reference = R15;
+ValeurCmp = 220 Ohms;
+IdModule  = R1;
+EndCmp
+
+BeginCmp
+TimeStamp = /59862297;
+Reference = R16;
+ValeurCmp = 220 Ohms;
+IdModule  = R1;
+EndCmp
+
+BeginCmp
+TimeStamp = /598622A6;
+Reference = R17;
+ValeurCmp = 220 Ohms;
+IdModule  = R1;
+EndCmp
+
+BeginCmp
+TimeStamp = /598622B5;
+Reference = R18;
+ValeurCmp = 220 Ohms;
+IdModule  = R1;
+EndCmp
+
+BeginCmp
+TimeStamp = /598622C4;
+Reference = R19;
+ValeurCmp = 220 Ohms;
+IdModule  = R1;
+EndCmp
+
+BeginCmp
+TimeStamp = /597E4226;
+Reference = RV1;
+ValeurCmp = 1M Ohms;
+IdModule  = ;
+EndCmp
+
+BeginCmp
+TimeStamp = /597E43F4;
+Reference = RV2;
+ValeurCmp = 1M Ohms;
+IdModule  = ;
+EndCmp
+
+BeginCmp
+TimeStamp = /597E4534;
+Reference = RV3;
+ValeurCmp = 1M Ohms;
+IdModule  = ;
+EndCmp
+
+BeginCmp
+TimeStamp = /597E4A54;
+Reference = SW1;
+ValeurCmp = 3PST_ROTARY_SWITCH;
+IdModule  = ;
+EndCmp
+
+BeginCmp
+TimeStamp = /597F6FFE;
+Reference = SW2;
+ValeurCmp = SWITCH_INV_MSM;
+IdModule  = ;
+EndCmp
+
+BeginCmp
+TimeStamp = /597F8499;
+Reference = SW3;
+ValeurCmp = SW_PUSH;
+IdModule  = ;
+EndCmp
+
+BeginCmp
+TimeStamp = /597F8AC0;
+Reference = U1;
+ValeurCmp = 74LS47;
+IdModule  = DIP-16__300;
+EndCmp
+
+BeginCmp
+TimeStamp = /597FC22D;
+Reference = U2;
+ValeurCmp = MCP23008;
+IdModule  = DIP-18__300;
+EndCmp
+
+EndListe
