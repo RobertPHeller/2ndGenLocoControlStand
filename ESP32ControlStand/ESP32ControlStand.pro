@@ -1,4 +1,4 @@
-update=Tue 01 Oct 2019 16:49:54 EDT
+update=Tue 01 Oct 2019 20:28:28 EDT
 version=1
 last_client=eeschema
 [cvpcb]
@@ -85,3 +85,8 @@ LibName28=atmel
 LibName29=contrib
 LibName30=valves
 LibName31=encoder
+LibName32=rotatry_switch
+LibName33=i2c_display
+LibName34=MCP23xxx
+LibName35=tbd62x83a
+LibName36=esp32_devboards
