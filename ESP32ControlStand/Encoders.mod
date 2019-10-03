@@ -1,0 +1,92 @@
+PCBNEW-LibModule-V1  Wed 02 Oct 2019 13:55:51 EDT
+# encoding utf-8
+Units mm
+$INDEX
+ALPSEC12C
+Bourns_ECW
+$EndINDEX
+$MODULE ALPSEC12C
+Po 0 0 0 15 5D94E131 00000000 ~~
+Li ALPSEC12C
+Sc 0
+AR 
+Op 0 0 0
+T0 0 0 1 1 0 0.15 N V 21 N "ALPSEC12C"
+T1 0 0 1 1 0 0.15 N V 21 N "VAL**"
+DS -7 -6.6 7 -6.6 0.15 21
+DS 7 -6.6 7 6.6 0.15 21
+DS 7 6.6 -7 6.6 0.15 21
+DS -7 6.6 -7 -6.6 0.15 21
+$PAD
+Sh "C" C 1.6 1.6 0 0 0
+Dr 1.016 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po 0 7.5
+$EndPAD
+$PAD
+Sh "A" C 1.6 1.6 0 0 0
+Dr 1.016 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po -2.5 7.5
+$EndPAD
+$PAD
+Sh "B" C 1.6 1.6 0 0 0
+Dr 1.016 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po 2.5 7.5
+$EndPAD
+$PAD
+Sh "" R 2 2.1 0 0 0
+Dr 2 0 0 O 2 2.1
+At HOLE N 00E0FFFF
+Ne 0 ""
+Po -5.6 0
+$EndPAD
+$PAD
+Sh "" R 2 2.1 0 0 0
+Dr 2 0 0 O 2 2.1
+At HOLE N 00E0FFFF
+Ne 0 ""
+Po 5.6 0
+$EndPAD
+$EndMODULE ALPSEC12C
+$MODULE Bourns_ECW
+Po 0 0 0 15 5D94E48D 00000000 ~~
+Li Bourns_ECW
+Cd Bourns ECW
+Kw Encoder
+Sc 0
+AR 
+Op 0 0 0
+T0 0.254 -2.159 1.016 1.016 0 0.1524 N V 21 N "ECW_Encoder"
+T1 0 -2.159 1.016 1.016 0 0.1524 N I 21 N "Val**"
+DS -3.81 1.27 -3.81 -1.27 0.1524 21
+DS -3.81 -1.27 3.81 -1.27 0.1524 21
+DS 3.81 -1.27 3.81 1.27 0.1524 21
+DS 3.81 1.27 -3.81 1.27 0.1524 21
+$PAD
+Sh "A" C 1.8 1.8 0 0 0
+Dr 1.27 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po -2.54 0
+$EndPAD
+$PAD
+Sh "C" C 1.8 1.8 0 0 0
+Dr 1.27 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po 0 0
+$EndPAD
+$PAD
+Sh "B" C 1.8 1.8 0 0 0
+Dr 1.27 0 0
+At STD N 00E0FFFF
+Ne 0 ""
+Po 2.54 0
+$EndPAD
+$EndMODULE Bourns_ECW
+$EndLIBRARY
