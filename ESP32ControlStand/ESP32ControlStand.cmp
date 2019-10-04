@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by PcbNew date = Wed 02 Oct 2019 20:18:53 EDT
+Cmp-Mod V01 Created by PcbNew date = Thu 03 Oct 2019 19:24:49 EDT
 
 BeginCmp
 TimeStamp = /5D93EAD3/5D95DF47;
@@ -200,7 +200,7 @@ BeginCmp
 TimeStamp = /5D93BC04;
 Reference = EN101;
 ValeurCmp = Throttle;
-IdModule  = Bourns_ECW;
+IdModule  = Series25L-Encoder;
 EndCmp
 
 BeginCmp
@@ -267,6 +267,13 @@ IdModule  = PIN_ARRAY_3X1;
 EndCmp
 
 BeginCmp
+TimeStamp = /5D9627A7;
+Reference = J109;
+ValeurCmp = On-Off Switch;
+IdModule  = PIN_ARRAY_2X1;
+EndCmp
+
+BeginCmp
 TimeStamp = /5D94A1D7/5D94A587;
 Reference = J401;
 ValeurCmp = RJ45;
@@ -319,21 +326,21 @@ BeginCmp
 TimeStamp = /5D93E12B;
 Reference = P103;
 ValeurCmp = CONN_3;
-IdModule  = 
+IdModule  = ;
 EndCmp
 
 BeginCmp
 TimeStamp = /5D93E13A;
 Reference = P104;
 ValeurCmp = CONN_3;
-IdModule  = 
+IdModule  = ;
 EndCmp
 
 BeginCmp
 TimeStamp = /5D93E9E0;
 Reference = P105;
 ValeurCmp = CONN_5;
-IdModule  = 
+IdModule  = ;
 EndCmp
 
 BeginCmp
@@ -354,7 +361,7 @@ BeginCmp
 TimeStamp = /5D93EADD;
 Reference = P108;
 ValeurCmp = CONN_6;
-IdModule  = 
+IdModule  = ;
 EndCmp
 
 BeginCmp

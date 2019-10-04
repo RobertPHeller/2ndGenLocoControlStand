@@ -72,7 +72,7 @@ F 0 "EN102" H 9950 4950 60  0000 C CNN
 F 1 "Reverser" H 9900 4650 60  0000 C CNN
 F 2 "~" H 9900 4750 60  0000 C CNN
 F 3 "~" H 9900 4750 60  0000 C CNN
-F 4 "PEC12R-4117F-N0012" H 9900 4750 60  0001 C CNN "Mouser Part Number"
+F 4 "652-PEC11R4325FN0012" H 9900 4750 60  0001 C CNN "Mouser Part Number"
 	1    9900 4750
 	1    0    0    -1  
 $EndComp
@@ -106,7 +106,7 @@ F 0 "EN101" H 9950 4100 60  0000 C CNN
 F 1 "Throttle" H 9900 3800 60  0000 C CNN
 F 2 "~" H 9900 3900 60  0000 C CNN
 F 3 "~" H 9900 3900 60  0000 C CNN
-F 4 "688-EC11E1820402" H 9900 3900 60  0001 C CNN "Mouser Part Number"
+F 4 "706-25LB10-Q" H 9900 3900 60  0001 C CNN "Mouser Part Number"
 	1    9900 3900
 	1    0    0    -1  
 $EndComp
@@ -368,8 +368,6 @@ Wire Wire Line
 	9550 5600 9300 5600
 Wire Wire Line
 	9550 5700 9300 5700
-Text Label 7950 6250 2    60   ~ 0
-
 Text Label 7950 6550 2    60   ~ 0
 SCL
 Text Label 7950 6650 2    60   ~ 0
@@ -702,8 +700,6 @@ F 3 "~" H 3300 6750 60  0000 C CNN
 	1    3300 6750
 	-1   0    0    -1  
 $EndComp
-Text Label 3700 6550 0    60   ~ 0
-
 Text Label 3700 6850 0    60   ~ 0
 SCL
 Text Label 3700 6950 0    60   ~ 0
@@ -1051,7 +1047,6 @@ Text Label 4900 4200 2    25   ~ 0
 Status_G
 NoConn ~ 5650 1750
 NoConn ~ 5450 1750
-NoConn ~ 5350 1750
 NoConn ~ 5150 1750
 NoConn ~ 4900 3800
 NoConn ~ 4900 4250
@@ -1098,4 +1093,22 @@ $EndComp
 Wire Wire Line
 	1550 1100 1550 900 
 Connection ~ 1550 900 
+$Comp
+L CONN_2 J109
+U 1 1 5D9627A7
+P 5750 2200
+F 0 "J109" V 5700 2200 40  0000 C CNN
+F 1 "On-Off Switch" V 5800 2200 40  0000 C CNN
+F 2 "~" H 5750 2200 60  0000 C CNN
+F 3 "~" H 5750 2200 60  0000 C CNN
+	1    5750 2200
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5350 1750 5350 2300
+Wire Wire Line
+	5350 2300 5400 2300
+Wire Wire Line
+	5400 2100 5400 1800
+Connection ~ 5400 1800
 $EndSCHEMATC
