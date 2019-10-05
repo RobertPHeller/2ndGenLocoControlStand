@@ -8,7 +8,7 @@
 #  Author        : $Author$
 #  Created By    : Robert Heller
 #  Created       : Sun Jul 30 22:21:49 2017
-#  Last Modified : <191004.1002>
+#  Last Modified : <191005.1452>
 #
 #  Description	
 #
@@ -50,6 +50,7 @@ snit::listtype point -minlen 3 -maxlen 3 -type snit::double
 snit::listtype pointlist -minlen 3 -type point
 snit::integer cval -min 0 -max 255
 snit::listtype color -minlen 3 -maxlen 3 -type cval
+snit::enum direction -values {DX DY DZ}
 
 ## Generic solid cylinders
 snit::type cylinder {
@@ -57,6 +58,7 @@ snit::type cylinder {
     option -radius -type snit::double -readonly yes -default 1
     option -height -type snit::double -readonly yes -default 1
     option -color -type color -readonly yes -default {0 0 0}
+    option -direction -type direction -default DZ -readonly yes
     variable index
     typevariable _index 20
     constructor {args} {
@@ -66,11 +68,11 @@ snit::type cylinder {
     }
     method print {{fp stdout}} {
         puts $fp [eval [list format {DEFCOL %d %d %d}] $options(-color)]
-        puts $fp [format {C%d = P (%f %f %f) VAL (%f) DZ} $index \
+        puts $fp [format {C%d = P (%f %f %f) VAL (%f) %s} $index \
                         [lindex $options(-bottom) 0] \
                         [lindex $options(-bottom) 1] \
                         [lindex $options(-bottom) 2] \
-                        $options(-radius)]
+                        $options(-radius) $options(-direction)]
         puts $fp [format {b%d = PRISM C%d %f} $index $index $options(-height)]
     }
     typemethod validate {obj} {
@@ -318,6 +320,7 @@ snit::type OrignalLid {
     option -boxtype -type BoxType -readonly yes -default RL6435
     typevariable _totalLidHeight -7
     typevariable _lidThickness -2.50
+    method LidThickness {} {return $_lidThickness}
     typevariable _lidHeight -2.0
     typevariable _holeDiameter 3
     method TotalLidHeight {} {return $_totalLidHeight}
@@ -495,6 +498,12 @@ snit::type ButtonDisplayBoard {
                 -radius [expr {$_holeDiameter / 2.0}] \
                 -height $height -color {255 255 255}]
     }
+    method standoff {name i base height {diameter 6}} {
+        return [cylinder $name \
+                -bottom [$self _3DPoint [lindex $_boardMHXY [expr {$i - 1}]] $base] \
+                -radius [expr {$diameter / 2.0}] \
+                -height $height -color {255 255 255}]
+    }
     method buttonHole {name i base height} {
         return [cylinder $name \
                 -bottom [$self _3DPoint [lindex $_buttonHolesXY [expr {$i - 1}]] $base] \
@@ -567,6 +576,12 @@ snit::type ButtonLEDBoard {
                 -radius [expr {$_holeDiameter / 2.0}] \
                 -height $height -color {255 255 255}]
     }
+    method standoff {name i base height {diameter 6}} {
+        return [cylinder $name \
+                -bottom [$self _3DPoint [lindex $_boardMHXY [expr {$i - 1}]] $base] \
+                -radius [expr {$diameter / 2.0}] \
+                -height $height -color {255 255 255}]
+    }
     method buttonHole {name i base height} {
         lassign [$self cget -origin] X Y Z
         if {[$self cget -board0]} {
@@ -591,18 +606,268 @@ snit::type ButtonLEDBoard {
                 -radius [expr {$_LEDHoleDiameter / 2.0}] \
                 -height $height -color {255 255 255}]
     }
-}    
-     
+}
+    
+snit::type Mech_Encoder_25L {
+    option -origin -type point -default {0 0 0} -readonly yes
+    option -bracketthick -type snit::double -default 0 -readonly yes
+    component _body
+    component _bushing
+    component _shaft
+    component _noturn
+    component _circuitBoard
+    typevariable _bodyWidth 23.5
+    typevariable _bodyHeight 21.97
+    typevariable _bodyDepth 8.71
+    typevariable _bushingDiameter [expr {(3.0/8.0)*25.4}]
+    typevariable _bushingLength   6.35
+    typevariable _noTurnXoff 10.16
+    typevariable _noTurnDia  3.05
+    typevariable _shaftDiameter   6.35
+    typevariable _shaftLength     12.7
+    typevariable _circuitBoardWidth 31.75
+    typevariable _circuitBoardLength 27.94
+    typevariable _circuitBoardXoff 16.51
+    typevariable _circuitBoardZoff 16.51
+    typevariable _circuitBoardThick [expr {(1.0/16.0)*25.4}]
+    constructor {args} {
+        $self configurelist $args
+        lassign [$self cget -origin] X Y Z
+        puts stderr "*** $type create $self:  -origin is [$self cget -origin]"
+        set bodyCornerX [expr {$X - ($_bodyWidth / 2.0)}]
+        set bodyCornerY $Y
+        set bodyCornerZ [expr {$Z - ($_bodyHeight / 2.0)}]
+        puts stderr "*** $type create $self: bodyCornerX: $bodyCornerX"
+        puts stderr "*** $type create $self: bodyCornerY: $bodyCornerY"
+        puts stderr "*** $type create $self: bodyCornerZ: $bodyCornerZ"
+        install _body using PrismSurfaceVector ${selfns}_body \
+              -surface [PolySurface create ${selfns}_body_surf -rectangle yes \
+                        -cornerpoint [list $bodyCornerX $bodyCornerY $bodyCornerZ] \
+                        -vec1 [list $_bodyWidth 0 0] \
+                        -vec2 [list 0 [expr {-1*$_bodyDepth}] 0]] \
+              -vector [list 0 0 $_bodyHeight] -color {0 0 0}
+        install _bushing using cylinder ${selfns}_bushing \
+              -bottom [list $X $Y $Z] \
+              -radius [expr {$_bushingDiameter / 2.0}] \
+              -height [expr {$_bushingLength}] \
+              -direction DY -color {200 200 200}
+        puts stderr "*** $type create $self: _bushing -bottom is [$_bushing cget -bottom]"
+        install _shaft using cylinder ${selfns}_shaft \
+              -bottom [list $X [expr {$Y + $_bushingLength}] $Z] \
+              -radius [expr {$_shaftDiameter / 2.0}] \
+              -height [expr {$_shaftLength}] \
+              -direction DY -color {240 240 240}
+        install _noturn using cylinder ${selfns}_noturn \
+              -bottom [list [expr {$X + $_noTurnXoff}] $Y $Z] \
+              -radius [expr {$_noTurnDia / 2.0}] \
+              -height [$self cget -bracketthick] \
+              -direction DY -color {255 255 255}
+        install _circuitBoard using PrismSurfaceVector ${selfns}_circuitBoard \
+              -surface [PolySurface create ${selfns}_circuitBoard_surf -rectangle yes \
+                        -cornerpoint [list [expr {$X - $_circuitBoardXoff}] \
+                            [expr {$bodyCornerY - $_bodyDepth}] \
+                            [expr {$Z - $_circuitBoardZoff}]] \
+                        -vec1 [list $_circuitBoardWidth 0 0] \
+                        -vec2 [list 0 0 $_circuitBoardLength]] \
+              -vector [list 0 [expr {-1*$_circuitBoardThick}] 0] \
+              -color {0 255 0}
+                               
+    }
+    method print {{fp stdout}} {
+        $_body print $fp
+        $_bushing print $fp
+        $_shaft print $fp
+        $_noturn print $fp
+        $_circuitBoard print $fp
+    }
+}
+
+snit::type PEC12R {
+    option -origin -type point -default {0 0 0} -readonly yes
+    option -bracketthick -type snit::double -default 0 -readonly yes
+    component _body
+    component _bushing
+    component _shaft
+    component _circuitBoard
+    component _noturnHole
+    component _noturnStandoff
+    typevariable _bodyWidth 12.4
+    typevariable _bodyHeight 13.4
+    typevariable _bodyDepth 5.6
+    typevariable _bushingDiameter 9
+    typevariable _bushingLength 7
+    typevariable _shaftDiameter 6
+    typevariable _shaftLength [expr {25-(5.6+7)}]
+    typevariable _circuitBoardWidth 17.78
+    typevariable _circuitBoardLength 28.575
+    typevariable _circuitBoardOffset 8.89
+    typevariable _circuitBoardThick [expr {(1.0/16.0)*25.4}]
+    typevariable _circuitBoardNTZoff 10.795
+    typevariable _circuitBoardNTXoff 5.715
+    typevariable _circuitBoardNTHoleDiameter 2.5
+    typevariable _circuitBoardNTStandoffDiameter 5.08
+    constructor {args} {
+        $self configurelist $args
+        lassign [$self cget -origin] X Y Z
+        puts stderr "*** $type create $self:  -origin is [$self cget -origin]"
+        set bodyCornerX [expr {$X - ($_bodyWidth / 2.0)}]
+        set bodyCornerY [expr {$Y + [$self cget -bracketthick]}]
+        set bodyCornerZ [expr {$Z - ($_bodyHeight / 2.0)}]
+        puts stderr "*** $type create $self: bodyCornerX: $bodyCornerX"
+        puts stderr "*** $type create $self: bodyCornerY: $bodyCornerY"
+        puts stderr "*** $type create $self: bodyCornerZ: $bodyCornerZ"
+        install _body using PrismSurfaceVector ${selfns}_body \
+              -surface [PolySurface create ${selfns}_body_surf -rectangle yes \
+                        -cornerpoint [list $bodyCornerX $bodyCornerY $bodyCornerZ] \
+                        -vec1 [list $_bodyWidth 0 0] \
+                        -vec2 [list 0 [expr {$_bodyDepth}] 0]] \
+              -vector [list 0 0 $_bodyHeight] -color {0 0 0}
+        install _bushing using cylinder ${selfns}_bushing \
+              -bottom [list $X $bodyCornerY $Z] \
+              -radius [expr {$_bushingDiameter / 2.0}] \
+              -height [expr {-1*$_bushingLength}] \
+              -direction DY -color {200 200 200}
+        puts stderr "*** $type create $self: _bushing -bottom is [$_bushing cget -bottom]"
+        install _shaft using cylinder ${selfns}_shaft \
+              -bottom [list $X [expr {$bodyCornerY - $_bushingLength}] $Z] \
+              -radius [expr {$_shaftDiameter / 2.0}] \
+              -height [expr {-1*$_shaftLength}] \
+              -direction DY -color {240 240 240}
+        install _circuitBoard using PrismSurfaceVector ${selfns}_circuitBoard \
+              -surface [PolySurface create ${selfns}_circuitBoard_surf -rectangle yes \
+                        -cornerpoint [list [expr {$X - $_circuitBoardOffset}] \
+                            [expr {$bodyCornerY + $_bodyDepth}] \
+                            [expr {$Z + $_circuitBoardOffset}]] \
+                        -vec1 [list $_circuitBoardWidth 0 0] \
+                        -vec2 [list 0 0 [expr {-1*$_circuitBoardLength}]]] \
+              -vector [list 0 [expr {$_circuitBoardThick}] 0] \
+              -color {0 255 0}
+        install _noturnHole using cylinder ${selfns}_noturnHole \
+              -bottom [list [expr {$X + $_circuitBoardNTXoff}] \
+                       $bodyCornerY \
+                       [expr {$Z - $_circuitBoardNTZoff}]] \
+              -radius [expr {$_circuitBoardNTHoleDiameter / 2.0}] \
+              -height [expr {-1*[$self cget -bracketthick]}] \
+              -direction DY  -color {255 255 255}
+        install _noturnStandoff using cylinder ${selfns}_noturnStandoff \
+              -bottom [list [expr {$X + $_circuitBoardNTXoff}] \
+                       $bodyCornerY \
+                       [expr {$Z - $_circuitBoardNTZoff}]] \
+              -radius [expr {$_circuitBoardNTStandoffDiameter / 2.0}] \
+              -height $_bodyDepth \
+              -direction DY  -color {255 255 255}
+    }
+    method print {{fp stdout}} {
+        $_body print $fp
+        $_bushing print $fp
+        $_shaft print $fp
+        $_circuitBoard print $fp
+        $_noturnHole print $fp
+        $_noturnStandoff print $fp
+    }
+}
+
+snit::type Pot_450T328 {
+    option -origin -type point -default {0 0 0} -readonly yes
+    option -bracketthick -type snit::double -default 0 -readonly yes
+    component _body
+    component _bushing
+    component _shaft
+    component _tab1
+    component _tab2
+    typevariable _bodyDiameter 23.8
+    typevariable _bodyDepth 11.3
+    typevariable _bushingDiameter [expr {(3.0/8.0)*25.4}]
+    typevariable _bushingLength 9.53
+    typevariable _shaftDiameter 6.35
+    typevariable _shaftLength [expr {25.4-9.53}]
+    typevariable _tabHoleDiameter 4.2
+    typevariable _tabXoffset 11.1
+    constructor {args} {
+        $self configurelist $args
+        lassign [$self cget -origin] X Y Z
+        puts stderr "*** $type create $self:  -origin is [$self cget -origin]"
+        set Y [expr {$Y + [$self cget -bracketthick]}]
+        install _body using cylinder ${selfns}_body \
+              -bottom [list $X $Y $Z] \
+              -radius [expr {$_bodyDiameter / 2.0}] \
+              -height $_bodyDepth \
+              -direction DY -color {255 255 0}
+        install _bushing using cylinder ${selfns}_bushing \
+              -bottom [list $X $Y $Z] \
+              -radius [expr {$_bushingDiameter / 2.0}] \
+              -height [expr {-1*$_bushingLength}] \
+              -direction DY -color {200 200 200}
+        install _shaft using cylinder ${selfns}_shaft \
+              -bottom [list $X [expr {$Y - $_bushingLength}] $Z] \
+              -radius [expr {$_shaftDiameter / 2.0}] \
+              -height [expr {-1*$_shaftLength}] \
+              -direction DY -color {240 240 240}
+        install _tab1 using cylinder ${selfns}_tab1 \
+              -bottom [list [expr {$X - $_tabXoffset}] $Y $Z] \
+              -radius [expr {$_tabHoleDiameter / 2.0}] \
+              -height [expr {-1*[$self cget -bracketthick]}] \
+              -direction DY -color {255 255 255}
+        install _tab2 using cylinder ${selfns}_tab2 \
+              -bottom [list [expr {$X + $_tabXoffset}] $Y $Z] \
+              -radius [expr {$_tabHoleDiameter / 2.0}] \
+              -height [expr {-1*[$self cget -bracketthick]}] \
+              -direction DY -color {255 255 255}
+    }
+    method print {{fp stdout}} {
+        $_body print $fp
+        $_bushing print $fp
+        $_shaft print $fp
+        $_tab1 print $fp
+        $_tab2 print $fp
+    }
+}
+
+
+snit::type ThrottleReverserBrakeBracket {
+    option -bracketthick -type snit::double -default 0 -readonly yes
+    option -bracketcenterpoint -type point -default {0 0 0} -readonly yes
+    option -bracketdepth -type snit::double -default 0 -readonly yes
+    option -bracketwidth -type snit::double -default 0 -readonly yes
+    option -bracketcornersize -type snit::double -default 5.0 -readonly yes
+    component _bracket
+    component _brakehole
+    constructor {args} {
+        $self configurelist $args
+        lassign [$self cget -bracketcenterpoint] X Y Z
+        puts stderr "*** $type create $self -bracketcenterpoint [$self cget -bracketcenterpoint]"
+        set bw_2 [expr {[$self cget -bracketwidth]/2.0}]
+        set bd   [$self cget -bracketdepth]
+        set bcs  [$self cget -bracketcornersize]
+        set bracketSurfPoly [list [list [expr {$X - $bw_2}] $Y $Z] \
+                             [list [expr {$X + $bw_2}] $Y $Z] \
+                             [list [expr {$X + $bw_2}] $Y [expr {$Z - ($bd-$bcs)}]] \
+                             [list [expr {$X + $bw_2-$bcs}] $Y [expr {$Z - $bd}]] \
+                             [list [expr {$X - $bw_2+$bcs}] $Y [expr {$Z - $bd}]] \
+                             [list [expr {$X - $bw_2}] $Y [expr {$Z - ($bd-$bcs)}]] \
+                             [list [expr {$X - $bw_2}] $Y $Z]]
+        install _bracket using PrismSurfaceVector ${selfns}_bracket \
+              -surface [PolySurface create ${selfns}_bracket_surf -rectangle no \
+                        -polypoints $bracketSurfPoly] \
+              -vector [list 0 [$self cget -bracketthick] 0] \
+              -color  {200 200 200}
+    }
+    method print {{fp stdout}} {
+        $_bracket print $fp
+    }
+}
+
 
 snit::type 2ndGenLocoControlStandLid {
     component _baseLid 
     delegate option -origin to _baseLid
     component _throttleSlot
-    component _throttleBracket
     component _reverserSlot
-    component _reverserBracket
     component _brakeSlot
-    component _brakeBracket
+    component _throttleReverserBrakeBracket
+    component _throttleEncoder
+    component _reverserEncoder
+    component _brakePotentiometer
     component _hornSlot
     component _hornBracket
     component _buttonDisplayBoard
@@ -610,6 +875,10 @@ snit::type 2ndGenLocoControlStandLid {
     component _buttonDisplayBoardMountHole2
     component _buttonDisplayBoardMountHole3
     component _buttonDisplayBoardMountHole4
+    component _buttonDisplayBoardStandoff1
+    component _buttonDisplayBoardStandoff2
+    component _buttonDisplayBoardStandoff3
+    component _buttonDisplayBoardStandoff4
     component _buttonDisplayBoardButtonHole1
     component _buttonDisplayBoardButtonHole2
     component _buttonDisplayBoardButtonHole3
@@ -622,6 +891,10 @@ snit::type 2ndGenLocoControlStandLid {
     component _buttonLEDBoardMH2
     component _buttonLEDBoardMH3
     component _buttonLEDBoardMH4
+    component _buttonLEDBoardStandoff1
+    component _buttonLEDBoardStandoff2
+    component _buttonLEDBoardStandoff3
+    component _buttonLEDBoardStandoff4
     component _buttonLEDBoardB1
     component _buttonLEDBoardB2
     component _buttonLEDBoardB3
@@ -638,6 +911,8 @@ snit::type 2ndGenLocoControlStandLid {
     component _buttonLEDBoardL6
     component _buttonLEDBoardL7
     component _buttonLEDBoardL8
+    component _lightSwitchMH
+    typevariable _lightSwitchMHDiameter 9.525
     constructor {args} {
         install _baseLid using OrignalLid ${selfns}_baseLid \
               -origin [from args -origin {0 0 0}] \
@@ -648,33 +923,57 @@ snit::type 2ndGenLocoControlStandLid {
         #puts stderr "*** $type create $self: OutsideLength is [$_baseLid OutsideLength]"
         install _throttleSlot using Slot ${selfns}_throttleSlot \
               -origin [list [expr {$X + ([$_baseLid OutsideWidth]/2.0)}] \
-                             [expr {$Y + ([$_baseLid OutsideLength]/2.0)}] \
+                             [expr {$Y + ([$_baseLid OutsideLength]/2.0) + 20}] \
                              $Z] \
               -width 6 -orientation horizontal -length 25.4 \
               -depth [$_baseLid TotalLidHeight]
         install _reverserSlot using Slot ${selfns}_reverserSlot \
-              -origin [list [expr {$X + ([$_baseLid OutsideWidth]/2.0) + 15}] \
-                               [expr {$Y + ([$_baseLid OutsideLength]/2.0) - 10}] \
+              -origin [list [expr {$X + ([$_baseLid OutsideWidth]/2.0) + 20}] \
+                               [expr {$Y + ([$_baseLid OutsideLength]/2.0) - 7.5}] \
                                $Z] \
               -width 6 -orientation horizontal -length 15.24 \
               -depth [$_baseLid TotalLidHeight]
         install _brakeSlot using Slot ${selfns}_brakeSlot \
-              -origin [list [expr {$X + ([$_baseLid OutsideWidth]/2.0) - 17.7}] \
-                               [expr {$Y + ([$_baseLid OutsideLength]/2.0) - 20}] \
+              -origin [list [expr {$X + ([$_baseLid OutsideWidth]/2.0) - 20}] \
+                               [expr {$Y + ([$_baseLid OutsideLength]/2.0) - 10}] \
                                $Z] \
               -width 6 -orientation horizontal -length 15.24 \
               -depth [$_baseLid TotalLidHeight]
+        install _throttleReverserBrakeBracket using \
+              ThrottleReverserBrakeBracket \
+              ${selfns}_throttleReverserBrakeBracket \
+              -bracketthick 3.0 \
+              -bracketcenterpoint [list [expr {$X + ([$_baseLid OutsideWidth]/2.0)}] \
+                                   [expr {$Y + ([$_baseLid OutsideLength]/2.0) + 5}] \
+                                   [expr {$Z + [$_baseLid LidThickness]}]] \
+              -bracketdepth 35 -bracketwidth 70
+        lassign [$_throttleSlot cget -origin] tX tY tZ
+        install _throttleEncoder using Mech_Encoder_25L ${selfns}_throttleEncoder \
+              -origin [list $tX [expr {$Y + ([$_baseLid OutsideLength]/2.0) + 5}] [expr {($tZ - 25.4)+[$_baseLid LidThickness]}]] \
+              -bracketthick 3.0
+        lassign [$_reverserSlot cget -origin] rX rY rZ
+        install _reverserEncoder using PEC12R ${selfns}_reverserEncoder \
+              -origin [list $rX [expr {$Y + ([$_baseLid OutsideLength]/2.0) + 5}] [expr {($rZ - 13.2)+[$_baseLid LidThickness]}]] \
+              -bracketthick 3.0
+        lassign [$_brakeSlot cget -origin] bX bY bZ
+        install _brakePotentiometer using Pot_450T328 ${selfns}_brakePotentiometer \
+              -origin [list $bX [expr {$Y + ([$_baseLid OutsideLength]/2.0) + 5}] [expr {($bZ - 15.24)+[$_baseLid LidThickness]}]] \
+              -bracketthick 3.0
         set buttonDisplayBoard_X [expr {$X + ([$_baseLid OutsideWidth]/2.0) - ([ButtonDisplayBoard Width]/2.0)}]
         set buttonDisplayBoard_Y [expr {$Y + [$_baseLid InsideBoxLength] - [ButtonDisplayBoard Length]}]
         install _buttonDisplayBoard using ButtonDisplayBoard ${selfns}_buttonDisplayBoard \
               -origin [list $buttonDisplayBoard_X \
                        $buttonDisplayBoard_Y \
-                       [expr {$Z + [$_baseLid TotalLidHeight] - 6}]]
+                       [expr {$Z + [$_baseLid TotalLidHeight] - (6 + 1.5875)}]]
         for {set i 1} {$i <= 4} {incr i} {
             set _buttonDisplayBoardMountHole$i [$_buttonDisplayBoard \
                                                 mountingHole \
                                                 ${selfns}_buttonDisplayBoardMountHole$i \
                                                 $i $Z [$_baseLid TotalLidHeight]]
+            set _buttonDisplayBoardStandoff$i [$_buttonDisplayBoard \
+                                               standoff \
+                                               ${selfns}_buttonDisplayBoardStandoff$i \
+                                               $i [expr {$Z + [$_baseLid TotalLidHeight]}] -6]
         }
         for {set i 1} {$i <= 5} {incr i} {
             set _buttonDisplayBoardButtonHole$i [$_buttonDisplayBoard \
@@ -697,16 +996,20 @@ snit::type 2ndGenLocoControlStandLid {
               -width 6 -orientation vertical -length 15.24 \
               -depth [$_baseLid TotalLidHeight]
         set buttonLEDBoardX [expr {$X + ([$_baseLid OutsideWidth]/2.0) - ([ButtonLEDBoard Width]/2.0)}]
-        set buttonLEDBoardY [expr {$Y + (([$_baseLid OutsideLength] - [$_baseLid InsideBoxLength]) / 2.0)}]
-        puts stderr "*** $type create $self: buttonLEDBoardX: $buttonLEDBoardX"
-        puts stderr "*** $type create $self: buttonLEDBoardY: $buttonLEDBoardY"
+        set buttonLEDBoardY [expr {$Y + ([$_baseLid OutsideLength] - [$_baseLid InsideBoxLength])}]
+        #puts stderr "*** $type create $self: buttonLEDBoardX: $buttonLEDBoardX"
+        #puts stderr "*** $type create $self: buttonLEDBoardY: $buttonLEDBoardY"
         install _buttonLEDBoard using ButtonLEDBoard ${selfns}_buttonLEDBoard \
-              -origin [list $buttonLEDBoardX $buttonLEDBoardY [expr {$Z + [$_baseLid TotalLidHeight] - 6}]]
+              -origin [list $buttonLEDBoardX $buttonLEDBoardY [expr {$Z + [$_baseLid TotalLidHeight] - (6 + 1.5875)}]]
         for {set i 1} {$i <= 4} {incr i} {
             set _buttonLEDBoardMH$i [$_buttonLEDBoard \
                                                 mountingHole \
                                                 ${selfns}_buttonLEDBoardMH$i \
                                                 $i $Z [$_baseLid TotalLidHeight]]
+            set _buttonLEDBoardStandoff$i [$_buttonLEDBoard \
+                                               standoff \
+                                               ${selfns}_buttonLEDBoardStandoff$i \
+                                               $i [expr {$Z + [$_baseLid TotalLidHeight]}] -6]
         }
 
         for {set i 1} {$i <= 8} {incr i} {
@@ -717,6 +1020,11 @@ snit::type 2ndGenLocoControlStandLid {
                                     ${selfns}_buttonLEDBoardL$i \
                                     $i $Z [$_baseLid TotalLidHeight]]
         }
+        install _lightSwitchMH using cylinder ${selfns}_lightSwitchMH \
+              -bottom [list [expr {$X + 19.05}] [expr {$Y + 50.8}] $Z] \
+              -radius [expr {$_lightSwitchMHDiameter / 2.0}] \
+              -height [$_baseLid TotalLidHeight] \
+              -color {255 255 255}
     }
     method print {{fp stdout}} {
         $_baseLid print $fp
@@ -726,6 +1034,7 @@ snit::type 2ndGenLocoControlStandLid {
         $_buttonDisplayBoard print $fp
         for {set i 1} {$i <= 4} {incr i} {
             [set _buttonDisplayBoardMountHole$i] print $fp
+            [set _buttonDisplayBoardStandoff$i] print $fp
         }
         for {set i 1} {$i <= 5} {incr i} {
             [set _buttonDisplayBoardButtonHole$i] print $fp
@@ -736,11 +1045,17 @@ snit::type 2ndGenLocoControlStandLid {
         $_buttonLEDBoard print $fp
         for {set i 1} {$i <= 4} {incr i} {
             [set _buttonLEDBoardMH$i] print $fp
+            [set _buttonLEDBoardStandoff$i] print $fp
         }
         for {set i 1} {$i <= 8} {incr i} {
             [set _buttonLEDBoardB$i] print $fp
             [set _buttonLEDBoardL$i] print $fp
         }
+        $_lightSwitchMH print $fp
+        $_throttleReverserBrakeBracket print $fp
+        $_throttleEncoder print $fp
+        $_reverserEncoder print $fp
+        $_brakePotentiometer print $fp
     }
 }
 

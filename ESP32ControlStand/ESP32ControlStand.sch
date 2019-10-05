@@ -45,7 +45,7 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 5
 Title ""
-Date "3 oct 2019"
+Date "5 oct 2019"
 Rev ""
 Comp ""
 Comment1 ""
@@ -84,6 +84,7 @@ F 0 "RV101" H 10000 2900 50  0000 C CNN
 F 1 "100K Ohms" H 10000 3000 50  0000 C CNN
 F 2 "~" H 10000 3000 60  0000 C CNN
 F 3 "~" H 10000 3000 60  0000 C CNN
+F 4 "774-450T328F104A1A1" H 10000 3000 60  0001 C CNN "Mouser Part Number"
 	1    10000 3000
 	0    -1   -1   0   
 $EndComp
@@ -95,6 +96,7 @@ F 0 "RV102" H 10050 2200 50  0000 C CNN
 F 1 "100K Ohms" H 10050 2300 50  0000 C CNN
 F 2 "~" H 10050 2300 60  0000 C CNN
 F 3 "~" H 10050 2300 60  0000 C CNN
+F 4 "774-450T328F104A1A1" H 10050 2300 60  0001 C CNN "Mouser Part Number"
 	1    10050 2300
 	0    -1   -1   0   
 $EndComp
