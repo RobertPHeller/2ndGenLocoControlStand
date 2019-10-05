@@ -8,7 +8,7 @@
 #  Author        : $Author$
 #  Created By    : Robert Heller
 #  Created       : Sun Jul 30 22:21:49 2017
-#  Last Modified : <191005.1452>
+#  Last Modified : <191005.1601>
 #
 #  Description	
 #
@@ -767,9 +767,12 @@ snit::type PEC12R {
     }
 }
 
+snit::enum Pot_450T328_Orientation -values {brake horn}
+
 snit::type Pot_450T328 {
     option -origin -type point -default {0 0 0} -readonly yes
     option -bracketthick -type snit::double -default 0 -readonly yes
+    option -orientation -type Pot_450T328_Orientation -default brake -readonly yes
     component _body
     component _bushing
     component _shaft
@@ -787,32 +790,64 @@ snit::type Pot_450T328 {
         $self configurelist $args
         lassign [$self cget -origin] X Y Z
         puts stderr "*** $type create $self:  -origin is [$self cget -origin]"
-        set Y [expr {$Y + [$self cget -bracketthick]}]
-        install _body using cylinder ${selfns}_body \
-              -bottom [list $X $Y $Z] \
-              -radius [expr {$_bodyDiameter / 2.0}] \
-              -height $_bodyDepth \
-              -direction DY -color {255 255 0}
-        install _bushing using cylinder ${selfns}_bushing \
-              -bottom [list $X $Y $Z] \
-              -radius [expr {$_bushingDiameter / 2.0}] \
-              -height [expr {-1*$_bushingLength}] \
-              -direction DY -color {200 200 200}
-        install _shaft using cylinder ${selfns}_shaft \
-              -bottom [list $X [expr {$Y - $_bushingLength}] $Z] \
-              -radius [expr {$_shaftDiameter / 2.0}] \
-              -height [expr {-1*$_shaftLength}] \
-              -direction DY -color {240 240 240}
-        install _tab1 using cylinder ${selfns}_tab1 \
-              -bottom [list [expr {$X - $_tabXoffset}] $Y $Z] \
-              -radius [expr {$_tabHoleDiameter / 2.0}] \
-              -height [expr {-1*[$self cget -bracketthick]}] \
-              -direction DY -color {255 255 255}
-        install _tab2 using cylinder ${selfns}_tab2 \
-              -bottom [list [expr {$X + $_tabXoffset}] $Y $Z] \
-              -radius [expr {$_tabHoleDiameter / 2.0}] \
-              -height [expr {-1*[$self cget -bracketthick]}] \
-              -direction DY -color {255 255 255}
+        switch [$self cget -orientation] {
+            brake {
+                set Y [expr {$Y + [$self cget -bracketthick]}]
+                install _body using cylinder ${selfns}_body \
+                      -bottom [list $X $Y $Z] \
+                      -radius [expr {$_bodyDiameter / 2.0}] \
+                      -height $_bodyDepth \
+                      -direction DY -color {255 255 0}
+                install _bushing using cylinder ${selfns}_bushing \
+                      -bottom [list $X $Y $Z] \
+                      -radius [expr {$_bushingDiameter / 2.0}] \
+                      -height [expr {-1*$_bushingLength}] \
+                      -direction DY -color {200 200 200}
+                install _shaft using cylinder ${selfns}_shaft \
+                      -bottom [list $X [expr {$Y - $_bushingLength}] $Z] \
+                      -radius [expr {$_shaftDiameter / 2.0}] \
+                      -height [expr {-1*$_shaftLength}] \
+                      -direction DY -color {240 240 240}
+                install _tab1 using cylinder ${selfns}_tab1 \
+                      -bottom [list [expr {$X - $_tabXoffset}] $Y $Z] \
+                      -radius [expr {$_tabHoleDiameter / 2.0}] \
+                      -height [expr {-1*[$self cget -bracketthick]}] \
+                      -direction DY -color {255 255 255}
+                install _tab2 using cylinder ${selfns}_tab2 \
+                      -bottom [list [expr {$X + $_tabXoffset}] $Y $Z] \
+                      -radius [expr {$_tabHoleDiameter / 2.0}] \
+                      -height [expr {-1*[$self cget -bracketthick]}] \
+                      -direction DY -color {255 255 255}
+            }
+            horn {
+                #set X [expr {$X + [$self cget -bracketthick]}]
+                install _body using cylinder ${selfns}_body \
+                      -bottom [list $X $Y $Z] \
+                      -radius [expr {$_bodyDiameter / 2.0}] \
+                      -height [expr {-1*$_bodyDepth}] \
+                      -direction DX -color {255 255 0}
+                install _bushing using cylinder ${selfns}_bushing \
+                      -bottom [list $X $Y $Z] \
+                      -radius [expr {$_bushingDiameter / 2.0}] \
+                      -height [expr {1*$_bushingLength}] \
+                      -direction DX -color {200 200 200}
+                install _shaft using cylinder ${selfns}_shaft \
+                      -bottom [list [expr {$X + $_bushingLength}] $Y $Z] \
+                      -radius [expr {$_shaftDiameter / 2.0}] \
+                      -height [expr {1*$_shaftLength}] \
+                      -direction DX -color {240 240 240}
+                install _tab1 using cylinder ${selfns}_tab1 \
+                      -bottom [list $X [expr {$Y - $_tabXoffset}] $Z] \
+                      -radius [expr {$_tabHoleDiameter / 2.0}] \
+                      -height [expr {1*[$self cget -bracketthick]}] \
+                      -direction DX -color {255 255 255}
+                install _tab2 using cylinder ${selfns}_tab2 \
+                      -bottom [list $X [expr {$Y + $_tabXoffset}] $Z] \
+                      -radius [expr {$_tabHoleDiameter / 2.0}] \
+                      -height [expr {1*[$self cget -bracketthick]}] \
+                      -direction DX -color {255 255 255}
+            }
+        }
     }
     method print {{fp stdout}} {
         $_body print $fp
@@ -824,14 +859,14 @@ snit::type Pot_450T328 {
 }
 
 
-snit::type ThrottleReverserBrakeBracket {
+snit::type Bracket {
     option -bracketthick -type snit::double -default 0 -readonly yes
     option -bracketcenterpoint -type point -default {0 0 0} -readonly yes
     option -bracketdepth -type snit::double -default 0 -readonly yes
     option -bracketwidth -type snit::double -default 0 -readonly yes
     option -bracketcornersize -type snit::double -default 5.0 -readonly yes
+    option -orientation -type Orient -default horizontal -readonly yes
     component _bracket
-    component _brakehole
     constructor {args} {
         $self configurelist $args
         lassign [$self cget -bracketcenterpoint] X Y Z
@@ -839,17 +874,32 @@ snit::type ThrottleReverserBrakeBracket {
         set bw_2 [expr {[$self cget -bracketwidth]/2.0}]
         set bd   [$self cget -bracketdepth]
         set bcs  [$self cget -bracketcornersize]
-        set bracketSurfPoly [list [list [expr {$X - $bw_2}] $Y $Z] \
-                             [list [expr {$X + $bw_2}] $Y $Z] \
-                             [list [expr {$X + $bw_2}] $Y [expr {$Z - ($bd-$bcs)}]] \
-                             [list [expr {$X + $bw_2-$bcs}] $Y [expr {$Z - $bd}]] \
-                             [list [expr {$X - $bw_2+$bcs}] $Y [expr {$Z - $bd}]] \
-                             [list [expr {$X - $bw_2}] $Y [expr {$Z - ($bd-$bcs)}]] \
-                             [list [expr {$X - $bw_2}] $Y $Z]]
+        switch [$self cget -orientation] {
+            horizontal {
+                set bracketSurfPoly [list [list [expr {$X - $bw_2}] $Y $Z] \
+                                     [list [expr {$X + $bw_2}] $Y $Z] \
+                                     [list [expr {$X + $bw_2}] $Y [expr {$Z - ($bd-$bcs)}]] \
+                                     [list [expr {$X + $bw_2-$bcs}] $Y [expr {$Z - $bd}]] \
+                                     [list [expr {$X - $bw_2+$bcs}] $Y [expr {$Z - $bd}]] \
+                                     [list [expr {$X - $bw_2}] $Y [expr {$Z - ($bd-$bcs)}]] \
+                                     [list [expr {$X - $bw_2}] $Y $Z]]
+                set brackVector [list 0 [$self cget -bracketthick] 0]
+            }
+            vertical {
+                set bracketSurfPoly [list [list $X [expr {$Y - $bw_2}] $Z] \
+                                     [list $X [expr {$Y + $bw_2}] $Z] \
+                                     [list $X [expr {$Y + $bw_2}] [expr {$Z - ($bd-$bcs)}]] \
+                                     [list $X [expr {$Y + $bw_2-$bcs}] [expr {$Z - $bd}]] \
+                                     [list $X [expr {$Y - $bw_2+$bcs}] [expr {$Z - $bd}]] \
+                                     [list $X [expr {$Y - $bw_2}] [expr {$Z - ($bd-$bcs)}]] \
+                                     [list $X [expr {$Y - $bw_2}] $Z]]
+                set brackVector [list [$self cget -bracketthick] 0 0]
+            }
+        }
         install _bracket using PrismSurfaceVector ${selfns}_bracket \
               -surface [PolySurface create ${selfns}_bracket_surf -rectangle no \
                         -polypoints $bracketSurfPoly] \
-              -vector [list 0 [$self cget -bracketthick] 0] \
+              -vector $brackVector \
               -color  {200 200 200}
     }
     method print {{fp stdout}} {
@@ -870,6 +920,7 @@ snit::type 2ndGenLocoControlStandLid {
     component _brakePotentiometer
     component _hornSlot
     component _hornBracket
+    component _hornPotentiometer
     component _buttonDisplayBoard
     component _buttonDisplayBoardMountHole1
     component _buttonDisplayBoardMountHole2
@@ -939,9 +990,9 @@ snit::type 2ndGenLocoControlStandLid {
                                $Z] \
               -width 6 -orientation horizontal -length 15.24 \
               -depth [$_baseLid TotalLidHeight]
-        install _throttleReverserBrakeBracket using \
-              ThrottleReverserBrakeBracket \
+        install _throttleReverserBrakeBracket using Bracket \
               ${selfns}_throttleReverserBrakeBracket \
+              -orientation horizontal \
               -bracketthick 3.0 \
               -bracketcenterpoint [list [expr {$X + ([$_baseLid OutsideWidth]/2.0)}] \
                                    [expr {$Y + ([$_baseLid OutsideLength]/2.0) + 5}] \
@@ -991,10 +1042,24 @@ snit::type 2ndGenLocoControlStandLid {
                                               $Z [$_baseLid TotalLidHeight]]
         install _hornSlot using Slot ${selfns}_hornSlot \
               -origin [list [expr {$X + [$_baseLid InsideBoxWidth] - 10}] \
-                       [expr {$Y + [$_baseLid InsideBoxLength] - 3}] \
+                       [expr {$Y + [$_baseLid InsideBoxLength] - 10}] \
                        $Z] \
               -width 6 -orientation vertical -length 15.24 \
               -depth [$_baseLid TotalLidHeight]
+        install _hornBracket using Bracket \
+              ${selfns}_hornBraket \
+              -orientation vertical \
+              -bracketthick 3.0 \
+              -bracketcenterpoint [list [expr {$X + [$_baseLid InsideBoxWidth] - 25}] \
+                                   [expr {$Y + [$_baseLid InsideBoxLength] - 10}] \
+                                   [expr {$Z + [$_baseLid LidThickness]}]] \
+              -bracketdepth 30 -bracketwidth 30
+        lassign [$_hornSlot cget -origin] hX hY hZ
+        install _hornPotentiometer using Pot_450T328 ${selfns}_hornPotentiometer \
+              -orientation horn \
+              -origin [list [expr {$X + [$_baseLid InsideBoxWidth] - 25}] \
+                       $hY [expr {($bZ - 15.24)+[$_baseLid LidThickness]}]] \
+              -bracketthick 3.0
         set buttonLEDBoardX [expr {$X + ([$_baseLid OutsideWidth]/2.0) - ([ButtonLEDBoard Width]/2.0)}]
         set buttonLEDBoardY [expr {$Y + ([$_baseLid OutsideLength] - [$_baseLid InsideBoxLength])}]
         #puts stderr "*** $type create $self: buttonLEDBoardX: $buttonLEDBoardX"
@@ -1042,6 +1107,8 @@ snit::type 2ndGenLocoControlStandLid {
         $_buttonDisplayBoardStatusLEDHole print $fp
         $_buttonDisplayBoardDisplayCutout print $fp
         $_hornSlot print $fp
+        $_hornBracket print $fp
+        $_hornPotentiometer print $fp
         $_buttonLEDBoard print $fp
         for {set i 1} {$i <= 4} {incr i} {
             [set _buttonLEDBoardMH$i] print $fp
