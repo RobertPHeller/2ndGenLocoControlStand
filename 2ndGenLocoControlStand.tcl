@@ -8,7 +8,7 @@
 #  Author        : $Author$
 #  Created By    : Robert Heller
 #  Created       : Sun Jul 30 22:21:49 2017
-#  Last Modified : <191005.1601>
+#  Last Modified : <191005.2247>
 #
 #  Description	
 #
@@ -60,7 +60,7 @@ snit::type cylinder {
     option -color -type color -readonly yes -default {0 0 0}
     option -direction -type direction -default DZ -readonly yes
     variable index
-    typevariable _index 20
+    typevariable _index 40
     constructor {args} {
         $self configurelist $args
         set index $_index
@@ -154,6 +154,24 @@ snit::type PrismSurfaceVector {
         } else {
             return $obj
         }
+    }
+}
+
+snit::type Sphere {
+    option -center -type point -readonly yes -default [list 0 0 0]
+    option -radius -type snit::double -default 0.0 -readonly yes 
+    option -color -type color -readonly yes -default {147 147 173}
+    variable index
+    typevariable _index 60
+    constructor {args} {
+        $self configurelist $args
+        set index $_index
+        incr _index
+    }
+    method print {{fp stdout}} {
+        puts $fp [eval [list format {DEFCOL %d %d %d}] $options(-color)]
+        lassign $options(-center) X Y Z
+        puts $fp [format {B%d = SPH P (%f %f %f) %f} $index $X $Y $Z $options(-radius)]
     }
 }
 
@@ -976,19 +994,19 @@ snit::type 2ndGenLocoControlStandLid {
               -origin [list [expr {$X + ([$_baseLid OutsideWidth]/2.0)}] \
                              [expr {$Y + ([$_baseLid OutsideLength]/2.0) + 20}] \
                              $Z] \
-              -width 6 -orientation horizontal -length 25.4 \
+              -width 6 -orientation horizontal -length [expr {25.4 + 6}] \
               -depth [$_baseLid TotalLidHeight]
         install _reverserSlot using Slot ${selfns}_reverserSlot \
-              -origin [list [expr {$X + ([$_baseLid OutsideWidth]/2.0) + 20}] \
+              -origin [list [expr {$X + ([$_baseLid OutsideWidth]/2.0) + 30}] \
                                [expr {$Y + ([$_baseLid OutsideLength]/2.0) - 7.5}] \
                                $Z] \
-              -width 6 -orientation horizontal -length 15.24 \
+              -width 6 -orientation horizontal -length [expr {15.24 + 6}] \
               -depth [$_baseLid TotalLidHeight]
         install _brakeSlot using Slot ${selfns}_brakeSlot \
-              -origin [list [expr {$X + ([$_baseLid OutsideWidth]/2.0) - 20}] \
+              -origin [list [expr {$X + ([$_baseLid OutsideWidth]/2.0) - 30}] \
                                [expr {$Y + ([$_baseLid OutsideLength]/2.0) - 10}] \
                                $Z] \
-              -width 6 -orientation horizontal -length 15.24 \
+              -width 6 -orientation horizontal -length [expr {15.24 + 6}] \
               -depth [$_baseLid TotalLidHeight]
         install _throttleReverserBrakeBracket using Bracket \
               ${selfns}_throttleReverserBrakeBracket \
@@ -997,7 +1015,7 @@ snit::type 2ndGenLocoControlStandLid {
               -bracketcenterpoint [list [expr {$X + ([$_baseLid OutsideWidth]/2.0)}] \
                                    [expr {$Y + ([$_baseLid OutsideLength]/2.0) + 5}] \
                                    [expr {$Z + [$_baseLid LidThickness]}]] \
-              -bracketdepth 35 -bracketwidth 70
+              -bracketdepth 35 -bracketwidth 90
         lassign [$_throttleSlot cget -origin] tX tY tZ
         install _throttleEncoder using Mech_Encoder_25L ${selfns}_throttleEncoder \
               -origin [list $tX [expr {$Y + ([$_baseLid OutsideLength]/2.0) + 5}] [expr {($tZ - 25.4)+[$_baseLid LidThickness]}]] \
@@ -1044,7 +1062,7 @@ snit::type 2ndGenLocoControlStandLid {
               -origin [list [expr {$X + [$_baseLid InsideBoxWidth] - 10}] \
                        [expr {$Y + [$_baseLid InsideBoxLength] - 10}] \
                        $Z] \
-              -width 6 -orientation vertical -length 15.24 \
+              -width 6 -orientation vertical -length [expr {15.24 + 15.24 + 6}] \
               -depth [$_baseLid TotalLidHeight]
         install _hornBracket using Bracket \
               ${selfns}_hornBraket \
@@ -1126,6 +1144,201 @@ snit::type 2ndGenLocoControlStandLid {
     }
 }
 
+snit::type FlattedShaft {
+    option -origin -type point -readonly yes -default {0 0 0}
+    option -radius -type snit::double -readonly yes -default 1
+    option -flatdepth -type snit::double -readonly yes -default 0
+    option -height -type snit::double -readonly yes -default 1
+    option -color -type color -readonly yes -default {0 0 0}
+    option -direction -type direction -default DZ -readonly yes
+    variable index
+    typevariable _index 200
+    constructor {args} {
+        $self configurelist $args
+        set index $_index
+        incr _index
+    }
+    method print {{fp stdout}} {
+        lassign $options(-origin) Xc Yc Zc
+        set R $options(-radius)
+        puts $fp [eval [list format {DEFCOL %d %d %d}] $options(-color)]
+        puts $fp [format {C%d = P (%f %f %f) VAL (%f) %s} $index $Xc $Yc $Zc $R $options(-direction)]
+        switch $options(-direction) {
+            DZ {
+                set Yl  [expr {$Yc - $R + $options(-flatdepth)}]
+                set Xl1 [expr {$Xc - $R}]
+                set Xl2 [expr {$Xc + $R}]
+                puts $fp [format {L%d = P (%f %f %f)  P (%f %f %f)} $index $Xl1 $Yl $Zc $Xl2 $Yl $Zc]
+            }
+            DY {
+                set Xl  [expr {$Xc - $R + $options(-flatdepth)}]
+                set Zl1 [expr {$Zc - $R}]
+                set Zl2 [expr {$Zc + $R}]
+                puts $fp [format {L%d = P (%f %f %f)  P (%f %f %f)} $index $Xl $Yc $Zl1 $Xl $Yc $Zl2]
+            }
+            DX {
+                set Zl  [expr {$Zc - $R + $options(-flatdepth)}]
+                set Xl1 [expr {$Xc - $R}]
+                set Xl2 [expr {$Xc + $R}]
+                puts $fp [format {L%d = P (%f %f %f)  P (%f %f %f)} $index $Xl1 $Yc $Zl $Xl2 $Yc $Zl]
+            }
+        }
+        puts $fp [format {L%d = CUT L%d C%d C%d} $index $index $index $index]
+        puts $fp [format {C%d = CUT C%d L%d L%d} $index $index $index $index]
+        puts $fp [format {b%d = PRISM C%d %f} $index $index $options(-height)]
+    }
+}
 
-set 2ndGenLocoControlStandLid [2ndGenLocoControlStandLid ControlStandLid -origin [list 0 0 60]]
+snit::type StraightControlLever {
+    option -origin -type point -readonly yes -default [list 0 0 0]
+    option -shaftlength -type snit::double -default 0.0 -readonly yes
+    option -shaftdiameter -type snit::double -default 6 -readonly yes
+    option -dholediameter -type snit::double -default 6.35 -readonly yes
+    option -dholeflatsize -type snit::double -default 5.56 -readonly yes
+    option -holeendblockthick -type snit::double -default 6 -readonly yes
+    option -holeendblockwidth -type snit::double -default  8.89
+    option -holeendblocklength -type snit::double -default 11.43 -readonly yes
+    option -handlelength -type snit::double -default 12.7 -readonly yes
+    option -handlediameter -type snit::double -default [expr {(3.0/8.0)*25.4}] -readonly yes
+    option -handlecolor -type color -default {0 0 0} -readonly yes 
+    component _dhole
+    component _holeendblock
+    component _shaft
+    component _handle
+    constructor {args} {
+        $self configurelist $args
+        lassign [$self cget -origin] X Y Z
+        install _holeendblock using PrismSurfaceVector ${selfns}_holeendblock \
+              -surface [PolySurface create ${selfns}_holeendblock_surf -rectangle yes \
+                        -cornerpoint [list $X [expr {$Y - ([$self cget -holeendblockwidth] / 2.0)}] [expr {$Z - ([$self cget -holeendblockthick] / 2.0)}]] \
+                        -vec1 [list [$self cget -holeendblocklength] 0 0] \
+                        -vec2 [list 0 [$self cget -holeendblockwidth] 0]] \
+              -vector [list 0 0 [$self cget -holeendblockthick]] \
+              -color {96 96 96}
+        install _shaft using cylinder ${selfns}_shaft \
+              -bottom [list [expr {$X + [$self cget -holeendblocklength]}] $Y $Z] \
+              -radius [expr {[$self cget -shaftdiameter] / 2.0}] \
+              -height [$self cget -shaftlength] \
+              -direction DX -color {96 96 96}
+        install _handle using cylinder ${selfns}_handle \
+              -bottom [list [expr {$X + [$self cget -holeendblocklength] + [$self cget -shaftlength]}] \
+                       $Y $Z] \
+              -radius [expr {[$self cget -handlediameter] / 2.0}] \
+              -height [$self cget -handlelength] \
+              -direction DX -color [$self cget -handlecolor]
+        install _dhole using FlattedShaft ${selfns}_dhole \
+              -origin [list [expr {$X + ([$self cget -holeendblocklength] / 2.0)}] $Y \
+                       [expr {$Z - ([$self cget -holeendblockthick] / 2.0)}]] \
+              -radius [expr {[$self cget -dholediameter] / 2.0}] \
+              -flatdepth [$self cget -dholeflatsize] \
+              -color {255 255 255} \
+              -height [expr {[$self cget -holeendblockthick]}] \
+              -direction DZ
+        
+    }
+    method print {{fp stdout}} {
+        $_holeendblock print $fp
+        $_shaft print $fp
+        $_handle print $fp
+        $_dhole print $fp
+    }
+}
+
+snit::type BentControlLever {
+    option -origin -type point -readonly yes -default [list 0 0 0]
+    option -shaftlength1 -type snit::double -default 0.0 -readonly yes
+    option -shaftlength2 -type snit::double -default 0.0 -readonly yes
+    option -shaftdiameter -type snit::double -default 6 -readonly yes
+    option -dholediameter -type snit::double -default 6.35 -readonly yes
+    option -dholeflatsize -type snit::double -default 5.56 -readonly yes
+    option -holeendblockthick -type snit::double -default 6 -readonly yes
+    option -holeendblockwidth -type snit::double -default  8.89
+    option -holeendblocklength -type snit::double -default 11.43 -readonly yes
+    option -handlelength -type snit::double -default 12.7 -readonly yes
+    option -handlediameter -type snit::double -default [expr {(3.0/8.0)*25.4}] -readonly yes
+    option -handlecolor -type color -default {0 0 0} -readonly yes 
+    component _dhole
+    component _holeendblock
+    component _shaft1
+    component _shaft2
+    component _elbow
+    component _handle
+    constructor {args} {
+        $self configurelist $args
+        lassign [$self cget -origin] X Y Z
+        install _holeendblock using PrismSurfaceVector ${selfns}_holeendblock \
+              -surface [PolySurface create ${selfns}_holeendblock_surf -rectangle yes \
+                        -cornerpoint [list $X [expr {$Y - ([$self cget -holeendblockwidth] / 2.0)}] [expr {$Z - ([$self cget -holeendblockthick] / 2.0)}]] \
+                        -vec1 [list [$self cget -holeendblocklength] 0 0] \
+                        -vec2 [list 0 [$self cget -holeendblockwidth] 0]] \
+              -vector [list 0 0 [$self cget -holeendblockthick]] \
+              -color {96 96 96}
+        install _shaft1 using cylinder ${selfns}_shaft1 \
+              -bottom [list [expr {$X + [$self cget -holeendblocklength]}] $Y $Z] \
+              -radius [expr {[$self cget -shaftdiameter] / 2.0}] \
+              -height [expr {[$self cget -shaftlength1]}] \
+              -direction DX -color {96 96 96}
+        set s2Bottom [list [expr {$X + [$self cget -holeendblocklength] + [$self cget -shaftlength1]}] \
+                      $Y $Z]
+        install _elbow using Sphere ${selfns}_elbow \
+              -center $s2Bottom \
+              -radius [expr {[$self cget -shaftdiameter] / 2.0}] \
+              -color {96 96 96}
+        install _shaft2 using cylinder ${selfns}_shaft2 \
+              -bottom $s2Bottom \
+              -radius [expr {[$self cget -shaftdiameter] / 2.0}] \
+              -height [$self cget -shaftlength2] \
+              -direction DY -color {96 96 96}
+        lassign $s2Bottom X1 Y1 Z1
+        install _handle using cylinder ${selfns}_handle \
+              -bottom [list $X1 [expr {$Y1 + [$self cget -shaftlength2]}] $Z1] \
+              -radius [expr {[$self cget -handlediameter] / 2.0}] \
+              -height [$self cget -handlelength] \
+              -direction DY -color [$self cget -handlecolor]
+        install _dhole using FlattedShaft ${selfns}_dhole \
+              -origin [list [expr {$X + ([$self cget -holeendblocklength] / 2.0)}] $Y \
+                       [expr {$Z - ([$self cget -holeendblockthick] / 2.0)}]] \
+              -radius [expr {[$self cget -dholediameter] / 2.0}] \
+              -flatdepth [$self cget -dholeflatsize] \
+              -color {255 255 255} \
+              -height [expr {[$self cget -holeendblockthick]}] \
+              -direction DZ
+        
+    }
+    method print {{fp stdout}} {
+        $_holeendblock print $fp
+        $_shaft1 print $fp
+        $_elbow print $fp
+        $_shaft2 print $fp
+        $_handle print $fp
+        $_dhole print $fp
+    }
+}
+
+
+set 2ndGenLocoControlStandLid [2ndGenLocoControlStandLid ControlStandLid \
+                               -origin [list 0 0 60]]
 $2ndGenLocoControlStandLid print
+
+set throttleHandle [StraightControlLever create ThrottleHandle \
+                    -origin [list 200 0 60] \
+                    -shaftlength 30 -handlecolor {0 0 255} \
+                    -dholediameter 6.35 -dholeflatsize 5.56]
+set reverserHandle [StraightControlLever create ReverserHandle \
+                    -origin [list 200 50 60] \
+                    -shaftlength 20 -handlecolor {0 0 0}  \
+                    -dholediameter 6 -dholeflatsize 4.5]
+set brakeHandle [StraightControlLever create BrakeHandle \
+                 -origin [list 200 100 60] \
+                 -shaftlength 20 -handlecolor {255 0 0} \
+                 -dholediameter 6.35 -dholeflatsize 3.96]
+set hornHandle [BentControlLever create HornHandle \
+                -origin [list 200 150 60] \
+                -shaftlength1 20 -shaftlength2 20 \
+                -handlecolor {50 50 50} -dholediameter 6.35 -dholeflatsize 3.96]
+
+
+$throttleHandle print
+$reverserHandle print
+$brakeHandle print
+$hornHandle print
