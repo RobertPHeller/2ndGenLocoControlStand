@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Sun Oct 6 09:53:58 2019
-//  Last Modified : <191006.1024>
+//  Last Modified : <191006.1323>
 //
 //  Description	
 //
@@ -71,12 +71,64 @@
 #define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
+Adafruit_MCP23017 mcp;
 
+uint8_t throttlePosition = 0;
+uint8_t throttleQuadrature;
+
+void checkThrottle()
+{
+    uint8_t newQuadrature;
+    newQuadrature = digitalRead(THROTTLEA) | (digitalRead(THROTTLEB) << 1);
+    uint8_t quadratureUp[] = {1, 3, 0, 2};
+    uint8_t quadratureDown[] = {2, 0, 3, 1};
+    if (newQuadrature != throttleQuadrature)
+    {
+        if (newQuadrature == quadratureUp[throttleQuadrature & 0x03])
+        {
+            if (throttlePosition > 0)
+                throttlePosition--;
+        }
+        else if (newQuadrature == quadratureDown[throttleQuadrature & 0x03])
+        {
+            if (throttlePosition < 8)
+                throttlePosition++;
+        }
+        else
+            throttlePosition = 0;
+    }
+    throttleQuadrature = newQuadrature & 0x03;
+}
+
+uint16_t readBrake() {
+    return analogRead(BRAKE);
+}
+
+uint16_t readHorn() {
+    return analogRead(HORN);
+}
+
+uint16_t readReverser() {
+    return analogRead(REVERSER);
+}
+
+uint8_t StatusColor = 1;
+
+uint8_t LedNumber = -1;
+
+uint16_t LedUpdateCount = 100;
 
 static const char rcsid[] = "@(#) : $Id$";
 
 void setup() {
     // put your setup code here, to run once:
+    Serial.begin(9600);
+    
+    // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
+    if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // Address 0x3C for 128x32
+        Serial.println(F("SSD1306 allocation failed"));
+        for(;;); // Don't proceed, loop forever
+    }
     pinMode(HORN,INPUT);
     pinMode(BRAKE,INPUT);
     pinMode(BUTTON_A,INPUT_PULLUP);
@@ -91,12 +143,68 @@ void setup() {
     digitalWrite(STATUS_G,LOW);
     pinMode(THROTTLEA,INPUT_PULLUP);
     pinMode(THROTTLEB,INPUT_PULLUP);
+    throttleQuadrature = digitalRead(THROTTLEA) | (digitalRead(THROTTLEB) << 1);
     pinMode(L_OFF,INPUT_PULLUP);
     pinMode(L_DIM,INPUT_PULLUP);
     pinMode(L_BRIGHT,INPUT_PULLUP);
     pinMode(L_DITCH,INPUT_PULLUP);
+    mcp.begin();
+    for (int i=0; i< 8; i++) {
+        mcp.pinMode(i,OUTPUT);  // LED i
+        mcp.digitalWrite(i,LOW);
+        mcp.pinMode(i+8,INPUT_PULLUP); // Button i
+    }
+    // Show initial display buffer contents on the screen --
+    // the library initializes this with an Adafruit splash screen.
+    display.display();
+    delay(2000); // Pause for 2 seconds
+    
+    // Clear the buffer
+    display.clearDisplay();
+    display.setTextSize(1);
+    display.setTextColor(WHITE);
+    display.cp437(true);
 }
                 
 void loop() {
     // put your main code here, to run repeatedly:
+    if (LedUpdateCount >= 100) {
+        if (LedNumber >= 0) {
+            mcp.digitalWrite(LedNumber,LOW);
+        }
+        LedNumber++;
+        if (LedNumber >= 8) LedNumber = 0;
+        mcp.digitalWrite(LedNumber,HIGH);
+        switch (StatusColor) {
+        case 0:
+            digitalWrite(STATUS_R,LOW);
+            digitalWrite(STATUS_G,LOW);
+            break;
+        case 1:
+            digitalWrite(STATUS_R,HIGH);
+            digitalWrite(STATUS_G,LOW);
+            break;
+        case 2:
+            digitalWrite(STATUS_R,LOW);
+            digitalWrite(STATUS_G,HIGH);
+            break;
+        case 3:
+            digitalWrite(STATUS_R,HIGH);
+            digitalWrite(STATUS_G,HIGH);
+            break;
+        }
+        StatusColor++;
+        if (StatusColor > 3) StatusColor = 0;
+        LedUpdateCount = 0;
+    }
+    display.clearDisplay();
+    display.setCursor(0, 0);
+    checkThrottle();
+    display.print("Throttle: ");display.println(throttlePosition);
+    display.print("Brake:    ");display.println(readBrake());
+    display.print("Horn:     ");display.println(readHorn());
+    display.print("Reverser: ");display.println(readReverser());
+    display.display();
+    LedUpdateCount++;
+    delay(10);
 }    
