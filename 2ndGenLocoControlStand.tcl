@@ -8,7 +8,7 @@
 #  Author        : $Author$
 #  Created By    : Robert Heller
 #  Created       : Sun Jul 30 22:21:49 2017
-#  Last Modified : <191005.2247>
+#  Last Modified : <191006.0844>
 #
 #  Description	
 #
@@ -483,6 +483,8 @@ snit::type ButtonDisplayBoard {
     typevariable _displayCutoutCornerXY {6.35 29.845}
     typevariable _displayCutoutCornerWidth 29.845
     typevariable _displayCutoutCornerLength 11.43
+    typevariable _displayMountingHolesXY {{6.604 27.305} {6.604 43.815} {36.576 27.305} {36.576 43.815}}
+    typevariable _displayMountingHoleDiameter 2.3
     typevariable _buttonHolesXY {{11.43 52.07} {7.62 19.05} {16.51 19.05}
         {25.4 19.05} {34.29 19.05}}
     typevariable _buttonHoleDiameter 5.08
@@ -541,6 +543,12 @@ snit::type ButtonDisplayBoard {
                           -vec1 [list $_displayCutoutCornerWidth 0 0] \
                           -vec2 [list 0 $_displayCutoutCornerLength 0]] \
                 -vector [list 0 0 $height] -color {255 255 255}]
+    }
+    method displayMountingHole {name i base height} {
+        return [cylinder $name \
+                -bottom [$self _3DPoint [lindex $_displayMountingHolesXY [expr {$i - 1}]] $base] \
+                -radius [expr {$_displayMountingHoleDiameter  / 2.0}] \
+                -height $height -color {255 255 255}]
     }
 }
 
@@ -955,6 +963,10 @@ snit::type 2ndGenLocoControlStandLid {
     component _buttonDisplayBoardButtonHole5
     component _buttonDisplayBoardStatusLEDHole
     component _buttonDisplayBoardDisplayCutout
+    component _buttonDisplayBoardDisplayMH1
+    component _buttonDisplayBoardDisplayMH2
+    component _buttonDisplayBoardDisplayMH3
+    component _buttonDisplayBoardDisplayMH4
     component _buttonLEDBoard
     component _buttonLEDBoardMH1
     component _buttonLEDBoardMH2
@@ -1058,6 +1070,12 @@ snit::type 2ndGenLocoControlStandLid {
                                               displayCutoutHole \
                                               ${selfns}_buttonDisplayBoardDisplayCutout \
                                               $Z [$_baseLid TotalLidHeight]]
+        for {set i 1} {$i <= 4} {incr i} {
+            set _buttonDisplayBoardDisplayMH$i [$_buttonDisplayBoard \
+                                                displayMountingHole \
+                                                ${selfns}_buttonDisplayBoardDisplayMH$i \
+                                                $i $Z [$_baseLid TotalLidHeight]]
+        }
         install _hornSlot using Slot ${selfns}_hornSlot \
               -origin [list [expr {$X + [$_baseLid InsideBoxWidth] - 10}] \
                        [expr {$Y + [$_baseLid InsideBoxLength] - 10}] \
@@ -1124,6 +1142,9 @@ snit::type 2ndGenLocoControlStandLid {
         }
         $_buttonDisplayBoardStatusLEDHole print $fp
         $_buttonDisplayBoardDisplayCutout print $fp
+        for {set i 1} {$i <= 4} {incr i} {
+            [set _buttonDisplayBoardDisplayMH$i] print $fp
+        }
         $_hornSlot print $fp
         $_hornBracket print $fp
         $_hornPotentiometer print $fp
@@ -1334,7 +1355,7 @@ set brakeHandle [StraightControlLever create BrakeHandle \
                  -dholediameter 6.35 -dholeflatsize 3.96]
 set hornHandle [BentControlLever create HornHandle \
                 -origin [list 200 150 60] \
-                -shaftlength1 20 -shaftlength2 20 \
+                -shaftlength1 20 -shaftlength2 30 \
                 -handlecolor {50 50 50} -dholediameter 6.35 -dholeflatsize 3.96]
 
 
