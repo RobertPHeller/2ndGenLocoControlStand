@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Sun Oct 6 09:53:40 2019
-//  Last Modified : <191007.1555>
+//  Last Modified : <191007.1901>
 //
 //  Description	
 //
@@ -78,7 +78,7 @@
 #include "config.h"
 #include "NODEID.h" // Get nodeid from an externally generated header file
 #include "ArduinoExtenderGpio.h"
-
+#include "ESP32ControlStand.h"
 
 using mcp23017Gpio = ArduinoExtenderGpioTemplate<Adafruit_MCP23017>;
 
@@ -269,22 +269,6 @@ openlcb::RefreshLoop BUT1_refresh_loop(openmrn.stack()->node(),
 );
 #endif
 
-#define HORN      A0
-#define BRAKE     A3
-#define BUTTON_A  34
-#define BUTTON_B  35
-#define BUTTON_C  33
-#define BUTTON_D  25
-#define BELL      26
-#define REVERSER  A17
-#define STATUS_R  12
-#define STATUS_G  13
-#define THROTTLEA 22
-#define THROTTLEB 19
-#define L_OFF     18
-#define L_DIM     17
-#define L_BRIGHT  16
-#define L_DITCH    0
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 32 // OLED display height, in pixels
@@ -292,6 +276,12 @@ openlcb::RefreshLoop BUT1_refresh_loop(openmrn.stack()->node(),
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 #define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+
+ESP32ControlStand stand(openmrn.stack()->node(),&display);
+
+openlcb::RefreshLoop stand_refresh_loop(openmrn.stack()->node(),
+   { &stand });
+
 
 class FactoryResetHelper : public DefaultConfigUpdateListener {
 public:
@@ -352,45 +342,6 @@ namespace openlcb
 
 static const char rcsid[] = "@(#) : $Id$";
 
-uint8_t throttlePosition = 0;
-uint8_t throttleQuadrature;
-
-void checkThrottle()
-{
-    uint8_t newQuadrature;
-    newQuadrature = digitalRead(THROTTLEA) | (digitalRead(THROTTLEB) << 1);
-    uint8_t quadratureUp[] = {1, 3, 0, 2};
-    uint8_t quadratureDown[] = {2, 0, 3, 1};
-    if (newQuadrature != throttleQuadrature)
-    {
-        if (newQuadrature == quadratureUp[throttleQuadrature & 0x03])
-        {
-            if (throttlePosition > 0)
-                throttlePosition--;
-        }
-        else if (newQuadrature == quadratureDown[throttleQuadrature & 0x03])
-        {
-            if (throttlePosition < 8)
-                throttlePosition++;
-        }
-        else
-            throttlePosition = 0;
-    }
-    throttleQuadrature = newQuadrature & 0x03;
-}
-
-uint16_t readBrake() {
-    return analogRead(BRAKE);
-}
-
-uint16_t readHorn() {
-    return analogRead(HORN);
-}
-
-uint16_t readReverser() {
-    return analogRead(REVERSER);
-}
-
 void setup() {
     Serial.begin(115200L);
 
@@ -422,25 +373,6 @@ void setup() {
         openlcb::CANONICAL_VERSION, openlcb::CONFIG_FILE_SIZE);
 
     // initialize all declared GPIO pins
-    pinMode(HORN,INPUT);
-    pinMode(BRAKE,INPUT);
-    pinMode(BUTTON_A,INPUT_PULLUP);
-    pinMode(BUTTON_B,INPUT_PULLUP);
-    pinMode(BUTTON_C,INPUT_PULLUP);
-    pinMode(BUTTON_D,INPUT_PULLUP);
-    pinMode(BELL,INPUT_PULLUP);
-    pinMode(REVERSER,INPUT);
-    pinMode(STATUS_R,OUTPUT);
-    digitalWrite(STATUS_R,LOW);
-    pinMode(STATUS_G,OUTPUT);
-    digitalWrite(STATUS_G,LOW);
-    pinMode(THROTTLEA,INPUT_PULLUP);
-    pinMode(THROTTLEB,INPUT_PULLUP);
-    throttleQuadrature = digitalRead(THROTTLEA) | (digitalRead(THROTTLEB) << 1);
-    pinMode(L_OFF,INPUT_PULLUP);
-    pinMode(L_DIM,INPUT_PULLUP);
-    pinMode(L_BRIGHT,INPUT_PULLUP);
-    pinMode(L_DITCH,INPUT_PULLUP);
 #ifdef MCP23017_0
     mcp0.begin(0x20);
     LED00_Pin.hw_init();
@@ -479,6 +411,7 @@ void setup() {
     BUT16_Pin.hw_init();
     BUT17_Pin.hw_init();
 #endif
+    stand.hw_init();
     // Start the OpenMRN stack
     openmrn.begin();
     openmrn.start_executor_thread();
