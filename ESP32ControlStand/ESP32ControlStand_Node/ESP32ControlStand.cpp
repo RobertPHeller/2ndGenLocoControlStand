@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Oct 7 18:47:11 2019
-//  Last Modified : <191007.1907>
+//  Last Modified : <191007.1955>
 //
 //  Description	
 //
@@ -70,14 +70,16 @@ static const char rcsid[] = "@(#) : $Id$";
 #define L_DITCH    0
 
 
-uint8_t ESP32ControlStand::checkThrottle()
+bool ESP32ControlStand::checkThrottle()
 {
+    bool changedP = false;
     uint8_t newQuadrature;
     newQuadrature = digitalRead(THROTTLEA) | (digitalRead(THROTTLEB) << 1);
     uint8_t quadratureUp[] = {1, 3, 0, 2};
     uint8_t quadratureDown[] = {2, 0, 3, 1};
     if (newQuadrature != throttleQuadrature_)
     {
+        changedP = true;
         if (newQuadrature == quadratureUp[throttleQuadrature & 0x03])
         {
             if (throttlePosition_ > 0)
@@ -92,19 +94,37 @@ uint8_t ESP32ControlStand::checkThrottle()
             throttlePosition_ = 0;
     }
     throttleQuadrature_ = newQuadrature & 0x03;
-    return throttlePosition_;
+    return changedP;
 }
 
-uint16_t ESP32ControlStand::readBrake() {
-    return analogRead(BRAKE);
+bool ESP32ControlStand::readBrake() {
+    uint16_t newBrake = analogRead(BRAKE);
+    if (newBrake != brake_) {
+        brake_ = newBrake;
+        return (true);
+    } else {
+        return (false);
+    }
 }
 
-uint16_t ESP32ControlStand::readHorn() {
-    return analogRead(HORN);
+bool ESP32ControlStand::readHorn() {
+    uint16_t newHorn = analogRead(HORN);
+    if (newHorn != horn_) {
+        horn_ = newHorn;
+        return (true);
+    } else {
+        return (false);
+    }
 }
 
-uint16_t ESP32ControlStand::readReverser() {
-    return analogRead(REVERSER);
+bool ESP32ControlStand::readReverser() {
+    uint16_t newReverser = analogRead(REVERSER);
+    if (newReverser != reverser_) {
+        reverser_ = newReverser;
+        return (true);
+    } else {
+        return (false);
+    }
 }
 void ESP32ControlStand::hw_init()
 {
@@ -128,3 +148,16 @@ void ESP32ControlStand::hw_init()
     pinMode(L_BRIGHT,INPUT_PULLUP);
     pinMode(L_DITCH,INPUT_PULLUP);
 }
+
+void ESP32ControlStand::poll_33hz(openlcb::WriteHelper *helper, Notifiable *done)
+{
+    if (checkThrottle() || 
+        readBrake() || 
+        readHorn() || 
+        readReverser())
+    {
+        // Update train
+    }
+    // Other tasks
+}
+

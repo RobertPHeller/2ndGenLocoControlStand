@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Oct 7 18:43:06 2019
-//  Last Modified : <191007.1908>
+//  Last Modified : <191007.1953>
 //
 //  Description	
 //
@@ -55,19 +55,27 @@
 
 class ESP32ControlStand : public openlcb::TractionThrottle, public openlcb::Polling {
     ESP32ControlStand(openlcb::Node *node, Adafruit_SSD1306 *display) 
-                : node_(node), display_(display), throttlePosition_(0)
+                : node_(node)
+          , display_(display)
+          , throttlePosition_(0)
+          , brake_(0)
+          , horn_(0)
+          , reverser_(0)
     { }
     void hw_init();
-    void openlcb::poll_33hz(openlcb::WriteHelper *helper, Notifiable *done) OVERRIDE;
+    void poll_33hz(openlcb::WriteHelper *helper, Notifiable *done) OVERRIDE;
 private:
     openlcb::Node *node_;
     Adafruit_SSD1306 *display_;
     uint8_t throttlePosition_;
     uint8_t throttleQuadrature_;
-    uint8_t checkThrottle();
-    uint16_t readBrake();
-    uint16_t readHorn();
-    uint16_t readReverser();
+    uint16_t brake_;
+    uint16_t horn_;
+    uint16_t reverser_;
+    bool checkThrottle();
+    bool readBrake();
+    bool readHorn();
+    bool readReverser();
 };
 
 #endif // __ESP32CONTROLSTAND_H
