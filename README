@@ -1,0 +1,13 @@
+This is a model diesel locomotive control stand (more or less typical of a 2nd 
+generation diesel locomotive).
+
+Files / Directories:
+
+2ndGenLocoControlStand.dxf, 2ndGenLocoControlStand.gcad, and 
+2ndGenLocoControlStand.tcl relate to the 3D model of the front panel (based on 
+a Hammond Manucafturing RL6685 enclosure).
+
+The ESP32ControlStand directory contains the ESP32 (TTGO-T1) based design, the 
+electronics are in KiCad form (Version: 2013.06.11).  The 
+ESP32ControlStand/ESP32ControlStand_Node directory contains the OpenMRN code 
+(C++, Arduino style using the OpenMRNLite library).
