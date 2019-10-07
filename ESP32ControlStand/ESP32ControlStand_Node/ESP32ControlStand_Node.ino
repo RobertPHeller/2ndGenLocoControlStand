@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Sun Oct 6 09:53:40 2019
-//  Last Modified : <191007.1047>
+//  Last Modified : <191007.1555>
 //
 //  Description	
 //
@@ -293,10 +293,154 @@ openlcb::RefreshLoop BUT1_refresh_loop(openmrn.stack()->node(),
 #define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
+class FactoryResetHelper : public DefaultConfigUpdateListener {
+public:
+    UpdateAction apply_configuration(int fd, bool initial_load,
+                                     BarrierNotifiable *done) OVERRIDE {
+        AutoNotify n(done);
+        return UPDATED;
+    }
+
+    void factory_reset(int fd) override
+    {
+        cfg.userinfo().name().write(fd, openlcb::SNIP_STATIC_DATA.model_name);
+        cfg.userinfo().description().write(
+            fd, "OpenLCB + Arduino-ESP32 on an ESP32.");
+#ifdef MCP23017_0
+        for(int i = 0; i < openlcb::NUM_OUTPUTS; i++)
+        {
+            cfg.seg().mcp0().consumers().entry(i).description().write(fd, "");
+        }
+        for(int i = 0; i < openlcb::NUM_INPUTS; i++)
+        {
+            cfg.seg().mcp0().producers().entry(i).description().write(fd, "");
+            CDI_FACTORY_RESET(cfg.seg().mcp0()..producers().entry(i).debounce);
+        }
+#endif
+#ifdef MCP23017_1
+        for(int i = 0; i < openlcb::NUM_OUTPUTS; i++)
+        {
+            cfg.seg().mcp1().consumers().entry(i).description().write(fd, "");
+        }
+        for(int i = 0; i < openlcb::NUM_INPUTS; i++)
+        {
+            cfg.seg().mcp1().producers().entry(i).description().write(fd, "");
+            CDI_FACTORY_RESET(cfg.seg().mcp1()..producers().entry(i).debounce);
+        }
+#endif
+    }
+} factory_reset_helper;
+
+namespace openlcb
+{
+    // Name of CDI.xml to generate dynamically.
+    const char CDI_FILENAME[] = "/spiffs/cdi.xml";
+
+    // This will stop openlcb from exporting the CDI memory space upon start.
+    extern const char CDI_DATA[] = "";
+
+    // Path to where OpenMRN should persist general configuration data.
+    extern const char *const CONFIG_FILENAME = "/spiffs/openlcb_config";
+
+    // The size of the memory space to export over the above device.
+    extern const size_t CONFIG_FILE_SIZE = cfg.seg().size() + cfg.seg().offset();
+
+    // Default to store the dynamic SNIP data is stored in the same persistant
+    // data file as general configuration data.
+    extern const char *const SNIP_DYNAMIC_FILENAME = CONFIG_FILENAME;
+}
+
 static const char rcsid[] = "@(#) : $Id$";
 
+uint8_t throttlePosition = 0;
+uint8_t throttleQuadrature;
+
+void checkThrottle()
+{
+    uint8_t newQuadrature;
+    newQuadrature = digitalRead(THROTTLEA) | (digitalRead(THROTTLEB) << 1);
+    uint8_t quadratureUp[] = {1, 3, 0, 2};
+    uint8_t quadratureDown[] = {2, 0, 3, 1};
+    if (newQuadrature != throttleQuadrature)
+    {
+        if (newQuadrature == quadratureUp[throttleQuadrature & 0x03])
+        {
+            if (throttlePosition > 0)
+                throttlePosition--;
+        }
+        else if (newQuadrature == quadratureDown[throttleQuadrature & 0x03])
+        {
+            if (throttlePosition < 8)
+                throttlePosition++;
+        }
+        else
+            throttlePosition = 0;
+    }
+    throttleQuadrature = newQuadrature & 0x03;
+}
+
+uint16_t readBrake() {
+    return analogRead(BRAKE);
+}
+
+uint16_t readHorn() {
+    return analogRead(HORN);
+}
+
+uint16_t readReverser() {
+    return analogRead(REVERSER);
+}
+
 void setup() {
-    
+    Serial.begin(115200L);
+
+    // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
+    if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // Address 0x3C for 128x32
+        Serial.println(F("SSD1306 allocation failed"));
+        for(;;); // Don't proceed, loop forever
+    }
+    // Initialize the SPIFFS filesystem as our persistence layer
+    if (!SPIFFS.begin())
+    {
+        printf("SPIFFS failed to mount, attempting to format and remount\n");
+        if (!SPIFFS.begin(true))
+        {
+            printf("SPIFFS mount failed even with format, giving up!\n");
+            while (1)
+            {
+                // Unable to start SPIFFS successfully, give up and wait
+                // for WDT to kick in
+            }
+        }
+    }
+
+    // Create the CDI.xml dynamically
+    openmrn.create_config_descriptor_xml(cfg, openlcb::CDI_FILENAME);
+
+    // Create the default internal configuration file
+    openmrn.stack()->create_config_file_if_needed(cfg.seg().internal_config(),
+        openlcb::CANONICAL_VERSION, openlcb::CONFIG_FILE_SIZE);
+
+    // initialize all declared GPIO pins
+    pinMode(HORN,INPUT);
+    pinMode(BRAKE,INPUT);
+    pinMode(BUTTON_A,INPUT_PULLUP);
+    pinMode(BUTTON_B,INPUT_PULLUP);
+    pinMode(BUTTON_C,INPUT_PULLUP);
+    pinMode(BUTTON_D,INPUT_PULLUP);
+    pinMode(BELL,INPUT_PULLUP);
+    pinMode(REVERSER,INPUT);
+    pinMode(STATUS_R,OUTPUT);
+    digitalWrite(STATUS_R,LOW);
+    pinMode(STATUS_G,OUTPUT);
+    digitalWrite(STATUS_G,LOW);
+    pinMode(THROTTLEA,INPUT_PULLUP);
+    pinMode(THROTTLEB,INPUT_PULLUP);
+    throttleQuadrature = digitalRead(THROTTLEA) | (digitalRead(THROTTLEB) << 1);
+    pinMode(L_OFF,INPUT_PULLUP);
+    pinMode(L_DIM,INPUT_PULLUP);
+    pinMode(L_BRIGHT,INPUT_PULLUP);
+    pinMode(L_DITCH,INPUT_PULLUP);
 #ifdef MCP23017_0
     mcp0.begin(0x20);
     LED00_Pin.hw_init();
@@ -335,9 +479,27 @@ void setup() {
     BUT16_Pin.hw_init();
     BUT17_Pin.hw_init();
 #endif
-    // put your setup code here, to run once:
+    // Start the OpenMRN stack
+    openmrn.begin();
+    openmrn.start_executor_thread();
+
+#if defined(PRINT_PACKETS)
+    // Dump all packets as they are sent/received.
+    // Note: This should not be enabled in deployed nodes as it will
+    // have performance impact.
+    openmrn.stack()->print_all_packets();
+#endif // PRINT_PACKETS
+
+#if defined(USE_CAN)
+    // Add the hardware CAN device as a bridge
+    openmrn.add_can_port(
+        new Esp32HardwareCan("esp32can", CAN_RX_PIN, CAN_TX_PIN));
+#endif // USE_CAN
+
 }
                 
 void loop() {
-    // put your main code here, to run repeatedly:
+    // Call the OpenMRN executor, this needs to be done as often
+    // as possible from the loop() method.
+    openmrn.loop();
 }    
