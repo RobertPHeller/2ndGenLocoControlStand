@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Oct 7 18:47:11 2019
-//  Last Modified : <191007.1955>
+//  Last Modified : <191008.1250>
 //
 //  Description	
 //
@@ -47,27 +47,112 @@ static const char rcsid[] = "@(#) : $Id$";
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
+#include <Button.h>
 #include <OpenMRNLite.h>
 #include "openlcb/TractionThrottle.hxx"
 #include "openlcb/RefreshLoop.hxx"
 #include "ESP32ControlStand.h"
 
-#define HORN      A0
-#define BRAKE     A3
-#define BUTTON_A  34
-#define BUTTON_B  35
-#define BUTTON_C  33
-#define BUTTON_D  25
-#define BELL      26
-#define REVERSER  A17
-#define STATUS_R  12
-#define STATUS_G  13
-#define THROTTLEA 22
-#define THROTTLEB 19
-#define L_OFF     18
-#define L_DIM     17
-#define L_BRIGHT  16
-#define L_DITCH    0
+LightSwitch::LightSwitch(uint8_t offPin, uint8_t dimPin, uint8_t brightPin, uint8_t ditchPin)
+      : _offPin(offPin)
+, _dimPin(dimPin)
+, _brightPin(brightPin)
+, _ditchPin(ditchPin)
+,  _delay(500)
+, _state(Unknown)
+, _ignore_until(0)
+, _has_changed(false)
+{
+}
+
+void LightSwitch::begin()
+{
+    pinMode(_offPin, INPUT_PULLUP);
+    pinMode(_dimPin, INPUT_PULLUP);
+    pinMode(_brightPin, INPUT_PULLUP);
+    pinMode(_ditchPin, INPUT_PULLUP);
+}
+
+LightSwitch::Position LightSwitch::read()
+{
+    if (_ignore_until > millis())
+    {
+    }
+    else {
+        switch (_state) {
+        case Unknown: // no previous state -- get initial state.
+            _ignore_until = millis() + _delay;
+            if (digitalRead(_offPin) == LOW)
+                _state = Off;
+            else if (digitalRead(_dimPin) == LOW)
+                _state = Dim;
+            else if (digitalRead(_brightPin) == LOW)
+                _state = Bright;
+            else if (digitalRead(_ditchPin) == LOW)
+                _state = Ditch;
+            break;
+        case Off:
+            if (digitalRead(_dimPin) == LOW)
+                _state = Dim;
+            else if (digitalRead(_brightPin) == LOW)
+                _state = Bright;
+            else if (digitalRead(_ditchPin) == LOW)
+                _state = Ditch;
+            else 
+                break;
+            _ignore_until = millis() + _delay;
+            _has_changed = true;
+            break;                
+        case Dim:
+            if (digitalRead(_offPin) == LOW)
+                _state = Off;
+            else if (digitalRead(_brightPin) == LOW)
+                _state = Bright;
+            else if (digitalRead(_ditchPin) == LOW)
+                _state = Ditch;
+            else
+                break;
+            _ignore_until = millis() + _delay;
+            _has_changed = true;
+            break;                                  
+        case Bright:
+            if (digitalRead(_offPin) == LOW)
+                _state = Off;
+            else if (digitalRead(_dimPin) == LOW)
+                _state = Dim;
+            else if (digitalRead(_ditchPin) == LOW)
+                _state = Ditch;
+            else
+                break;
+            _ignore_until = millis() + _delay;
+            _has_changed = true;
+            break;                                  
+        case Ditch:
+            if (digitalRead(_offPin) == LOW)
+                _state = Off;
+            else if (digitalRead(_dimPin) == LOW)
+                _state = Dim;
+            else if (digitalRead(_brightPin) == LOW)
+                _state = Bright;
+            else
+                break;
+            _ignore_until = millis() + _delay;
+            _has_changed = true;
+            break;                                  
+        }
+    }
+    return _state;
+}
+
+bool LightSwitch::has_changed()
+{
+    if (_has_changed == true)
+    {
+        _has_changed = false;
+        return true;
+    }
+    return false;
+}
 
 
 bool ESP32ControlStand::checkThrottle()
@@ -80,12 +165,12 @@ bool ESP32ControlStand::checkThrottle()
     if (newQuadrature != throttleQuadrature_)
     {
         changedP = true;
-        if (newQuadrature == quadratureUp[throttleQuadrature & 0x03])
+        if (newQuadrature == quadratureUp[throttleQuadrature_ & 0x03])
         {
             if (throttlePosition_ > 0)
                 throttlePosition_--;
         }
-        else if (newQuadrature == quadratureDown[throttleQuadrature & 0x03])
+        else if (newQuadrature == quadratureDown[throttleQuadrature_ & 0x03])
         {
             if (throttlePosition_ < 8)
                 throttlePosition_++;
@@ -130,11 +215,12 @@ void ESP32ControlStand::hw_init()
 {
     pinMode(HORN,INPUT);
     pinMode(BRAKE,INPUT);
-    pinMode(BUTTON_A,INPUT_PULLUP);
-    pinMode(BUTTON_B,INPUT_PULLUP);
-    pinMode(BUTTON_C,INPUT_PULLUP);
-    pinMode(BUTTON_D,INPUT_PULLUP);
-    pinMode(BELL,INPUT_PULLUP);
+    a_.begin();
+    b_.begin();
+    c_.begin();
+    d_.begin();
+    bell_.begin();
+    lightSwitch_.begin();
     pinMode(REVERSER,INPUT);
     pinMode(STATUS_R,OUTPUT);
     digitalWrite(STATUS_R,LOW);
@@ -142,22 +228,21 @@ void ESP32ControlStand::hw_init()
     digitalWrite(STATUS_G,LOW);
     pinMode(THROTTLEA,INPUT_PULLUP);
     pinMode(THROTTLEB,INPUT_PULLUP);
-    throttleQuadrature = digitalRead(THROTTLEA) | (digitalRead(THROTTLEB) << 1);
-    pinMode(L_OFF,INPUT_PULLUP);
-    pinMode(L_DIM,INPUT_PULLUP);
-    pinMode(L_BRIGHT,INPUT_PULLUP);
-    pinMode(L_DITCH,INPUT_PULLUP);
+    throttleQuadrature_ = digitalRead(THROTTLEA) | (digitalRead(THROTTLEB) << 1);
 }
 
 void ESP32ControlStand::poll_33hz(openlcb::WriteHelper *helper, Notifiable *done)
 {
-    if (checkThrottle() || 
-        readBrake() || 
-        readHorn() || 
-        readReverser())
+    if (checkThrottle() || readBrake() || readHorn() || 
+        readReverser() || (bell_.read(), bell_.has_changed()) ||
+        (lightSwitch_.read(), lightSwitch_.has_changed()))
     {
         // Update train
     }
+    a_.read();
+    b_.read();
+    c_.read();
+    d_.read();
     // Other tasks
 }
 

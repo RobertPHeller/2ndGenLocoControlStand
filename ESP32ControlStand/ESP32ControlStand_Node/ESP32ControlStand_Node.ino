@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Sun Oct 6 09:53:40 2019
-//  Last Modified : <191007.1901>
+//  Last Modified : <191008.0935>
 //
 //  Description	
 //
@@ -183,14 +183,14 @@ constexpr const Gpio *const LED0_set[] = {
 openlcb::MultiConfiguredConsumer gpio_consumers(openmrn.stack()->node(),
     LED0_set, ARRAYSIZE(LED0_set), cfg.seg().mcp0().consumers());
 
-openlcb::ConfiguredProducer BUT00_producer(openmrn.stack()->node(), cfg.seg().mcp0().producers().entry<0>(), BUT00_Pin);
-openlcb::ConfiguredProducer BUT01_producer(openmrn.stack()->node(), cfg.seg().mcp0().producers().entry<1>(), BUT01_Pin);
-openlcb::ConfiguredProducer BUT02_producer(openmrn.stack()->node(), cfg.seg().mcp0().producers().entry<2>(), BUT02_Pin);
-openlcb::ConfiguredProducer BUT03_producer(openmrn.stack()->node(), cfg.seg().mcp0().producers().entry<3>(), BUT03_Pin);
-openlcb::ConfiguredProducer BUT04_producer(openmrn.stack()->node(), cfg.seg().mcp0().producers().entry<4>(), BUT04_Pin);
-openlcb::ConfiguredProducer BUT05_producer(openmrn.stack()->node(), cfg.seg().mcp0().producers().entry<5>(), BUT05_Pin);
-openlcb::ConfiguredProducer BUT06_producer(openmrn.stack()->node(), cfg.seg().mcp0().producers().entry<6>(), BUT06_Pin);
-openlcb::ConfiguredProducer BUT07_producer(openmrn.stack()->node(), cfg.seg().mcp0().producers().entry<7>(), BUT07_Pin);
+openlcb::ConfiguredProducer BUT00_producer(openmrn.stack()->node(), cfg.seg().mcp0().producers().entry<0>(), &BUT00_Pin);
+openlcb::ConfiguredProducer BUT01_producer(openmrn.stack()->node(), cfg.seg().mcp0().producers().entry<1>(), &BUT01_Pin);
+openlcb::ConfiguredProducer BUT02_producer(openmrn.stack()->node(), cfg.seg().mcp0().producers().entry<2>(), &BUT02_Pin);
+openlcb::ConfiguredProducer BUT03_producer(openmrn.stack()->node(), cfg.seg().mcp0().producers().entry<3>(), &BUT03_Pin);
+openlcb::ConfiguredProducer BUT04_producer(openmrn.stack()->node(), cfg.seg().mcp0().producers().entry<4>(), &BUT04_Pin);
+openlcb::ConfiguredProducer BUT05_producer(openmrn.stack()->node(), cfg.seg().mcp0().producers().entry<5>(), &BUT05_Pin);
+openlcb::ConfiguredProducer BUT06_producer(openmrn.stack()->node(), cfg.seg().mcp0().producers().entry<6>(), &BUT06_Pin);
+openlcb::ConfiguredProducer BUT07_producer(openmrn.stack()->node(), cfg.seg().mcp0().producers().entry<7>(), &BUT07_Pin);
 
 // The producers need to be polled repeatedly for changes and to execute the
 // debouncing algorithm. This class instantiates a refreshloop and adds the
@@ -243,14 +243,14 @@ constexpr const Gpio *const LED1_set[] = {
 openlcb::MultiConfiguredConsumer gpio_consumers(openmrn.stack()->node(),
     LED1_set, ARRAYSIZE(LED1_set), cfg.seg().mcp1().consumers());
 
-openlcb::ConfiguredProducer BUT10_producer(openmrn.stack()->node(), cfg.seg().mcp1().producers().entry<0>(), BUT10_Pin);
-openlcb::ConfiguredProducer BUT11_producer(openmrn.stack()->node(), cfg.seg().mcp1().producers().entry<1>(), BUT11_Pin);
-openlcb::ConfiguredProducer BUT12_producer(openmrn.stack()->node(), cfg.seg().mcp1().producers().entry<2>(), BUT12_Pin);
-openlcb::ConfiguredProducer BUT13_producer(openmrn.stack()->node(), cfg.seg().mcp1().producers().entry<3>(), BUT13_Pin);
-openlcb::ConfiguredProducer BUT14_producer(openmrn.stack()->node(), cfg.seg().mcp1().producers().entry<4>(), BUT14_Pin);
-openlcb::ConfiguredProducer BUT15_producer(openmrn.stack()->node(), cfg.seg().mcp1().producers().entry<5>(), BUT15_Pin);
-openlcb::ConfiguredProducer BUT16_producer(openmrn.stack()->node(), cfg.seg().mcp1().producers().entry<6>(), BUT16_Pin);
-openlcb::ConfiguredProducer BUT17_producer(openmrn.stack()->node(), cfg.seg().mcp1().producers().entry<7>(), BUT17_Pin);
+openlcb::ConfiguredProducer BUT10_producer(openmrn.stack()->node(), cfg.seg().mcp1().producers().entry<0>(), &BUT10_Pin);
+openlcb::ConfiguredProducer BUT11_producer(openmrn.stack()->node(), cfg.seg().mcp1().producers().entry<1>(), &BUT11_Pin);
+openlcb::ConfiguredProducer BUT12_producer(openmrn.stack()->node(), cfg.seg().mcp1().producers().entry<2>(), &BUT12_Pin);
+openlcb::ConfiguredProducer BUT13_producer(openmrn.stack()->node(), cfg.seg().mcp1().producers().entry<3>(), &BUT13_Pin);
+openlcb::ConfiguredProducer BUT14_producer(openmrn.stack()->node(), cfg.seg().mcp1().producers().entry<4>(), &BUT14_Pin);
+openlcb::ConfiguredProducer BUT15_producer(openmrn.stack()->node(), cfg.seg().mcp1().producers().entry<5>(), &BUT15_Pin);
+openlcb::ConfiguredProducer BUT16_producer(openmrn.stack()->node(), cfg.seg().mcp1().producers().entry<6>(), &BUT16_Pin);
+openlcb::ConfiguredProducer BUT17_producer(openmrn.stack()->node(), cfg.seg().mcp1().producers().entry<7>(), &BUT17_Pin);
 
 // The producers need to be polled repeatedly for changes and to execute the
 // debouncing algorithm. This class instantiates a refreshloop and adds the
@@ -304,7 +304,7 @@ public:
         for(int i = 0; i < openlcb::NUM_INPUTS; i++)
         {
             cfg.seg().mcp0().producers().entry(i).description().write(fd, "");
-            CDI_FACTORY_RESET(cfg.seg().mcp0()..producers().entry(i).debounce);
+            CDI_FACTORY_RESET(cfg.seg().mcp0().producers().entry(i).debounce);
         }
 #endif
 #ifdef MCP23017_1
@@ -315,7 +315,7 @@ public:
         for(int i = 0; i < openlcb::NUM_INPUTS; i++)
         {
             cfg.seg().mcp1().producers().entry(i).description().write(fd, "");
-            CDI_FACTORY_RESET(cfg.seg().mcp1()..producers().entry(i).debounce);
+            CDI_FACTORY_RESET(cfg.seg().mcp1().producers().entry(i).debounce);
         }
 #endif
     }

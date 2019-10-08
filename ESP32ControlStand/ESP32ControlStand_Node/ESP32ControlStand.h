@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Oct 7 18:43:06 2019
-//  Last Modified : <191007.1953>
+//  Last Modified : <191008.1105>
 //
 //  Description	
 //
@@ -48,15 +48,58 @@
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
+#include <Button.h>
 #include <OpenMRNLite.h>
 #include "openlcb/TractionThrottle.hxx"
 #include "openlcb/RefreshLoop.hxx"
 
+#define HORN      A0
+#define BRAKE     A3
+#define BUTTON_A  34
+#define BUTTON_B  35
+#define BUTTON_C  33
+#define BUTTON_D  25
+#define BELL      26
+#define REVERSER  A17
+#define STATUS_R  12
+#define STATUS_G  13
+#define THROTTLEA 22
+#define THROTTLEB 19
+#define L_OFF     18
+#define L_DIM     17
+#define L_BRIGHT  16
+#define L_DITCH    0
+
+class LightSwitch {
+public:
+    enum Position {Unknown=0, Off, Dim, Bright, Ditch};
+    LightSwitch(uint8_t offPin, uint8_t dimPin, uint8_t brightPin, uint8_t ditchPin);
+    void begin();
+    Position read();
+    bool has_changed();
+    bool isOff();
+    bool isDim();
+    bool isBright();
+    bool isDitch();
+private:
+    uint8_t _offPin, _dimPin, _brightPin, _ditchPin;
+    uint16_t _delay;
+    Position _state;
+    bool     _has_changed;
+    uint32_t _ignore_until;
+};
 
 class ESP32ControlStand : public openlcb::TractionThrottle, public openlcb::Polling {
-    ESP32ControlStand(openlcb::Node *node, Adafruit_SSD1306 *display) 
-                : node_(node)
+public:
+    ESP32ControlStand(openlcb::Node *node, Adafruit_GFX *display) 
+                : TractionThrottle(node)
           , display_(display)
+          , a_(BUTTON_A)
+          , b_(BUTTON_B)
+          , c_(BUTTON_C)
+          , d_(BUTTON_D)
+          , bell_(BELL)
+          , lightSwitch_(L_OFF,L_DIM,L_BRIGHT,L_DITCH)
           , throttlePosition_(0)
           , brake_(0)
           , horn_(0)
@@ -65,8 +108,13 @@ class ESP32ControlStand : public openlcb::TractionThrottle, public openlcb::Poll
     void hw_init();
     void poll_33hz(openlcb::WriteHelper *helper, Notifiable *done) OVERRIDE;
 private:
-    openlcb::Node *node_;
-    Adafruit_SSD1306 *display_;
+    Adafruit_GFX *display_;
+    Button a_;
+    Button b_;
+    Button c_;
+    Button d_;
+    Button bell_;
+    LightSwitch lightSwitch_;
     uint8_t throttlePosition_;
     uint8_t throttleQuadrature_;
     uint16_t brake_;
