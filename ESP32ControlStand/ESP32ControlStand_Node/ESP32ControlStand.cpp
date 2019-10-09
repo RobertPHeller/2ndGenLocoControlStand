@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Oct 7 18:47:11 2019
-//  Last Modified : <191008.2252>
+//  Last Modified : <191009.1522>
 //
 //  Description	
 //
@@ -133,7 +133,6 @@ void ESP32ControlStand::hw_init()
     pinMode(THROTTLEA,INPUT_PULLUP);
     pinMode(THROTTLEB,INPUT_PULLUP);
     throttleQuadrature_ = digitalRead(THROTTLEA) | (digitalRead(THROTTLEB) << 1);
-    welcomeScreen();
 }
 
 void ESP32ControlStand::poll_33hz(openlcb::WriteHelper *helper, Notifiable *done)
@@ -149,19 +148,69 @@ void ESP32ControlStand::poll_33hz(openlcb::WriteHelper *helper, Notifiable *done
 
 void ESP32ControlStand::pollMenu()
 {
-    switch (button()) {
-    case A:
+    switch (currentState_) {
+    case Idle:
+    case Welcome: 
+        if (button() != None) {
+            selection_ = 0;
+            currentState_ = MainMenu;
+            mainMenu();
+        }
         break;
-    case B:
+    case MainMenu:
+        switch (button()) {
+        case A:
+            if (selection_ > 0) {
+                selection_--;
+                mainMenu();
+            }
+            break;
+        case B:
+            switch (selection_) {
+            }
+            break;
+        case C:
+            if (selection_ < _MAINMENUMAX) {
+                selection_++;
+                mainMenu();
+            }
+            break;
+        case D:
+            currentState_ = Idle;
+            idleScreen();
+            break;
+        case None: 
+            break;
+        }
         break;
-    case C:
+    case BrowseLocos:
         break;
-    case D:
+    case RunLoco:
         break;
-    case None: return;
     }
 }
 
 void ESP32ControlStand::welcomeScreen()
+{
+    display_.clearDisplay();
+    display_.setTextSize(2);
+    display_.setCursor(0,0);
+    display_.println("Welcome");
+    display_.setTextSize(1);
+    openlcb::NodeID address = throttle_node()->node_id();
+    uint8_t addressbytes[6];
+    addressbytes[0] = (address >> 40) & 0x0FF;
+    addressbytes[1] = (address >> 32) & 0x0FF;
+    addressbytes[2] = (address >> 24) & 0x0FF;
+    addressbytes[3] = (address >> 16) & 0x0FF;
+    addressbytes[4] = (address >>  8) & 0x0FF;
+    addressbytes[5] = (address >>  0) & 0x0FF;
+    display_.println(mac_to_string(addressbytes,true).c_str());
+    display_.println("Any button => menu.");
+    //                123456789012345678901
+    display_.display(); 
+}
+
+void ESP32ControlStand::HandleNewNode(openlcb::NodeID id)
 {
 }

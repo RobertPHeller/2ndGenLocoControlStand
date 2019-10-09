@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Sun Oct 6 09:53:40 2019
-//  Last Modified : <191008.2247>
+//  Last Modified : <191009.0828>
 //
 //  Description	
 //
@@ -416,7 +416,7 @@ void setup() {
     openmrn.add_can_port(
         new Esp32HardwareCan("esp32can", CAN_RX_PIN, CAN_TX_PIN));
 #endif // USE_CAN
-
+    stand.welcomeScreen();
 }
                 
 void loop() {
