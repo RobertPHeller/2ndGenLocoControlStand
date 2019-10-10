@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Oct 7 18:47:11 2019
-//  Last Modified : <191009.2108>
+//  Last Modified : <191010.0954>
 //
 //  Description	
 //
@@ -284,7 +284,4 @@ void ESP32ControlStand::handle_producer_identified(const openlcb::EventRegistryE
 }
 
 
-void ESP32ControlStand::SendIsTrainEventQuery()
-{
-}
 
