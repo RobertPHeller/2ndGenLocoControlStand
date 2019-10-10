@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Oct 7 18:43:06 2019
-//  Last Modified : <191009.1515>
+//  Last Modified : <191009.2206>
 //
 //  Description	
 //
@@ -52,11 +52,13 @@
 #include <OpenMRNLite.h>
 #include "openlcb/TractionThrottle.hxx"
 #include "openlcb/RefreshLoop.hxx"
-#include "openlcb/NodeBrowser.hxx"
+#include "openlcb/EventHandlerTemplates.hxx"
+#include "openlcb/EventService.hxx"
 #include "LightSwitch.h"
-#include <functional>
+#include <map>
+#include <string>
 
-using namespace std::placeholders;
+using TrainIDMap   = std::map<openlcb::NodeID, std::string>;
 
 #define HORN      A0
 #define BRAKE     A3
@@ -81,7 +83,14 @@ using namespace std::placeholders;
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 #define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
 
-class ESP32ControlStand : public openlcb::TractionThrottle, public openlcb::Polling {
+#define BROWSELOCOS 0
+#define SEARCHFORLOCO 1
+#define SETTINGS 2
+#define STATUS 3
+#define _MAINMENUMIN BROWSELOCOS
+#define _MAINMENUMAX STATUS
+
+class ESP32ControlStand : public openlcb::TractionThrottle, public openlcb::Polling,                           openlcb::SimpleEventHandler {
 public:
     enum Pressed {None=0, A, B, C, D};
     ESP32ControlStand(openlcb::Node *node) 
@@ -93,17 +102,31 @@ public:
           , d_(BUTTON_D)          
           , bell_(BELL)
           , lightSwitch_(L_OFF,L_DIM,L_BRIGHT,L_DITCH)
-          , browse_(node,std::bind(&ESP32ControlStand::HandleNewNode,this,_1))
           , throttlePosition_(0)
           , brake_(0)
           , horn_(0)
           , reverser_(0)
           , currentState_(Welcome)
-          , selection_(0)
-    { }
+          , selection_(_MAINMENUMIN)
+    { 
+        register_handler(); 
+    }
+    ~ESP32ControlStand() 
+    {
+        unregister_handler();
+    }
     void hw_init();
     void poll_33hz(openlcb::WriteHelper *helper, Notifiable *done) OVERRIDE;
     void welcomeScreen();
+    void handle_event_report(const openlcb::EventRegistryEntry &entry, 
+                             EventReport *event,
+                             BarrierNotifiable *done) override;
+    void handle_identify_global(const openlcb::EventRegistryEntry &registry_entry, 
+                                EventReport *event, BarrierNotifiable *done) override;
+    void handle_producer_identified(const openlcb::EventRegistryEntry &entry,
+                                  EventReport *event,
+                                  BarrierNotifiable *done) override;
+    void SendIsTrainEventQuery();
 private:
     Adafruit_SSD1306 display_;
     Button a_;
@@ -112,15 +135,14 @@ private:
     Button d_;
     Button bell_;
     LightSwitch lightSwitch_;
-    openlcb::NodeBrowser browse_;
     uint8_t throttlePosition_;
     uint16_t brake_;
     uint16_t horn_;
     uint16_t reverser_;
-    enum MenuState {Welcome, MainMenu, BrowseLocos, RunLoco, Idle} currentState_;
+    enum MenuState {Welcome, MainMenu, Browse, Search, Settings, Status, RunLoco, Idle} currentState_;
     int selection_;
     uint8_t throttleQuadrature_;
-    void HandleNewNode(openlcb::NodeID id);
+    TrainIDMap   trainsByID_;
     bool checkThrottle();
     bool readBrake();
     bool readHorn();
@@ -136,6 +158,23 @@ private:
         else if (c_.pressed()) return(C);
         else if (d_.pressed()) return(D);
         else return(None);
+    }
+    void mainMenu();
+    void idleScreen();
+    void register_handler();
+    void unregister_handler();
+    void AddTrain(openlcb::NodeHandle train) {
+        if (train.id != 0) AddTrain(train.id);
+        else {
+            //openlcb::NodeID id = throttle_node()->iface()->local_aliases()->lookup(train.alias);
+            //AddTrain(id);
+        }
+    }
+    void AddTrain(openlcb::NodeID trainid)
+    {
+        // Get SNIP...
+        openlcb::SnipDecodedData snip;
+        trainsByID_[trainid] = snip.user_name;
     }
 };
 

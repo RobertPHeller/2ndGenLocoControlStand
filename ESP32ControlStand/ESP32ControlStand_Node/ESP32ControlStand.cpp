@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Oct 7 18:47:11 2019
-//  Last Modified : <191009.1522>
+//  Last Modified : <191009.2108>
 //
 //  Description	
 //
@@ -51,6 +51,8 @@ static const char rcsid[] = "@(#) : $Id$";
 #include <OpenMRNLite.h>
 #include "openlcb/TractionThrottle.hxx"
 #include "openlcb/RefreshLoop.hxx"
+#include "openlcb/EventHandlerTemplates.hxx"
+#include "openlcb/EventService.hxx"
 #include "ESP32ControlStand.h"
 
 
@@ -146,13 +148,23 @@ void ESP32ControlStand::poll_33hz(openlcb::WriteHelper *helper, Notifiable *done
     pollMenu();  // Other tasks
 }
 
+void ESP32ControlStand::idleScreen()
+{
+}
+
+void ESP32ControlStand::mainMenu()
+{
+}
+
+
+
 void ESP32ControlStand::pollMenu()
 {
     switch (currentState_) {
     case Idle:
     case Welcome: 
         if (button() != None) {
-            selection_ = 0;
+            selection_ = _MAINMENUMIN;
             currentState_ = MainMenu;
             mainMenu();
         }
@@ -160,7 +172,7 @@ void ESP32ControlStand::pollMenu()
     case MainMenu:
         switch (button()) {
         case A:
-            if (selection_ > 0) {
+            if (selection_ > _MAINMENUMIN) {
                 selection_--;
                 mainMenu();
             }
@@ -183,7 +195,13 @@ void ESP32ControlStand::pollMenu()
             break;
         }
         break;
-    case BrowseLocos:
+    case Browse:
+        break;
+    case Search:
+        break;
+    case Settings:
+        break;
+    case Status:
         break;
     case RunLoco:
         break;
@@ -211,6 +229,62 @@ void ESP32ControlStand::welcomeScreen()
     display_.display(); 
 }
 
-void ESP32ControlStand::HandleNewNode(openlcb::NodeID id)
+void ESP32ControlStand::register_handler()
+{
+    openlcb::EventRegistry::instance()->register_handler(
+            openlcb::EventRegistryEntry(this, 
+                                        openlcb::TractionDefs::IS_TRAIN_EVENT),
+                                        0);
+                                                         
+}
+
+void ESP32ControlStand::unregister_handler()
+{
+    openlcb::EventRegistry::instance()->unregister_handler(this);
+}
+void ESP32ControlStand::handle_event_report(const openlcb::EventRegistryEntry &entry, 
+                                            EventReport *event,
+                                            BarrierNotifiable *done)
+{
+    if (event->dst_node && event->dst_node != throttle_node())
+    {
+        done->notify();
+        return;
+    }
+    done->notify();
+    if (event->event == openlcb::TractionDefs::IS_TRAIN_EVENT)
+        AddTrain(event->src_node);
+}
+ 
+void ESP32ControlStand::handle_identify_global(const openlcb::EventRegistryEntry &registry_entry, 
+                                               EventReport *event, BarrierNotifiable *done)
+{
+    if (event->dst_node && event->dst_node != throttle_node())
+    {
+        done->notify();
+        return;
+    }
+    done->notify();
+    if (event->event == openlcb::TractionDefs::IS_TRAIN_EVENT)
+        AddTrain(event->src_node);
+}
+
+void ESP32ControlStand::handle_producer_identified(const openlcb::EventRegistryEntry &entry,
+                                                   EventReport *event,
+                                                   BarrierNotifiable *done)
+{
+    if (event->dst_node && event->dst_node != throttle_node())
+    {
+        done->notify();
+        return;
+    }
+    done->notify();
+    if (event->event == openlcb::TractionDefs::IS_TRAIN_EVENT)
+        AddTrain(event->src_node);
+}
+
+
+void ESP32ControlStand::SendIsTrainEventQuery()
 {
 }
+

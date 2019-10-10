@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Sun Oct 6 09:53:40 2019
-//  Last Modified : <191009.0828>
+//  Last Modified : <191009.1936>
 //
 //  Description	
 //
@@ -417,6 +417,7 @@ void setup() {
         new Esp32HardwareCan("esp32can", CAN_RX_PIN, CAN_TX_PIN));
 #endif // USE_CAN
     stand.welcomeScreen();
+    stand.SendIsTrainEventQuery();
 }
                 
 void loop() {
