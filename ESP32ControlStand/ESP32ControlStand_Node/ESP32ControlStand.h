@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Oct 7 18:43:06 2019
-//  Last Modified : <191009.2206>
+//  Last Modified : <191010.2048>
 //
 //  Description	
 //
@@ -54,9 +54,14 @@
 #include "openlcb/RefreshLoop.hxx"
 #include "openlcb/EventHandlerTemplates.hxx"
 #include "openlcb/EventService.hxx"
+#include "openlcb/IfCan.hxx"
+#include "executor/Notifiable.hxx"
+#include "executor/StateFlow.hxx"
 #include "LightSwitch.h"
 #include <map>
 #include <string>
+#include "SNIPClient.h"
+
 
 using TrainIDMap   = std::map<openlcb::NodeID, std::string>;
 
@@ -90,7 +95,7 @@ using TrainIDMap   = std::map<openlcb::NodeID, std::string>;
 #define _MAINMENUMIN BROWSELOCOS
 #define _MAINMENUMAX STATUS
 
-class ESP32ControlStand : public openlcb::TractionThrottle, public openlcb::Polling,                           openlcb::SimpleEventHandler {
+class ESP32ControlStand : public openlcb::TractionThrottle, public openlcb::Polling, openlcb::SimpleEventHandler {
 public:
     enum Pressed {None=0, A, B, C, D};
     ESP32ControlStand(openlcb::Node *node) 
@@ -108,6 +113,8 @@ public:
           , reverser_(0)
           , currentState_(Welcome)
           , selection_(_MAINMENUMIN)
+          , snipClient_(throttle_node()->iface())
+          , currentTrain_(0)
     { 
         register_handler(); 
     }
@@ -126,7 +133,14 @@ public:
     void handle_producer_identified(const openlcb::EventRegistryEntry &entry,
                                   EventReport *event,
                                   BarrierNotifiable *done) override;
-    void SendIsTrainEventQuery();
+    void SendIsTrainEventQuery()
+    {
+        write_helper[0].WriteAsync(throttle_node(),
+                                   openlcb::Defs::MTI_PRODUCER_IDENTIFY,
+                                   openlcb::WriteHelper::global(),
+                                   openlcb::eventid_to_buffer(openlcb::TractionDefs::IS_TRAIN_EVENT),
+                                   this);
+    }
 private:
     Adafruit_SSD1306 display_;
     Button a_;
@@ -143,6 +157,11 @@ private:
     int selection_;
     uint8_t throttleQuadrature_;
     TrainIDMap   trainsByID_;
+    TrainIDMap::const_iterator selectedTrain_;
+    openlcb::NodeID currentTrain_;
+    openlcb::WriteHelper write_helper[4];
+    SNIPClient snipClient_;
+    openlcb::NodeHandle tempTrain_;
     bool checkThrottle();
     bool readBrake();
     bool readHorn();
@@ -161,21 +180,37 @@ private:
     }
     void mainMenu();
     void idleScreen();
+    void BrowseScreen();
+    void SearchScreen();
+    void SettingsScreen();
+    void StatusScreen();
     void register_handler();
     void unregister_handler();
-    void AddTrain(openlcb::NodeHandle train) {
-        if (train.id != 0) AddTrain(train.id);
-        else {
-            //openlcb::NodeID id = throttle_node()->iface()->local_aliases()->lookup(train.alias);
-            //AddTrain(id);
-        }
+    Action AddTrain(openlcb::NodeHandle train) {
+        tempTrain_ = train;
+        snipClient_.request(train,throttle_node(),this);
+        return wait_and_call(STATE(snip_response));
     }
-    void AddTrain(openlcb::NodeID trainid)
+    Action snip_response()
     {
-        // Get SNIP...
-        openlcb::SnipDecodedData snip;
-        trainsByID_[trainid] = snip.user_name;
+        if (snipClient_.error_code() != SNIPClient::OPERATION_SUCCESS) {
+            LOG(INFO,
+                "SNIP request failed. Error code: %" PRIx32 ". Using blank name.",
+                snipClient_.error_code());
+        }
+        if (tempTrain_.id != 0) {
+            trainsByID_[tempTrain_.id] = snipClient_.response()->user_name;
+        } else {
+            openlcb::NodeIdLookupFlow nodeIdLookup_((openlcb::IfCan*)(throttle_node()->iface()));
+            auto result = invoke_flow(&nodeIdLookup_,throttle_node(),tempTrain_);
+            if (result->data()->resultCode == 0) {
+                trainsByID_[result->data()->handle.id] = snipClient_.response()->user_name;
+            }
+        }
+        return release_and_exit();
     }
+    bool AcquireTrain(openlcb::NodeID train);
+    void ReleaseTrain(openlcb::NodeID train);
 };
 
 #endif // __ESP32CONTROLSTAND_H

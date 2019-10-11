@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Oct 7 18:47:11 2019
-//  Last Modified : <191009.2108>
+//  Last Modified : <191010.2030>
 //
 //  Description	
 //
@@ -148,16 +148,6 @@ void ESP32ControlStand::poll_33hz(openlcb::WriteHelper *helper, Notifiable *done
     pollMenu();  // Other tasks
 }
 
-void ESP32ControlStand::idleScreen()
-{
-}
-
-void ESP32ControlStand::mainMenu()
-{
-}
-
-
-
 void ESP32ControlStand::pollMenu()
 {
     switch (currentState_) {
@@ -179,6 +169,23 @@ void ESP32ControlStand::pollMenu()
             break;
         case B:
             switch (selection_) {
+            case BROWSELOCOS:
+                selectedTrain_ = trainsByID_.begin();
+                currentState_ = Browse;
+                BrowseScreen();
+                break;
+            case SEARCHFORLOCO:
+                currentState_ = Search;
+                SearchScreen();
+                break;
+            case SETTINGS:
+                currentState_ = Settings;
+                SettingsScreen();
+                break;
+            case STATUS:
+                currentState_ = Status;
+                StatusScreen();
+                break;
             }
             break;
         case C:
@@ -196,6 +203,33 @@ void ESP32ControlStand::pollMenu()
         }
         break;
     case Browse:
+        switch (button()) {
+        case A:
+            if (selectedTrain_ != trainsByID_.begin()) {
+                selectedTrain_--;
+                BrowseScreen();
+            }
+            break;
+        case B:
+            if (AcquireTrain(selectedTrain_->first)) {
+                if (currentTrain_ != 0) {
+                    ReleaseTrain(currentTrain_);
+                }
+                currentTrain_ = selectedTrain_->first;
+                currentState_ = Idle;
+                idleScreen();
+            }
+            break;
+        case C:
+            selectedTrain_++;
+            if (selectedTrain_ == trainsByID_.end()) selectedTrain_--;
+            BrowseScreen();
+            break;
+        case D:
+            currentState_ = MainMenu;
+            mainMenu();
+            break;
+        }
         break;
     case Search:
         break;
@@ -212,6 +246,7 @@ void ESP32ControlStand::welcomeScreen()
 {
     display_.clearDisplay();
     display_.setTextSize(2);
+    display_.setTextColor(WHITE); // Draw white text
     display_.setCursor(0,0);
     display_.println("Welcome");
     display_.setTextSize(1);
@@ -228,6 +263,117 @@ void ESP32ControlStand::welcomeScreen()
     //                123456789012345678901
     display_.display(); 
 }
+
+void ESP32ControlStand::idleScreen()
+{
+    display_.clearDisplay();
+    if (currentTrain_ == 0) {
+        display_.setTextSize(2);
+        display_.setTextColor(WHITE); // Draw white text
+        display_.setCursor(0,0);
+        display_.println("IDLING");
+        display_.setTextSize(1);
+        openlcb::NodeID address = throttle_node()->node_id();
+        uint8_t addressbytes[6];
+        addressbytes[0] = (address >> 40) & 0x0FF;
+        addressbytes[1] = (address >> 32) & 0x0FF;
+        addressbytes[2] = (address >> 24) & 0x0FF;
+        addressbytes[3] = (address >> 16) & 0x0FF;
+        addressbytes[4] = (address >>  8) & 0x0FF;
+        addressbytes[5] = (address >>  0) & 0x0FF;
+        display_.println(mac_to_string(addressbytes,true).c_str());
+    } else {
+        display_.setTextSize(1);
+        display_.setTextColor(WHITE); // Draw white text
+        display_.setCursor(0,0);
+        display_.println("LOCOMOTIVE");
+        display_.println(trainsByID_[currentTrain_].c_str());
+        uint8_t addressbytes[6];
+        addressbytes[0] = (currentTrain_ >> 40) & 0x0FF;
+        addressbytes[1] = (currentTrain_ >> 32) & 0x0FF;
+        addressbytes[2] = (currentTrain_ >> 24) & 0x0FF;
+        addressbytes[3] = (currentTrain_ >> 16) & 0x0FF;
+        addressbytes[4] = (currentTrain_ >>  8) & 0x0FF;
+        addressbytes[5] = (currentTrain_ >>  0) & 0x0FF;
+        display_.println(mac_to_string(addressbytes,true).c_str());
+        display_.println("");
+    }
+    display_.println("Any button => menu.");
+    //                123456789012345678901
+    display_.display();
+}
+
+void ESP32ControlStand::mainMenu()
+{
+    display_.clearDisplay();
+    display_.setTextColor(WHITE); // Draw white text
+    display_.setTextSize(1);
+    display_.setCursor(0,0);
+    if (selection_ < STATUS) {
+        if (selection_ == BROWSELOCOS)
+            display_.println(">>Browse Trains");
+        else
+            display_.println("  Browse Trains");
+        if (selection_ == SEARCHFORLOCO)
+            display_.println(">>Search Trains");
+        else
+            display_.println("  Search Trains");
+        if (selection_ == SETTINGS)
+            display_.println(">>Settings");
+        else
+            display_.println("  Settings");
+    } else {
+        if (selection_ == STATUS)
+            display_.println(">>Status");
+        else
+            display_.println("  Status");
+        display_.println("  ");
+        display_.println("  ");
+    }
+    display_.println("Prev Sele Next Back");
+    display_.display();
+}
+
+void ESP32ControlStand::BrowseScreen()
+{
+    display_.clearDisplay();
+    display_.setTextColor(WHITE); // Draw white text 
+    display_.setTextSize(1);
+    display_.setCursor(0,0);
+    TrainIDMap::const_iterator iTrain = selectedTrain_;
+    if (iTrain != trainsByID_.begin()) iTrain--;
+    for (int i = 0; i++; i < 3) {
+        if (iTrain == selectedTrain_) display_.print(">>");
+        else display_.print("  ");
+        if (iTrain != trainsByID_.end()) 
+            display_.println(iTrain->second.c_str());
+        else display_.println("");
+    }
+    display_.println("Prev Sele Next Back");
+    display_.display();
+}
+
+void ESP32ControlStand::SearchScreen()
+{
+}
+
+void ESP32ControlStand::SettingsScreen()
+{
+}
+
+void ESP32ControlStand::StatusScreen()
+{
+}
+
+bool ESP32ControlStand::AcquireTrain(openlcb::NodeID train)
+{
+}
+
+void ESP32ControlStand::ReleaseTrain(openlcb::NodeID train)
+{
+}
+
+
 
 void ESP32ControlStand::register_handler()
 {
@@ -284,7 +430,4 @@ void ESP32ControlStand::handle_producer_identified(const openlcb::EventRegistryE
 }
 
 
-void ESP32ControlStand::SendIsTrainEventQuery()
-{
-}
 
