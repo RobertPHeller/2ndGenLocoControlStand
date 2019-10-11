@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Oct 7 18:43:06 2019
-//  Last Modified : <191010.1654>
+//  Last Modified : <191010.2048>
 //
 //  Description	
 //
@@ -114,6 +114,7 @@ public:
           , currentState_(Welcome)
           , selection_(_MAINMENUMIN)
           , snipClient_(throttle_node()->iface())
+          , currentTrain_(0)
     { 
         register_handler(); 
     }
@@ -156,6 +157,8 @@ private:
     int selection_;
     uint8_t throttleQuadrature_;
     TrainIDMap   trainsByID_;
+    TrainIDMap::const_iterator selectedTrain_;
+    openlcb::NodeID currentTrain_;
     openlcb::WriteHelper write_helper[4];
     SNIPClient snipClient_;
     openlcb::NodeHandle tempTrain_;
@@ -177,6 +180,10 @@ private:
     }
     void mainMenu();
     void idleScreen();
+    void BrowseScreen();
+    void SearchScreen();
+    void SettingsScreen();
+    void StatusScreen();
     void register_handler();
     void unregister_handler();
     Action AddTrain(openlcb::NodeHandle train) {
@@ -202,7 +209,8 @@ private:
         }
         return release_and_exit();
     }
-        
+    bool AcquireTrain(openlcb::NodeID train);
+    void ReleaseTrain(openlcb::NodeID train);
 };
 
 #endif // __ESP32CONTROLSTAND_H
