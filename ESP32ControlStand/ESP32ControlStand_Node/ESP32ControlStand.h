@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Oct 7 18:43:06 2019
-//  Last Modified : <191011.2206>
+//  Last Modified : <191012.1058>
 //
 //  Description	
 //
@@ -236,9 +236,13 @@ private:
     void StatusScreen();
     void register_handler();
     void unregister_handler();
-    Action AddTrain(openlcb::NodeHandle train) {
+    void AddTrain(openlcb::NodeHandle train) {
         tempTrain_ = train;
-        snipClient_.request(train,throttle_node(),this);
+        start_flow(STATE(getSNIP));
+    }
+    Action getSNIP()
+    {
+        snipClient_.request(tempTrain_,throttle_node(),this);
         return wait_and_call(STATE(snip_response));
     }
     Action snip_response()
