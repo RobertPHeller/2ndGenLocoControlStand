@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Oct 7 18:43:06 2019
-//  Last Modified : <191012.1058>
+//  Last Modified : <191012.1543>
 //
 //  Description	
 //
@@ -89,7 +89,7 @@ using TrainIDMap   = std::map<openlcb::NodeID, std::string>;
 #define BELL      26
 #define REVERSER  A17
 #define STATUS_R  12
-#define STATUS_G  13
+#define STATUS_G  32
 #define THROTTLEA 23
 #define THROTTLEB 19
 #define L_OFF     18

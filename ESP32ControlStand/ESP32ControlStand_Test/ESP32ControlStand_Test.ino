@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Sun Oct 6 09:53:58 2019
-//  Last Modified : <191006.1323>
+//  Last Modified : <191012.1543>
 //
 //  Description	
 //
@@ -56,7 +56,7 @@
 #define BELL      26
 #define REVERSER  A17
 #define STATUS_R  12
-#define STATUS_G  13
+#define STATUS_G  32
 #define THROTTLEA 22
 #define THROTTLEB 19
 #define L_OFF     18

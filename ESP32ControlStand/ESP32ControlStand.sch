@@ -1045,12 +1045,11 @@ Text Label 5800 4150 0    25   ~ 0
 L_Ditch
 Text Label 4900 4100 2    25   ~ 0
 Status_R
-Text Label 4900 4200 2    25   ~ 0
+Text Label 4900 3800 2    25   ~ 0
 Status_G
 NoConn ~ 5650 1750
 NoConn ~ 5450 1750
 NoConn ~ 5150 1750
-NoConn ~ 4900 3800
 NoConn ~ 4900 4250
 NoConn ~ 4900 4300
 NoConn ~ 4900 4350
@@ -1113,4 +1112,5 @@ Wire Wire Line
 Wire Wire Line
 	5400 2100 5400 1800
 Connection ~ 5400 1800
+NoConn ~ 4900 4200
 $EndSCHEMATC
