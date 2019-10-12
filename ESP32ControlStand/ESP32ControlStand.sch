@@ -45,7 +45,7 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 5
 Title ""
-Date "5 oct 2019"
+Date "12 oct 2019"
 Rev ""
 Comp ""
 Comment1 ""
@@ -885,9 +885,9 @@ Text Label 5800 3950 0    25   ~ 0
 CAN_TX
 Text Label 5800 4100 0    25   ~ 0
 CAN_RX
-Text Label 5800 3550 0    25   ~ 0
-SDA
 Text Label 5800 3750 0    25   ~ 0
+SDA
+Text Label 5800 3600 0    25   ~ 0
 SCL
 Text Label 5800 4200 0    25   ~ 0
 MISO
@@ -913,7 +913,7 @@ Text Label 8100 3850 2    60   ~ 0
 ThrottleA
 Text Label 8100 4050 2    60   ~ 0
 ThrottleB
-Text Label 5800 3600 0    25   ~ 0
+Text Label 5800 3550 0    25   ~ 0
 ThrottleA
 Text Label 5800 3850 0    25   ~ 0
 ThrottleB
