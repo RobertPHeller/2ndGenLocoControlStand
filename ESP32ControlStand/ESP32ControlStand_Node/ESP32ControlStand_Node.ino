@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Sun Oct 6 09:53:40 2019
-//  Last Modified : <191009.1936>
+//  Last Modified : <191011.2208>
 //
 //  Description	
 //
@@ -270,7 +270,8 @@ openlcb::RefreshLoop BUT1_refresh_loop(openmrn.stack()->node(),
 #endif
 
 
-ESP32ControlStand stand(openmrn.stack()->node());
+ESP32ControlStand stand(openmrn.stack()->node(),
+                        cfg.seg().controlstand());
 
 openlcb::RefreshLoop stand_refresh_loop(openmrn.stack()->node(),
    { &stand });

@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Oct 7 18:43:06 2019
-//  Last Modified : <191010.2048>
+//  Last Modified : <191011.2206>
 //
 //  Description	
 //
@@ -55,13 +55,28 @@
 #include "openlcb/EventHandlerTemplates.hxx"
 #include "openlcb/EventService.hxx"
 #include "openlcb/IfCan.hxx"
+#include "openlcb/ConfigRepresentation.hxx"
 #include "executor/Notifiable.hxx"
 #include "executor/StateFlow.hxx"
+#include "utils/ConfigUpdateListener.hxx"
+#include "utils/ConfigUpdateService.hxx"
 #include "LightSwitch.h"
 #include <map>
 #include <string>
 #include "SNIPClient.h"
 
+/// CDI Configuration for a @ref ESP32ControlStand
+CDI_GROUP(ESP32ControlStandConfig)
+CDI_GROUP_ENTRY(entropy,openlcb::Uint16ConfigEntry,
+                Name("Entropy Factor"),Default(1));
+CDI_GROUP_ENTRY(acceleration,openlcb::Uint16ConfigEntry,
+                Name("Acceleration Factor"),Default(1));
+CDI_GROUP_ENTRY(brake,openlcb::Uint16ConfigEntry,
+                Name("Brake Factor"),Default(1));
+CDI_GROUP_ENTRY(maximumspeed,openlcb::Uint16ConfigEntry,
+                Name("Maximum Speed"),Default(65535));
+CDI_GROUP_END();
+                
 
 using TrainIDMap   = std::map<openlcb::NodeID, std::string>;
 
@@ -75,7 +90,7 @@ using TrainIDMap   = std::map<openlcb::NodeID, std::string>;
 #define REVERSER  A17
 #define STATUS_R  12
 #define STATUS_G  13
-#define THROTTLEA 22
+#define THROTTLEA 23
 #define THROTTLEB 19
 #define L_OFF     18
 #define L_DIM     17
@@ -95,11 +110,15 @@ using TrainIDMap   = std::map<openlcb::NodeID, std::string>;
 #define _MAINMENUMIN BROWSELOCOS
 #define _MAINMENUMAX STATUS
 
-class ESP32ControlStand : public openlcb::TractionThrottle, public openlcb::Polling, openlcb::SimpleEventHandler {
+#define currentTrain target_node()
+
+class ESP32ControlStand : public openlcb::TractionThrottle, public openlcb::Polling, openlcb::SimpleEventHandler, public ConfigUpdateListener {
 public:
     enum Pressed {None=0, A, B, C, D};
-    ESP32ControlStand(openlcb::Node *node) 
+    ESP32ControlStand(openlcb::Node *node, 
+                      const ESP32ControlStandConfig &cfg) 
                 : TractionThrottle(node)
+          , cfg_(cfg)
           , display_(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET)
           , a_(BUTTON_A)
           , b_(BUTTON_B)
@@ -114,9 +133,15 @@ public:
           , currentState_(Welcome)
           , selection_(_MAINMENUMIN)
           , snipClient_(throttle_node()->iface())
-          , currentTrain_(0)
+          , entropyFactor_(1)
+          , accelerationFactor_(1)
+          , brakeFactor_(1)
+          , maximumSpeed_(65535)
+          , currentSpeed_(0)
+          , currentDirection_(Neutral)
     { 
         register_handler(); 
+        ConfigUpdateService::instance()->register_update_listener(this);
     }
     ~ESP32ControlStand() 
     {
@@ -141,7 +166,27 @@ public:
                                    openlcb::eventid_to_buffer(openlcb::TractionDefs::IS_TRAIN_EVENT),
                                    this);
     }
+    virtual UpdateAction apply_configuration(int fd, 
+                                             bool initial_load,
+                                             BarrierNotifiable *done) override
+    {
+        AutoNotify n(done);
+        entropyFactor_ = cfg_.entropy().read(fd);
+        accelerationFactor_ = cfg_.acceleration().read(fd);
+        brakeFactor_ = cfg_.brake().read(fd);
+        maximumSpeed_ = cfg_.maximumspeed().read(fd);
+        return UPDATED;
+    }
+    virtual void factory_reset(int fd) 
+    {
+        CDI_FACTORY_RESET(cfg_.entropy);
+        CDI_FACTORY_RESET(cfg_.acceleration);
+        CDI_FACTORY_RESET(cfg_.brake);
+        CDI_FACTORY_RESET(cfg_.maximumspeed);
+    }
+    
 private:
+    const ESP32ControlStandConfig cfg_;
     Adafruit_SSD1306 display_;
     Button a_;
     Button b_;
@@ -158,10 +203,15 @@ private:
     uint8_t throttleQuadrature_;
     TrainIDMap   trainsByID_;
     TrainIDMap::const_iterator selectedTrain_;
-    openlcb::NodeID currentTrain_;
     openlcb::WriteHelper write_helper[4];
     SNIPClient snipClient_;
     openlcb::NodeHandle tempTrain_;
+    uint16_t entropyFactor_, 
+          accelerationFactor_, 
+          brakeFactor_, 
+          maximumSpeed_,
+          currentSpeed_;
+    enum {Reverse, Neutral, Forward} currentDirection_;
     bool checkThrottle();
     bool readBrake();
     bool readHorn();
@@ -210,7 +260,6 @@ private:
         return release_and_exit();
     }
     bool AcquireTrain(openlcb::NodeID train);
-    void ReleaseTrain(openlcb::NodeID train);
 };
 
 #endif // __ESP32CONTROLSTAND_H

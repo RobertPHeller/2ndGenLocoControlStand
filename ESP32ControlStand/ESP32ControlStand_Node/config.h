@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Oct 7 10:48:07 2019
-//  Last Modified : <191007.1058>
+//  Last Modified : <191011.2154>
 //
 //  Description	
 //
@@ -48,6 +48,7 @@
 #include "openlcb/MemoryConfig.hxx"
 
 #include "freertos_drivers/esp32/Esp32WiFiConfiguration.hxx"
+#include "ESP32ControlStand.h"
 
 // catch invalid configuration at compile time
 #if !defined(USE_CAN) && !defined(USE_WIFI)
@@ -123,6 +124,7 @@ CDI_GROUP_ENTRY(mcp1,mcpConfiguration,Name("MCP23017 #2 Configuration"));
 #if defined(USE_WIFI)
 CDI_GROUP_ENTRY(wifi, WiFiConfiguration, Name("WiFi Configuration"));
 #endif
+CDI_GROUP_ENTRY(controlstand,ESP32ControlStandConfig,Name("ESP32 Control Stand Configuration"));
 CDI_GROUP_END();
 
 /// This segment is only needed temporarily until there is program code to set

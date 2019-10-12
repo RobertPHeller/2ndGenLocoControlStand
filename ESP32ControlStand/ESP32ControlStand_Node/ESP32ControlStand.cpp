@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Oct 7 18:47:11 2019
-//  Last Modified : <191010.2030>
+//  Last Modified : <191011.2118>
 //
 //  Description	
 //
@@ -212,10 +212,6 @@ void ESP32ControlStand::pollMenu()
             break;
         case B:
             if (AcquireTrain(selectedTrain_->first)) {
-                if (currentTrain_ != 0) {
-                    ReleaseTrain(currentTrain_);
-                }
-                currentTrain_ = selectedTrain_->first;
                 currentState_ = Idle;
                 idleScreen();
             }
@@ -267,7 +263,7 @@ void ESP32ControlStand::welcomeScreen()
 void ESP32ControlStand::idleScreen()
 {
     display_.clearDisplay();
-    if (currentTrain_ == 0) {
+    if (currentTrain == 0) {
         display_.setTextSize(2);
         display_.setTextColor(WHITE); // Draw white text
         display_.setCursor(0,0);
@@ -287,14 +283,14 @@ void ESP32ControlStand::idleScreen()
         display_.setTextColor(WHITE); // Draw white text
         display_.setCursor(0,0);
         display_.println("LOCOMOTIVE");
-        display_.println(trainsByID_[currentTrain_].c_str());
+        display_.println(trainsByID_[currentTrain].c_str());
         uint8_t addressbytes[6];
-        addressbytes[0] = (currentTrain_ >> 40) & 0x0FF;
-        addressbytes[1] = (currentTrain_ >> 32) & 0x0FF;
-        addressbytes[2] = (currentTrain_ >> 24) & 0x0FF;
-        addressbytes[3] = (currentTrain_ >> 16) & 0x0FF;
-        addressbytes[4] = (currentTrain_ >>  8) & 0x0FF;
-        addressbytes[5] = (currentTrain_ >>  0) & 0x0FF;
+        addressbytes[0] = (currentTrain >> 40) & 0x0FF;
+        addressbytes[1] = (currentTrain >> 32) & 0x0FF;
+        addressbytes[2] = (currentTrain >> 24) & 0x0FF;
+        addressbytes[3] = (currentTrain >> 16) & 0x0FF;
+        addressbytes[4] = (currentTrain >>  8) & 0x0FF;
+        addressbytes[5] = (currentTrain >>  0) & 0x0FF;
         display_.println(mac_to_string(addressbytes,true).c_str());
         display_.println("");
     }
@@ -369,9 +365,6 @@ bool ESP32ControlStand::AcquireTrain(openlcb::NodeID train)
 {
 }
 
-void ESP32ControlStand::ReleaseTrain(openlcb::NodeID train)
-{
-}
 
 
 
