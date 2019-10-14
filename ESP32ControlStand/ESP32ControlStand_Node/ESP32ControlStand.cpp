@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Oct 7 18:47:11 2019
-//  Last Modified : <191011.2118>
+//  Last Modified : <191014.1310>
 //
 //  Description	
 //
@@ -139,13 +139,64 @@ void ESP32ControlStand::hw_init()
 
 void ESP32ControlStand::poll_33hz(openlcb::WriteHelper *helper, Notifiable *done)
 {
-    if (checkThrottle() || readBrake() || readHorn() || 
-        readReverser() || (bell_.read(), bell_.has_changed()) ||
-        (lightSwitch_.read(), lightSwitch_.has_changed()))
-    {
+    checkThrottle();
+    readBrake();
+    readHorn();
+    readReverser();
+    if (pollCount_ == _POLLCOUNT) {
         // Update train
+        if (currentTrain != 0 && reverserPosition_ != Neutral) {
+            int reduction = entropyFactor_+brakeFactor_*brake_;
+            int increase  = throttlePosition_*accelerationFactor_;
+            int delta = increase - reduction;
+            bool curveldir = currentVelocity_.direction();
+            float newspeed = currentVelocity_.speed() + delta;
+            if (newspeed < 0) {
+                newspeed = 0;
+            } else if (newspeed > maximumSpeed_) {
+                newspeed = maximumSpeed_;
+            }
+            currentVelocity_ = newspeed;
+            currentVelocity_.set_direction(curveldir);
+            set_speed(currentVelocity_);
+            if (throttlePosition_ == 0 && currentVelocity_.speed() == 0) {
+                updateReverserPosition();
+            }
+        }
+        pollCount_ = 0;
+    }
+    if (currentTrain != 0) {
+        if (bell_.pressed()) {
+            ringBell();
+        }
+        LightSwitch::Position newpos = lightSwitch_.read();
+        if (lightSwitch_.has_changed()) {
+            switch (currentLS_) {
+            case LightSwitch::Off:
+                break;
+            case LightSwitch::Dim:
+                break;
+            case LightSwitch::Bright:
+                break;
+            case LightSwitch::Ditch:
+                break;
+            }
+            switch (newpos) {
+                break;
+            case LightSwitch::Off:
+                break;
+            case LightSwitch::Dim:
+                break;
+            case LightSwitch::Bright:
+                break;
+            case LightSwitch::Ditch:
+                break;
+            }
+            currentLS_ = newpos;
+        }
     }
     pollMenu();  // Other tasks
+    pollCount_++;
 }
 
 void ESP32ControlStand::pollMenu()

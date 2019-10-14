@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Oct 7 18:43:06 2019
-//  Last Modified : <191012.1543>
+//  Last Modified : <191014.1314>
 //
 //  Description	
 //
@@ -51,6 +51,7 @@
 #include <Button.h>
 #include <OpenMRNLite.h>
 #include "openlcb/TractionThrottle.hxx"
+#include "openlcb/Velocity.hxx"
 #include "openlcb/RefreshLoop.hxx"
 #include "openlcb/EventHandlerTemplates.hxx"
 #include "openlcb/EventService.hxx"
@@ -67,14 +68,14 @@
 
 /// CDI Configuration for a @ref ESP32ControlStand
 CDI_GROUP(ESP32ControlStandConfig)
-CDI_GROUP_ENTRY(entropy,openlcb::Uint16ConfigEntry,
-                Name("Entropy Factor"),Default(1));
-CDI_GROUP_ENTRY(acceleration,openlcb::Uint16ConfigEntry,
-                Name("Acceleration Factor"),Default(1));
-CDI_GROUP_ENTRY(brake,openlcb::Uint16ConfigEntry,
-                Name("Brake Factor"),Default(1));
-CDI_GROUP_ENTRY(maximumspeed,openlcb::Uint16ConfigEntry,
-                Name("Maximum Speed"),Default(65535));
+CDI_GROUP_ENTRY(entropy,openlcb::Uint8ConfigEntry,
+                Name("Entropy Factor"),Default(1)); // about 2 scale mph
+CDI_GROUP_ENTRY(acceleration,openlcb::Uint8ConfigEntry,
+                Name("Acceleration Factor"),Default(1)); // about 2 scale mph
+CDI_GROUP_ENTRY(brake,openlcb::Uint8ConfigEntry,
+                Name("Brake Factor"),Default(1)); // about 2 scale mph
+CDI_GROUP_ENTRY(maximumspeed,openlcb::Uint8ConfigEntry,
+                Name("Maximum Speed"),Default(45)); // about 100 scale MPH
 CDI_GROUP_END();
                 
 
@@ -109,12 +110,12 @@ using TrainIDMap   = std::map<openlcb::NodeID, std::string>;
 #define STATUS 3
 #define _MAINMENUMIN BROWSELOCOS
 #define _MAINMENUMAX STATUS
+#define _POLLCOUNT 16
 
 #define currentTrain target_node()
 
 class ESP32ControlStand : public openlcb::TractionThrottle, public openlcb::Polling, openlcb::SimpleEventHandler, public ConfigUpdateListener {
 public:
-    enum Pressed {None=0, A, B, C, D};
     ESP32ControlStand(openlcb::Node *node, 
                       const ESP32ControlStandConfig &cfg) 
                 : TractionThrottle(node)
@@ -126,6 +127,7 @@ public:
           , d_(BUTTON_D)          
           , bell_(BELL)
           , lightSwitch_(L_OFF,L_DIM,L_BRIGHT,L_DITCH)
+          , currentLS_(LightSwitch::Unknown)
           , throttlePosition_(0)
           , brake_(0)
           , horn_(0)
@@ -136,9 +138,10 @@ public:
           , entropyFactor_(1)
           , accelerationFactor_(1)
           , brakeFactor_(1)
-          , maximumSpeed_(65535)
-          , currentSpeed_(0)
-          , currentDirection_(Neutral)
+          , maximumSpeed_(45)
+          , currentVelocity_(0)
+          , reverserPosition_(Neutral)
+          , pollCount_(0)
     { 
         register_handler(); 
         ConfigUpdateService::instance()->register_update_listener(this);
@@ -194,10 +197,12 @@ private:
     Button d_;
     Button bell_;
     LightSwitch lightSwitch_;
+    LightSwitch::Position currentLS_;
     uint8_t throttlePosition_;
     uint16_t brake_;
     uint16_t horn_;
     uint16_t reverser_;
+    enum Pressed {None=0, A, B, C, D};
     enum MenuState {Welcome, MainMenu, Browse, Search, Settings, Status, RunLoco, Idle} currentState_;
     int selection_;
     uint8_t throttleQuadrature_;
@@ -209,14 +214,17 @@ private:
     uint16_t entropyFactor_, 
           accelerationFactor_, 
           brakeFactor_, 
-          maximumSpeed_,
-          currentSpeed_;
-    enum {Reverse, Neutral, Forward} currentDirection_;
+          maximumSpeed_;
+    openlcb::Velocity currentVelocity_;
+    enum {Reverse, Neutral, Forward} reverserPosition_;
+    uint8_t pollCount_;
     bool checkThrottle();
     bool readBrake();
     bool readHorn();
     bool readReverser();
     void pollMenu();
+    void ringBell() {}
+    void updateReverserPosition() {}
     Pressed button() {
         a_.read();
         b_.read();
