@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Oct 7 18:47:11 2019
-//  Last Modified : <191014.1555>
+//  Last Modified : <191014.1653>
 //
 //  Description	
 //
@@ -284,6 +284,7 @@ void ESP32ControlStand::pollMenu()
                 unHighlightLetter();
                 letterIndex_--;
                 highlightLetter();
+                display_.display();
             }
             break;
         case B:
@@ -294,6 +295,7 @@ void ESP32ControlStand::pollMenu()
                     unHighlightChar();
                     searchStringIndex_--;
                     highlightChar();
+                    display_.display();
                 }
             } else if (searchStringIndex_ < 20) {
                 char ch;
@@ -306,6 +308,7 @@ void ESP32ControlStand::pollMenu()
                 unHighlightChar();
                 searchStringIndex_++;
                 highlightChar();
+                display_.display();
             }
             break;
         case C:
@@ -313,6 +316,7 @@ void ESP32ControlStand::pollMenu()
                 unHighlightLetter();
                 letterIndex_++;
                 highlightLetter();
+                display_.display();
             }
             break;
         case D:
@@ -333,8 +337,6 @@ void ESP32ControlStand::pollMenu()
     case Settings:
         break;
     case Status:
-        break;
-    case RunLoco:
         break;
     }
 }

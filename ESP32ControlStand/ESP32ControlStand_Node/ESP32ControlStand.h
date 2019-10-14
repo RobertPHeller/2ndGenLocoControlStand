@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Oct 7 18:43:06 2019
-//  Last Modified : <191014.1553>
+//  Last Modified : <191014.1649>
 //
 //  Description	
 //
@@ -203,7 +203,7 @@ private:
     uint16_t horn_;
     uint16_t reverser_;
     enum Pressed {None=0, A, B, C, D};
-    enum MenuState {Welcome, MainMenu, Browse, Search, Settings, Status, RunLoco, Idle} currentState_;
+    enum MenuState {Welcome, MainMenu, Browse, Search, Settings, Status, Idle} currentState_;
     int selection_;
     uint8_t throttleQuadrature_;
     TrainIDMap   trainsByID_;
@@ -218,6 +218,8 @@ private:
     openlcb::Velocity currentVelocity_;
     enum {Reverse, Neutral, Forward} reverserPosition_;
     uint8_t pollCount_;
+    uint8_t searchStringIndex_, letterIndex_;
+    char searchString_[21];
     bool checkThrottle();
     bool readBrake();
     bool readHorn();
@@ -239,8 +241,6 @@ private:
     void mainMenu();
     void idleScreen();
     void BrowseScreen();
-    uint8_t searchStringIndex_, letterIndex_;
-    char searchString_[21];
     void highlightChar() {
         int y = 0;
         int x = 6*searchStringIndex_;
