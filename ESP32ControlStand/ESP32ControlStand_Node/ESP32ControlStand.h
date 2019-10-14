@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Oct 7 18:43:06 2019
-//  Last Modified : <191014.1314>
+//  Last Modified : <191014.1553>
 //
 //  Description	
 //
@@ -239,6 +239,70 @@ private:
     void mainMenu();
     void idleScreen();
     void BrowseScreen();
+    uint8_t searchStringIndex_, letterIndex_;
+    char searchString_[21];
+    void highlightChar() {
+        int y = 0;
+        int x = 6*searchStringIndex_;
+        if (searchStringIndex_ == 20) 
+            display_.drawChar(x,y,' ',BLACK,WHITE,1);
+        else
+            display_.drawChar(x,y,searchString_[searchStringIndex_],BLACK,WHITE,1);
+    }
+    void unHighlightChar() {
+        int y = 0;
+        int x = 6*searchStringIndex_;
+        if (searchStringIndex_ == 20)
+            display_.drawChar(x,y,' ',WHITE,BLACK,1);
+        else
+            display_.drawChar(x,y,searchString_[searchStringIndex_],WHITE,BLACK,1);
+    }
+    void highlightLetter() {
+        int x,y;
+        unsigned char ch;
+        if (letterIndex_ < 20) 
+        {
+            y = 8;
+            x = 6*letterIndex_;
+        } else {
+            y = 16;
+            x = 6*(letterIndex_-20);
+        }
+        if (letterIndex_ < 26) ch = 'A' + letterIndex_;
+        else if (letterIndex_ < 36) ch = '0' + (letterIndex_-26);
+        else if (letterIndex_ == 36) ch = ' ';
+        else if (letterIndex_ == 37) ch = '-';
+        else if (letterIndex_ == 38) ch = '.';
+        else if (letterIndex_ == 39) ch = '<';
+        display_.drawChar(x,y,searchString_[searchStringIndex_],BLACK,WHITE,1);
+    }
+    void unHighlightLetter() {
+        int x,y;
+        unsigned char ch;
+        if (letterIndex_ < 20) 
+        {
+            y = 8;
+            x = 6*letterIndex_;
+        } else {
+            y = 16;
+            x = 6*(letterIndex_-20);
+        }
+        if (letterIndex_ < 26) ch = 'A' + letterIndex_;
+        else if (letterIndex_ < 36) ch = '0' + (letterIndex_-26);
+        else if (letterIndex_ == 36) ch = ' ';
+        else if (letterIndex_ == 37) ch = '-';
+        else if (letterIndex_ == 38) ch = '.';
+        else if (letterIndex_ == 39) ch = '<';
+        display_.drawChar(x,y,searchString_[searchStringIndex_],WHITE,BLACK,1);
+    }
+    bool match_(std::string trainname)
+    {
+        for (int i=0;i < searchStringIndex_; i++) {
+            if (i >= trainname.length()) return false;
+            if (toupper(trainname[i]) != searchString_[i]) return false;
+        }
+        return true;
+    }
     void SearchScreen();
     void SettingsScreen();
     void StatusScreen();
@@ -271,7 +335,25 @@ private:
         }
         return release_and_exit();
     }
-    bool AcquireTrain(openlcb::NodeID train);
+    
+    void AcquireTrain(openlcb::NodeID train)
+    {
+        tempTrain_.id=train;
+        start_flow(STATE(send_assign));
+    }
+    Action send_assign()
+    {
+        return invoke_subflow_and_wait(this, STATE(assign_done),
+                                       openlcb::TractionThrottleCommands::ASSIGN_TRAIN, 
+                                       tempTrain_.id, false);
+    }
+
+    Action assign_done()
+    {
+        notify();
+        return release_and_exit();
+    }
+
 };
 
 #endif // __ESP32CONTROLSTAND_H

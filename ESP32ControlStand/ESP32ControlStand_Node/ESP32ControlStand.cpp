@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Oct 7 18:47:11 2019
-//  Last Modified : <191014.1310>
+//  Last Modified : <191014.1555>
 //
 //  Description	
 //
@@ -262,10 +262,9 @@ void ESP32ControlStand::pollMenu()
             }
             break;
         case B:
-            if (AcquireTrain(selectedTrain_->first)) {
-                currentState_ = Idle;
-                idleScreen();
-            }
+            AcquireTrain(selectedTrain_->first);
+            currentState_ = Idle;
+            idleScreen();
             break;
         case C:
             selectedTrain_++;
@@ -279,6 +278,57 @@ void ESP32ControlStand::pollMenu()
         }
         break;
     case Search:
+        switch (button()) {
+        case A:
+            if (letterIndex_ > 0) {
+                unHighlightLetter();
+                letterIndex_--;
+                highlightLetter();
+            }
+            break;
+        case B:
+            if (letterIndex_ == 39) // backspace
+            {
+                if (searchStringIndex_ > 0) {
+                    searchString_[searchStringIndex_] = '_';
+                    unHighlightChar();
+                    searchStringIndex_--;
+                    highlightChar();
+                }
+            } else if (searchStringIndex_ < 20) {
+                char ch;
+                if (letterIndex_ < 26) ch = 'A' + letterIndex_;
+                else if (letterIndex_ < 36) ch = '0' + (letterIndex_-26); 
+                else if (letterIndex_ == 36) ch = ' ';
+                else if (letterIndex_ == 37) ch = '-';
+                else if (letterIndex_ == 38) ch = '.';
+                searchString_[searchStringIndex_] = ch;
+                unHighlightChar();
+                searchStringIndex_++;
+                highlightChar();
+            }
+            break;
+        case C:
+            if (letterIndex_ < 39) {
+                unHighlightLetter();
+                letterIndex_++;
+                highlightLetter();
+            }
+            break;
+        case D:
+            for (selectedTrain_ = trainsByID_.begin();
+                 selectedTrain_ != trainsByID_.end();
+                 selectedTrain_++) {
+                if (match_(selectedTrain_->second)) break;
+            }
+            if (selectedTrain_ != trainsByID_.end()) 
+            {
+                AcquireTrain(selectedTrain_->first);
+                currentState_ = Idle;
+                idleScreen();
+            }
+            break;
+        }
         break;
     case Settings:
         break;
@@ -402,6 +452,21 @@ void ESP32ControlStand::BrowseScreen()
 
 void ESP32ControlStand::SearchScreen()
 {
+    display_.clearDisplay();
+    display_.setTextColor(WHITE); // Draw white text
+    display_.setTextSize(1);
+    display_.setCursor(0,0);
+    display_.println("____________________");
+    searchStringIndex_ = 0;
+    letterIndex_ = 0;
+    for (int i=0; i < 20; i++) searchString_[i] = '_';
+    searchString_[20] = '\0';
+    display_.println("ABCDEFGHIJKLMNOPQRST");
+    display_.println("UVWXYZ0123456789 -.<");
+    display_.println("Prev Sele Next Sear");
+    highlightChar();
+    highlightLetter();
+    display_.display();
 }
 
 void ESP32ControlStand::SettingsScreen()
@@ -411,12 +476,6 @@ void ESP32ControlStand::SettingsScreen()
 void ESP32ControlStand::StatusScreen()
 {
 }
-
-bool ESP32ControlStand::AcquireTrain(openlcb::NodeID train)
-{
-}
-
-
 
 
 void ESP32ControlStand::register_handler()
