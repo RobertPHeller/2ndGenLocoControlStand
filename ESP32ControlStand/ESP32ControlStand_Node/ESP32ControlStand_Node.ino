@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Sun Oct 6 09:53:40 2019
-//  Last Modified : <191011.2208>
+//  Last Modified : <191016.1050>
 //
 //  Description	
 //
@@ -338,7 +338,13 @@ static const char rcsid[] = "@(#) : $Id$";
 
 void setup() {
     Serial.begin(115200L);
-
+    // Set up status LED Early and show Yellow (starting up)
+    pinMode(STATUS_R,OUTPUT);
+    digitalWrite(STATUS_R,HIGH);
+    pinMode(STATUS_G,OUTPUT);
+    digitalWrite(STATUS_G,HIGH);
+    
+    
     // Initialize the SPIFFS filesystem as our persistence layer
     if (!SPIFFS.begin())
     {
@@ -346,10 +352,16 @@ void setup() {
         if (!SPIFFS.begin(true))
         {
             printf("SPIFFS mount failed even with format, giving up!\n");
+            // blink red
+            digitalWrite(STATUS_G,LOW);
             while (1)
             {
                 // Unable to start SPIFFS successfully, give up and wait
                 // for WDT to kick in
+                digitalWrite(STATUS_R,LOW);
+                delay(500);
+                digitalWrite(STATUS_R,HIGH);
+                delay(500);
             }
         }
     }
@@ -419,6 +431,9 @@ void setup() {
 #endif // USE_CAN
     stand.welcomeScreen();
     stand.SendIsTrainEventQuery();
+    // Green for up and running...
+    digitalWrite(STATUS_R,LOW);
+    digitalWrite(STATUS_G,HIGH);
 }
                 
 void loop() {

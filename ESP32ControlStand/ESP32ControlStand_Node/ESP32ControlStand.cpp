@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Oct 7 18:47:11 2019
-//  Last Modified : <191014.1653>
+//  Last Modified : <191016.1050>
 //
 //  Description	
 //
@@ -117,7 +117,14 @@ void ESP32ControlStand::hw_init()
     // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
     if(!display_.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // Address 0x3C for 128x32
         Serial.println(F("SSD1306 allocation failed"));
-        for(;;); // Don't proceed, loop forever
+        // blink red
+        digitalWrite(STATUS_G,LOW);
+        for(;;) { // Don't proceed, loop forever
+            digitalWrite(STATUS_R,LOW);
+            delay(500);
+            digitalWrite(STATUS_R,HIGH);
+            delay(1000);
+        }
     }
     pinMode(HORN,INPUT);
     pinMode(BRAKE,INPUT);
@@ -128,10 +135,6 @@ void ESP32ControlStand::hw_init()
     bell_.begin();
     lightSwitch_.begin();
     pinMode(REVERSER,INPUT);
-    pinMode(STATUS_R,OUTPUT);
-    digitalWrite(STATUS_R,LOW);
-    pinMode(STATUS_G,OUTPUT);
-    digitalWrite(STATUS_G,LOW);
     pinMode(THROTTLEA,INPUT_PULLUP);
     pinMode(THROTTLEB,INPUT_PULLUP);
     throttleQuadrature_ = digitalRead(THROTTLEA) | (digitalRead(THROTTLEB) << 1);
@@ -231,6 +234,8 @@ void ESP32ControlStand::pollMenu()
                 break;
             case SETTINGS:
                 currentState_ = Settings;
+                selection_ = _SETTINGSMIN;
+                updateSetting_ = false;
                 SettingsScreen();
                 break;
             case STATUS:
@@ -335,6 +340,56 @@ void ESP32ControlStand::pollMenu()
         }
         break;
     case Settings:
+        switch (button()) {
+        case A: 
+            if (updateSetting_) {
+                switch (selection_) {
+                case ENTROPYFACTOR: 
+                    if (entropyFactor_ > 1) entropyFactor_--;
+                    break;
+                case ACCELERATIONFACTOR:
+                    if (accelerationFactor_ > 1) accelerationFactor_--;
+                    break;
+                case BRAKEFACTOR:
+                    if (brakeFactor_ > 1) brakeFactor_--;
+                    break;
+                case MAXIMUMSPEED:
+                    if (maximumSpeed_ > 1) maximumSpeed_--;
+                    break;
+                }
+            } else {
+                if (selection_ > _SETTINGSMIN) selection_--;
+            }
+            break;
+        case B:
+            updateSetting_ = !updateSetting_;
+            break;
+        case C:
+            if (updateSetting_) {
+                switch (selection_) {
+                case ENTROPYFACTOR: 
+                    if (entropyFactor_ < 255) entropyFactor_++;
+                    break;
+                case ACCELERATIONFACTOR:
+                    if (accelerationFactor_ < 255) accelerationFactor_++;
+                    break;
+                case BRAKEFACTOR:
+                    if (brakeFactor_ < 255) brakeFactor_++;
+                    break;
+                case MAXIMUMSPEED:
+                    if (maximumSpeed_ < 255) maximumSpeed_++;
+                    break;
+                }
+            } else {
+                if (selection_ < _SETTINGSMAX) selection_++;
+            }
+            break;
+        case D:
+            selection_ = SETTINGS;
+            currentState_ = MainMenu;
+            mainMenu();
+            break;
+        }
         break;
     case Status:
         break;
@@ -473,6 +528,57 @@ void ESP32ControlStand::SearchScreen()
 
 void ESP32ControlStand::SettingsScreen()
 {
+    display_.clearDisplay();
+    display_.setTextColor(WHITE); // Draw white text
+    display_.setTextSize(1);
+    display_.setCursor(0,0);
+    if (selection_ < MAXIMUMSPEED) {
+        if (selection_ == ENTROPYFACTOR) {
+            if (updateSetting_) display_.print("**Entropy: ");
+            else display_.print(">>Entropy: ");
+        } else {
+            display_.print("  Entropy: ");
+        }
+        display_.println(entropyFactor_);
+        if (selection_ == ACCELERATIONFACTOR) {
+            if (updateSetting_) display_.print("**Acceler: ");
+            else display_.print(">>Acceler: ");
+        } else {
+            display_.print("  Acceler: ");
+        }
+        display_.println(accelerationFactor_);
+        if (selection_ == BRAKEFACTOR) {
+            if (updateSetting_) display_.print("**Brake:   ");
+            else display_.print(">>Brake:   ");
+        } else {
+            display_.print("  Brake:   ");
+        }
+        display_.println(brakeFactor_);
+    } else {
+        if (selection_ == ACCELERATIONFACTOR) {
+            if (updateSetting_) display_.print("**Acceler: ");
+            else display_.print(">>Acceler: ");
+        } else {
+            display_.print("  Acceler: ");
+        }
+        display_.println(accelerationFactor_);
+        if (selection_ == BRAKEFACTOR) {
+            if (updateSetting_) display_.print("**Brake:   ");
+            else display_.print(">>Brake:   ");
+        } else {
+            display_.print("  Brake:   ");
+        }
+        display_.println(brakeFactor_);
+        if (selection_ == MAXIMUMSPEED) {
+            if (updateSetting_) display_.print("**MxSpeed: ");
+            else display_.print(">>MxSpeed: ");
+        } else {
+            display_.print("  MxSpeed: ");
+        }
+        display_.println(maximumSpeed_);
+    }
+    if (updateSetting_) display_.println("++++ Set  ---- Back");
+    else                display_.println("Prev Sele Next Back");
 }
 
 void ESP32ControlStand::StatusScreen()

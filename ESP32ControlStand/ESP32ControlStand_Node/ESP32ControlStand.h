@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Oct 7 18:43:06 2019
-//  Last Modified : <191014.1649>
+//  Last Modified : <191015.1346>
 //
 //  Description	
 //
@@ -110,6 +110,15 @@ using TrainIDMap   = std::map<openlcb::NodeID, std::string>;
 #define STATUS 3
 #define _MAINMENUMIN BROWSELOCOS
 #define _MAINMENUMAX STATUS
+#define ENTROPYFACTOR 0
+#define ACCELERATIONFACTOR 1
+#define BRAKEFACTOR 2
+#define MAXIMUMSPEED 3
+#define _SETTINGSMIN ENTROPYFACTOR
+#define _SETTINGSMAX MAXIMUMSPEED
+
+
+
 #define _POLLCOUNT 16
 
 #define currentTrain target_node()
@@ -220,6 +229,7 @@ private:
     uint8_t pollCount_;
     uint8_t searchStringIndex_, letterIndex_;
     char searchString_[21];
+    bool updateSetting_;
     bool checkThrottle();
     bool readBrake();
     bool readHorn();
