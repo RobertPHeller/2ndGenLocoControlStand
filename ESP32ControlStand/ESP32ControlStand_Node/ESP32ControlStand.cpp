@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Oct 7 18:47:11 2019
-//  Last Modified : <191016.1050>
+//  Last Modified : <191016.1304>
 //
 //  Description	
 //
@@ -166,6 +166,9 @@ void ESP32ControlStand::poll_33hz(openlcb::WriteHelper *helper, Notifiable *done
                 updateReverserPosition();
             }
         }
+        if (currentState_ == Idle &&
+            button() == None && 
+            currentTrain != 0) idleScreen();
         pollCount_ = 0;
     }
     if (currentTrain != 0) {
@@ -237,10 +240,6 @@ void ESP32ControlStand::pollMenu()
                 selection_ = _SETTINGSMIN;
                 updateSetting_ = false;
                 SettingsScreen();
-                break;
-            case STATUS:
-                currentState_ = Status;
-                StatusScreen();
                 break;
             }
             break;
@@ -391,8 +390,6 @@ void ESP32ControlStand::pollMenu()
             break;
         }
         break;
-    case Status:
-        break;
     }
 }
 
@@ -437,6 +434,7 @@ void ESP32ControlStand::idleScreen()
         addressbytes[5] = (address >>  0) & 0x0FF;
         display_.println(mac_to_string(addressbytes,true).c_str());
     } else {
+        load_speed_from_train_node();
         display_.setTextSize(1);
         display_.setTextColor(WHITE); // Draw white text
         display_.setCursor(0,0);
@@ -450,7 +448,13 @@ void ESP32ControlStand::idleScreen()
         addressbytes[4] = (currentTrain >>  8) & 0x0FF;
         addressbytes[5] = (currentTrain >>  0) & 0x0FF;
         display_.println(mac_to_string(addressbytes,true).c_str());
-        display_.println("");
+        display_.print(get_speed().mph());
+        display_.print("MPH");
+        if (get_speed().direction() == openlcb::Velocity::FORWARD) {
+            display_.println(" FWD");
+        } else {
+            display_.println(" REV");
+        }
     }
     display_.println("Any button => menu.");
     //                123456789012345678901
@@ -463,27 +467,18 @@ void ESP32ControlStand::mainMenu()
     display_.setTextColor(WHITE); // Draw white text
     display_.setTextSize(1);
     display_.setCursor(0,0);
-    if (selection_ < STATUS) {
-        if (selection_ == BROWSELOCOS)
-            display_.println(">>Browse Trains");
-        else
-            display_.println("  Browse Trains");
-        if (selection_ == SEARCHFORLOCO)
-            display_.println(">>Search Trains");
-        else
-            display_.println("  Search Trains");
-        if (selection_ == SETTINGS)
-            display_.println(">>Settings");
-        else
-            display_.println("  Settings");
-    } else {
-        if (selection_ == STATUS)
-            display_.println(">>Status");
-        else
-            display_.println("  Status");
-        display_.println("  ");
-        display_.println("  ");
-    }
+    if (selection_ == BROWSELOCOS)
+        display_.println(">>Browse Trains");
+    else
+        display_.println("  Browse Trains");
+    if (selection_ == SEARCHFORLOCO)
+        display_.println(">>Search Trains");
+    else
+        display_.println("  Search Trains");
+    if (selection_ == SETTINGS)
+        display_.println(">>Settings");
+    else
+        display_.println("  Settings");
     display_.println("Prev Sele Next Back");
     display_.display();
 }
@@ -577,14 +572,9 @@ void ESP32ControlStand::SettingsScreen()
         }
         display_.println(maximumSpeed_);
     }
-    if (updateSetting_) display_.println("++++ Set  ---- Back");
+    if (updateSetting_) display_.println("++++ Done ---- Back");
     else                display_.println("Prev Sele Next Back");
 }
-
-void ESP32ControlStand::StatusScreen()
-{
-}
-
 
 void ESP32ControlStand::register_handler()
 {

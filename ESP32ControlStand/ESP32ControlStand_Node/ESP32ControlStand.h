@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Oct 7 18:43:06 2019
-//  Last Modified : <191015.1346>
+//  Last Modified : <191016.1311>
 //
 //  Description	
 //
@@ -107,9 +107,8 @@ using TrainIDMap   = std::map<openlcb::NodeID, std::string>;
 #define BROWSELOCOS 0
 #define SEARCHFORLOCO 1
 #define SETTINGS 2
-#define STATUS 3
 #define _MAINMENUMIN BROWSELOCOS
-#define _MAINMENUMAX STATUS
+#define _MAINMENUMAX SETTINGS
 #define ENTROPYFACTOR 0
 #define ACCELERATIONFACTOR 1
 #define BRAKEFACTOR 2
@@ -212,7 +211,7 @@ private:
     uint16_t horn_;
     uint16_t reverser_;
     enum Pressed {None=0, A, B, C, D};
-    enum MenuState {Welcome, MainMenu, Browse, Search, Settings, Status, Idle} currentState_;
+    enum MenuState {Welcome, MainMenu, Browse, Search, Settings, Idle} currentState_;
     int selection_;
     uint8_t throttleQuadrature_;
     TrainIDMap   trainsByID_;
@@ -315,7 +314,6 @@ private:
     }
     void SearchScreen();
     void SettingsScreen();
-    void StatusScreen();
     void register_handler();
     void unregister_handler();
     void AddTrain(openlcb::NodeHandle train) {
@@ -363,7 +361,20 @@ private:
         notify();
         return release_and_exit();
     }
-
+    void load_speed_from_train_node()
+    {
+        if (currentTrain == 0) return;
+        else start_flow(STATE(send_load_state));
+    }
+    Action send_load_state()
+    {
+        return invoke_subflow_and_wait(this, STATE(load_speed_done),
+                                       openlcb::TractionThrottleCommands::LOAD_STATE);
+    }
+    Action load_speed_done()
+    {
+        return release_and_exit();
+    }
 };
 
 #endif // __ESP32CONTROLSTAND_H
