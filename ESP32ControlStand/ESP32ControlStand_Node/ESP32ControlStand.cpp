@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Oct 7 18:47:11 2019
-//  Last Modified : <191016.1304>
+//  Last Modified : <191021.1836>
 //
 //  Description	
 //
@@ -209,6 +209,10 @@ void ESP32ControlStand::pollMenu()
 {
     switch (currentState_) {
     case Idle:
+        if (button() == A) {
+            EmergencyStop();
+            break;
+        }
     case Welcome: 
         if (button() != None) {
             selection_ = _MAINMENUMIN;
@@ -456,7 +460,7 @@ void ESP32ControlStand::idleScreen()
             display_.println(" REV");
         }
     }
-    display_.println("Any button => menu.");
+    display_.println("EStop menu menu menu");
     //                123456789012345678901
     display_.display();
 }

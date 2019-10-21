@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Oct 7 18:43:06 2019
-//  Last Modified : <191016.1311>
+//  Last Modified : <191021.1839>
 //
 //  Description	
 //
@@ -316,6 +316,10 @@ private:
     void SettingsScreen();
     void register_handler();
     void unregister_handler();
+    void EmergencyStop()
+    {
+        set_emergencystop();
+    }
     void AddTrain(openlcb::NodeHandle train) {
         tempTrain_ = train;
         start_flow(STATE(getSNIP));
