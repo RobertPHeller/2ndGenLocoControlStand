@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Oct 7 18:47:11 2019
-//  Last Modified : <191021.1836>
+//  Last Modified : <191022.1446>
 //
 //  Description	
 //
@@ -210,7 +210,7 @@ void ESP32ControlStand::pollMenu()
     switch (currentState_) {
     case Idle:
         if (button() == A) {
-            EmergencyStop();
+            set_emergencystop();
             break;
         }
     case Welcome: 
@@ -231,13 +231,31 @@ void ESP32ControlStand::pollMenu()
         case B:
             switch (selection_) {
             case BROWSELOCOS:
+                if (trainsByID_.empty()) break;
                 selectedTrain_ = trainsByID_.begin();
                 currentState_ = Browse;
                 BrowseScreen();
                 break;
             case SEARCHFORLOCO:
+                if (trainsByID_.empty()) break;
                 currentState_ = Search;
                 SearchScreen();
+                break;
+            case REFRESHLOCOLIST:
+                trainsByID_.clear();
+                SendIsTrainEventQuery();
+                break;
+            case FUNCTIONS:
+                if (currentTrain == 0) break;
+                load_speed_from_train_node();
+                currentState_ = Functions;
+                selection_ = 0;
+                FunctionScreen();
+                break;
+            case CONSIST:
+                if (currentTrain == 0) break;
+                currentState_ = Consist;
+                ConsistScreen();
                 break;
             case SETTINGS:
                 currentState_ = Settings;
@@ -341,6 +359,26 @@ void ESP32ControlStand::pollMenu()
             }
             break;
         }
+        break;
+    case Functions:
+        switch (button()) {
+        case A:
+            if (selection_ > _FUNCTIONSMIN) selection_--;
+            break;
+        case B:
+            toggle_fn(selection_);
+            break;
+        case C:
+            if (selection_ < _FUNCTIONSMAX) selection_++;
+            break;
+        case D:
+            selection_ = FUNCTIONS;
+            currentState_ = MainMenu;
+            mainMenu();
+            break;
+        }
+        break;
+    case Consist:
         break;
     case Settings:
         switch (button()) {
@@ -471,18 +509,33 @@ void ESP32ControlStand::mainMenu()
     display_.setTextColor(WHITE); // Draw white text
     display_.setTextSize(1);
     display_.setCursor(0,0);
-    if (selection_ == BROWSELOCOS)
-        display_.println(">>Browse Trains");
-    else
-        display_.println("  Browse Trains");
-    if (selection_ == SEARCHFORLOCO)
-        display_.println(">>Search Trains");
-    else
-        display_.println("  Search Trains");
-    if (selection_ == SETTINGS)
-        display_.println(">>Settings");
-    else
-        display_.println("  Settings");
+    if (selection_ <= _MAINMENUP1MAX) {
+        if (selection_ == BROWSELOCOS)
+            display_.println(">>Browse Trains");
+        else
+            display_.println("  Browse Trains");
+        if (selection_ == SEARCHFORLOCO)
+            display_.println(">>Search Trains");
+        else
+            display_.println("  Search Trains");
+        if (selection_ == REFRESHLOCOLIST)
+            display_.println(">>Refresh Loco List");
+        else
+            display_.println("  Refresh Loco List");
+    } else if (selection_ <= _MAINMENUP2MAX) {
+        if (selection_ == FUNCTIONS)
+            display_.println(">>Functions");
+        else
+            display_.println("  Functions");
+        if (selection_ == CONSIST)
+            display_.println(">>Consist");
+        else
+            display_.println("  Consist");
+        if (selection_ == SETTINGS)
+            display_.println(">>Settings");
+        else
+            display_.println("  Settings");
+    }
     display_.println("Prev Sele Next Back");
     display_.display();
 }
@@ -523,6 +576,32 @@ void ESP32ControlStand::SearchScreen()
     highlightChar();
     highlightLetter();
     display_.display();
+}
+
+void ESP32ControlStand::FunctionScreen()
+{
+    display_.clearDisplay();
+    display_.setTextColor(WHITE); // Draw white text 
+    display_.setTextSize(1);
+    display_.setCursor(0,0);
+    int screenindexbase = selection_ / 3;
+    char buffer[18];
+    for (int i = 0; i < 3; i++) {
+        int selection_i = (screenindexbase*3)+i;
+        if (selection_i > 28) display_.println("");
+        else {
+            if (selection_i == selection_) display_.print(">>");
+            else display_.print("  ");
+            snprintf(buffer,sizeof(buffer),"%2d: %s",selection_i,(get_fn(selection_i))?"On":"Off");
+            display_.println(buffer);
+        }
+    }
+    display_.println("Prev Togg Next Back");
+    display_.display();
+}
+
+void ESP32ControlStand::ConsistScreen()
+{
 }
 
 void ESP32ControlStand::SettingsScreen()
@@ -578,6 +657,7 @@ void ESP32ControlStand::SettingsScreen()
     }
     if (updateSetting_) display_.println("++++ Done ---- Back");
     else                display_.println("Prev Sele Next Back");
+    display_.display();
 }
 
 void ESP32ControlStand::register_handler()

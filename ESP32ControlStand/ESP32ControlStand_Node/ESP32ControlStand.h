@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Oct 7 18:43:06 2019
-//  Last Modified : <191021.1839>
+//  Last Modified : <191022.1436>
 //
 //  Description	
 //
@@ -106,8 +106,13 @@ using TrainIDMap   = std::map<openlcb::NodeID, std::string>;
 
 #define BROWSELOCOS 0
 #define SEARCHFORLOCO 1
-#define SETTINGS 2
+#define REFRESHLOCOLIST 2
+#define FUNCTIONS 3
+#define CONSIST 4
+#define SETTINGS 5
 #define _MAINMENUMIN BROWSELOCOS
+#define _MAINMENUP1MAX REFRESHLOCOLIST
+#define _MAINMENUP2MAX SETTINGS
 #define _MAINMENUMAX SETTINGS
 #define ENTROPYFACTOR 0
 #define ACCELERATIONFACTOR 1
@@ -115,7 +120,8 @@ using TrainIDMap   = std::map<openlcb::NodeID, std::string>;
 #define MAXIMUMSPEED 3
 #define _SETTINGSMIN ENTROPYFACTOR
 #define _SETTINGSMAX MAXIMUMSPEED
-
+#define _FUNCTIONSMIN 0
+#define _FUNCTIONSMAX 28
 
 
 #define _POLLCOUNT 16
@@ -211,7 +217,7 @@ private:
     uint16_t horn_;
     uint16_t reverser_;
     enum Pressed {None=0, A, B, C, D};
-    enum MenuState {Welcome, MainMenu, Browse, Search, Settings, Idle} currentState_;
+    enum MenuState {Welcome, MainMenu, Browse, Search, Functions, Consist, Settings, Idle} currentState_;
     int selection_;
     uint8_t throttleQuadrature_;
     TrainIDMap   trainsByID_;
@@ -250,6 +256,8 @@ private:
     void mainMenu();
     void idleScreen();
     void BrowseScreen();
+    void FunctionScreen();
+    void ConsistScreen();
     void highlightChar() {
         int y = 0;
         int x = 6*searchStringIndex_;
@@ -316,10 +324,6 @@ private:
     void SettingsScreen();
     void register_handler();
     void unregister_handler();
-    void EmergencyStop()
-    {
-        set_emergencystop();
-    }
     void AddTrain(openlcb::NodeHandle train) {
         tempTrain_ = train;
         start_flow(STATE(getSNIP));
