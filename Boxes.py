@@ -9,7 +9,7 @@
 #  Author        : $Author$
 #  Created By    : Robert Heller
 #  Created       : Sat Dec 19 08:26:18 2020
-#  Last Modified : <201219.1013>
+#  Last Modified : <201223.1840>
 #
 #  Description	
 #
@@ -95,22 +95,37 @@ class OrignalLid(object):
     def _insideWidth(self):
         pass
     def cutlids(self,obj):
-        self._l1 = self._l1.cut(obj)
-        self._l2 = self._l2.cut(obj)
+        self._lid = self._lid.cut(obj)
+    def fuselids(self,obj):
+        self._lid = self._lid.fuse(obj)
     def _buildLid(self):
         oX = self.origin.x
         oY = self.origin.y
         oZ = self.origin.z
-        self._l1 = Part.makePlane(self.OutsideWidth,self.OutsideLength,\
+        #print("*** OrignalLid._buildLid: oX = %f, oY = %f, oZ = %f"%(oX,oY,oZ),\
+        #        file=sys.__stderr__)
+        self._lid = Part.makePlane(self.OutsideWidth,self.OutsideLength,\
                                   self.origin)\
-                     .extrude(Base.Vector(0,0,\
-                                        self.TotalLidHeight-self.LidHeight))
+                    .extrude(Base.Vector(0,0,\
+                                         self.TotalLidHeight-self.LidHeight))
         innerX = oX + ((self.OutsideWidth-self._insideWidth)/2.0)
         innerY = oY + ((self.OutsideLength-self._insideLength)/2.0)
-        innerZ = oZ + (self.TotalLidHeight - self.LidHeight)
-        self._l2 = Part.makePlane(self._insideWidth,self._insideLength,\
+        innerZ = oZ + self.LidThickness
+        #print("*** OrignalLid._buildLid: innerX = %f, innerY = %f, innerZ = %f"%(innerX,innerY,innerZ),\
+        #        file=sys.__stderr__)
+        self.fuselids(Part.makePlane(self._insideWidth,self._insideLength,\
+                                    Base.Vector(innerX,innerY,innerZ))\
+                     .extrude(Base.Vector(0,0,\
+                                          self.TotalLidHeight-self.LidThickness)) )
+        innerX = oX + ((self.OutsideWidth-self.InsideBoxWidth)/2.0)
+        innerY = oY + ((self.OutsideLength-self.InsideBoxLength)/2.0)
+        innerZ = oZ + self.TotalLidHeight-self.LidHeight
+        #print("*** OrignalLid._buildLid: innerX = %f, innerY = %f, innerZ = %f"%(innerX,innerY,innerZ),\
+        #        file=sys.__stderr__)
+        self.cutlids(Part.makePlane(self.InsideBoxWidth,\
+                                    self.InsideBoxLength,\
                                   Base.Vector(innerX,innerY,innerZ))\
-                     .extrude(Base.Vector(0,0,self.LidHeight))
+                     .extrude(Base.Vector(0,0,self.LidHeight)))
         h1X = oX + ((self.OutsideWidth - self._holeCenterWidth)/2.0)
         h1Y = oY + ((self.OutsideLength - self._holeCenterLength)/2.0)
         h1 = Part.Face(Part.Wire(Part.makeCircle(self._holeDiameter/2.0,\
@@ -137,13 +152,9 @@ class OrignalLid(object):
         self.cutlids(h4)
     def show(self):
          doc = App.activeDocument()
-         obj = doc.addObject("Part::Feature",self.name+"_l1")
-         obj.Shape=self._l1
-         obj.Label=self.name+"_l1"
-         obj.ViewObject.ShapeColor=tuple([190/255.0,190/255.0,190/255.0])
-         obj = doc.addObject("Part::Feature",self.name+"_l2")
-         obj.Shape=self._l2
-         obj.Label=self.name+"_l2"
+         obj = doc.addObject("Part::Feature",self.name+"_lid")
+         obj.Shape=self._lid
+         obj.Label=self.name+"_lid"
          obj.ViewObject.ShapeColor=tuple([90/255.0,90/255.0,90/255.0])
          
 

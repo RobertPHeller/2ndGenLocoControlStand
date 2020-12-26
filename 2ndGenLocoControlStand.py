@@ -9,7 +9,7 @@
 #  Author        : $Author$
 #  Created By    : Robert Heller
 #  Created       : Sat Dec 19 08:19:18 2020
-#  Last Modified : <201222.2229>
+#  Last Modified : <201225.1420>
 #
 #  Description	
 #
@@ -57,6 +57,11 @@ from Boxes import *
 from Brackets import *
 from MechEncoders import *
 from DaughterBoards import *
+from LightSwitch import *
+from LEDs import *
+from ButtonPlungers import *
+from Levers import *
+from Knobs import *
 
 def IntToString(i):
     return "%d" % i
@@ -153,7 +158,7 @@ class SecondGenLocoControlStandLid(RL6685Lid):
                 ButtonDisplayBoard(name+"_buttonDisplayBoard",\
                                    Base.Vector(buttonDisplayBoard_X,\
                                                buttonDisplayBoard_Y,\
-                                               Z + self.TotalLidHeight - \
+                                               Z + self.LidThickness - \
                                                    (6 + 1.5875)))
         self._buttonDisplayBoardStandoff = list()
         for i in range(1,5):
@@ -161,13 +166,23 @@ class SecondGenLocoControlStandLid(RL6685Lid):
                                                           self.TotalLidHeight))
             self._buttonDisplayBoardStandoff.append(\
                 self._buttonDisplayBoard.standoff(i,\
-                                                  Z+self.TotalLidHeight,\
+                                                  Z+self.LidThickness,\
                                                   -6))
+        self._buttonDisplayBoardPlungers = list()
         for i in range(1,6):
             self.cutlids(self._buttonDisplayBoard.buttonHole(i,Z,\
                                                           self.TotalLidHeight))
+            self._buttonDisplayBoardPlungers.append(\
+                ButtonPlunger(name+"_buttonDisplayBoardPlungers"+IntToString(i),\
+                              self._buttonDisplayBoard.buttonHoleOrigin(\
+                                                    i,Z+self.LidThickness)))
         self.cutlids(self._buttonDisplayBoard.statusLEDHole(Z,\
                                                           self.TotalLidHeight))
+        self._statusLED = \
+            LED_5MMHead(name+"_statusLED",\
+                        self._buttonDisplayBoard.statusLEDHoleOrigin(\
+                                                    Z+self.LidThickness),\
+                                                    color=tuple([0.0,1.0,0.0]))
         self.cutlids(self._buttonDisplayBoard.displayCutoutHole(Z,\
                                                           self.TotalLidHeight))
         for i in range(1,5):
@@ -203,20 +218,36 @@ class SecondGenLocoControlStandLid(RL6685Lid):
             ButtonLEDBoard(name+"_buttonLEDBoard",\
                            Base.Vector(buttonLEDBoardX,\
                                        buttonLEDBoardY,\
-                                       Z + self.TotalLidHeight - (6 + 1.5875)))
+                                       Z + self.LidThickness - (6 + 1.5875)))
         self._buttonLEDBoardStandoff = list()
         for i in range(1,5):
             self.cutlids(self._buttonLEDBoard.mountingHole(i,Z,\
                                                           self.TotalLidHeight))
             self._buttonLEDBoardStandoff.append(\
                 self._buttonLEDBoard.standoff(i,\
-                                                  Z+self.TotalLidHeight,\
+                                                  Z+self.LidThickness,\
                                                   -6))
+        self._buttonLEDBoardLEDS = list()
+        self._buttonLEDBoardPlungers = list()
         for i in range(1,9):
             self.cutlids(self._buttonLEDBoard.buttonHole(i,Z,\
                                                          self.TotalLidHeight))
+            self._buttonLEDBoardPlungers.append(\
+                ButtonPlunger(name+"_buttonLEDBoardPlungers"+IntToString(i),\
+                              self._buttonLEDBoard.buttonHoleOrigin(i,\
+                                        Z+self.LidThickness)))
             self.cutlids(self._buttonLEDBoard.LEDHole(i,Z,\
                                                       self.TotalLidHeight))
+            self._buttonLEDBoardLEDS.append(\
+                LED_5MMHead(name+"_buttonLEDBoardLEDS"+IntToString(i),\
+                            self._buttonLEDBoard.LEDHoleOrigin(i,\
+                                                         Z+self.LidThickness)))
+        self._lightSwitch = \
+                  Grayhill_56A36_01_1_04N(name+"_lightSwitch",
+                                          Base.Vector(X + 19.05,\
+                                                      Y + 50.8,\
+                                                      Z + self.LidThickness))
+        self.cutlids(self._lightSwitch._bushing)
     def show(self):
         RL6685Lid.show(self)
         self._throttleReverserBrakeBracket.show()
@@ -238,12 +269,47 @@ class SecondGenLocoControlStandLid(RL6685Lid):
             obj.Shape=self._buttonLEDBoardStandoff[i-1]
             obj.Label=self.name+"_buttonLEDBoardStandoff"+IntToString(i)
             obj.ViewObject.ShapeColor=tuple([1.0,1.0,1.0])
+        self._lightSwitch.show()
+        self._statusLED.show()
+        for led in self._buttonLEDBoardLEDS:
+            led.show()
+        for plunger in self._buttonDisplayBoardPlungers:
+            plunger.show()
+        for plunger in self._buttonLEDBoardPlungers:
+            plunger.show()
 
 if __name__ == '__main__':
     App.ActiveDocument=App.newDocument("Boxes")
     doc = App.activeDocument()
-    controlstandlid = SecondGenLocoControlStandLid("ControlStandLid",Base.Vector(0,0,0))
+    controlstandlid = SecondGenLocoControlStandLid("ControlStandLid",\
+                                                   Base.Vector(0,0,0))
     controlstandlid.show()
+    throttleHandle = StraightControlLever("ThrottleHandle",\
+                                          Base.Vector(200,0,0),\
+                                          shaftlength=30,\
+                                          handlecolor=tuple([0.0,0.0,1.0]),\
+                                          dholediameter=6.35,\
+                                          dholeflatsize=5.56)
+    throttleHandle.show()
+    reverserHandle = StraightControlLever("ReverserHandle",\
+                                          Base.Vector(200,50,0),\
+                                          shaftlength=20,\
+                                          handlecolor=tuple([0.0,0.0,0.0]),\
+                                          dholediameter=6,\
+                                          dholeflatsize=4.5)
+    reverserHandle.show()
+    brakeHandle = StraightControlLever("BrakeHandle",\
+                                       Base.Vector(200,100,0),\
+                                       shaftlength=20,\
+                                       handlecolor=tuple([1.0,0.0,0.0]),\
+                                       dholediameter=6.35,dholeflatsize=3.96)
+    brakeHandle.show()
+    hornHandle = BentControlLever("HornHandle",Base.Vector(200,150,0),\
+                                  shaftlength1=20,shaftlength2=30,\
+                                  handlecolor=tuple([50.0/255.0,50.0/255.0,\
+                                                     50.0/255.0]),\
+                                  dholediameter=6.35,dholeflatsize=3.96)
+    hornHandle.show()
     Gui.SendMsgToActiveView("ViewFit")
     Gui.activeDocument().activeView().viewIsometric()
     doc.saveAs("2ndGenLocoControlStand.fcstd")

@@ -8,7 +8,7 @@
 #  Author        : $Author$
 #  Created By    : Robert Heller
 #  Created       : Tue Dec 22 00:56:49 2020
-#  Last Modified : <201222.2227>
+#  Last Modified : <201223.2317>
 #
 #  Description	
 #
@@ -69,7 +69,7 @@ class ButtonDisplayBoard(object):
                       (25.4, 19.05), (34.29, 19.05)]
     _buttonHoleDiameter = 5.08
     _statusLEDHoleXY = (22.86, 50.8)
-    _statusLEDHoleDiameter = 5
+    _statusLEDHoleDiameter = 5.0
     def __init__(self,name,origin):
         self.name = name
         if not isinstance(origin,Base.Vector):
@@ -103,20 +103,23 @@ class ButtonDisplayBoard(object):
         return Part.Face(Part.Wire(Part.makeCircle(diameter/2.0,\
                                                    holebottom)))\
                         .extrude(Base.Vector(0,0,height))
-    def buttonHole(self,i,base,height):
+    def buttonHoleOrigin(self,i,base):
         holeX,holeY = self._buttonHolesXY[i-1]
         holeX+=self.origin.x
         holeY+=self.origin.y
-        holebottom=Base.Vector(holeX,holeY,base)
+        return Base.Vector(holeX,holeY,base)
+    def buttonHole(self,i,base,height):
+        holebottom=self.buttonHoleOrigin(i,base)
         return Part.Face(Part.Wire(Part.makeCircle(self._buttonHoleDiameter/2.0,\
                                                    holebottom)))\
                         .extrude(Base.Vector(0,0,height))
-                        
-    def statusLEDHole(self,base,height):
+    def statusLEDHoleOrigin(self,base):
         holeX,holeY = self._statusLEDHoleXY
         holeX+=self.origin.x
         holeY+=self.origin.y
-        holebottom=Base.Vector(holeX,holeY,base)
+        return Base.Vector(holeX,holeY,base)
+    def statusLEDHole(self,base,height):
+        holebottom=self.statusLEDHoleOrigin(base)
         return Part.Face(Part.Wire(Part.makeCircle(self._statusLEDHoleDiameter/2.0,\
                                                    holebottom)))\
                         .extrude(Base.Vector(0,0,height))
@@ -155,7 +158,7 @@ class ButtonLEDBoard(object):
     _LEDHoleX0org = 5.08
     _LEDHoleX1org = 6.985
     _LEDHoleY = 17.145
-    _LEDHoleDiameter = 5
+    _LEDHoleDiameter = 5.0
     _buttonHoleAndLEDCount = 8
     def __init__(self,name,origin,board0=True):
         self.name = name
@@ -192,7 +195,7 @@ class ButtonLEDBoard(object):
         return Part.Face(Part.Wire(Part.makeCircle(diameter/2.0,\
                                                    holebottom)))\
                         .extrude(Base.Vector(0,0,height))
-    def buttonHole(self,i,base,height):
+    def buttonHoleOrigin(self,i,base):
         X = self.origin.x
         Y = self.origin.y
         Z = self.origin.z
@@ -200,13 +203,13 @@ class ButtonLEDBoard(object):
             Xoff = self._buttonHoleX0org + ((i-1)*self._holeDeltaX)
         else:
             Xoff = self._buttonHoleX1org + ((i-1)*self._holeDeltaX)
+        return Base.Vector(X+Xoff,Y+self._buttonHoleY,base)
+    def buttonHole(self,i,base,height):
         return Part.Face(Part.Wire(\
                     Part.makeCircle(self._buttonHoleDiameter/2.0,\
-                                    Base.Vector(X+Xoff,\
-                                                Y+self._buttonHoleY,\
-                                                base))))\
+                                    self.buttonHoleOrigin(i,base))))\
                     .extrude(Base.Vector(0,0,height))
-    def LEDHole(self,i,base,height):
+    def LEDHoleOrigin(self,i,base):
         X = self.origin.x
         Y = self.origin.y
         Z = self.origin.z
@@ -214,9 +217,9 @@ class ButtonLEDBoard(object):
             Xoff = self._LEDHoleX0org + ((i-1)*self._holeDeltaX)
         else:
             Xoff = self._LEDHoleX1org + ((i-1)*self._holeDeltaX)
+        return Base.Vector(X+Xoff,Y+self._LEDHoleY,base)
+    def LEDHole(self,i,base,height):
         return Part.Face(Part.Wire(\
                     Part.makeCircle(self._LEDHoleDiameter/2.0,\
-                                    Base.Vector(X+Xoff,\
-                                                Y+self._LEDHoleY,\
-                                                base))))\
+                                    self.LEDHoleOrigin(i,base))))\
                     .extrude(Base.Vector(0,0,height))

@@ -1,4 +1,5 @@
 EESchema Schematic File Version 2
+LIBS:ESP32ControlStand-rescue
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -10,7 +11,6 @@ LIBS:cmos4000
 LIBS:adc-dac
 LIBS:memory
 LIBS:xilinx
-LIBS:special
 LIBS:microcontrollers
 LIBS:dsp
 LIBS:microchip
@@ -39,7 +39,7 @@ LIBS:lm2574n-5
 LIBS:sn65hvd233-ht
 LIBS:adafruit_powerboost_500
 LIBS:ESP32ControlStand-cache
-EELAYER 27 0
+EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
@@ -66,7 +66,7 @@ F 4 "926-LM2574N-5.0/NOPB" H 5200 2800 60  0001 C CNN "Mouser Part Number"
 	1    0    0    -1  
 $EndComp
 $Comp
-L CP1 C502
+L CP1-RESCUE-ESP32ControlStand C502
 U 1 1 5D94AA5A
 P 5950 2900
 F 0 "C502" H 6000 3000 50  0000 L CNN
@@ -78,7 +78,7 @@ F 4 "140-REA220M2ABK0811P" H 5950 2900 60  0001 C CNN "Mouser Part Number"
 	1    0    0    -1  
 $EndComp
 $Comp
-L CP1 C501
+L CP1-RESCUE-ESP32ControlStand C501
 U 1 1 5D94AA5B
 P 3700 2800
 F 0 "C501" H 3750 2900 50  0000 L CNN
@@ -137,7 +137,7 @@ Wire Wire Line
 	3700 3300 3700 3000
 Connection ~ 4850 3300
 $Comp
-L GND #PWR053
+L GND-RESCUE-ESP32ControlStand #PWR053
 U 1 1 5D94AA5E
 P 4850 3400
 F 0 "#PWR053" H 4850 3400 30  0001 C CNN

@@ -1,4 +1,5 @@
 EESchema Schematic File Version 2
+LIBS:ESP32ControlStand-rescue
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -10,7 +11,6 @@ LIBS:cmos4000
 LIBS:adc-dac
 LIBS:memory
 LIBS:xilinx
-LIBS:special
 LIBS:microcontrollers
 LIBS:dsp
 LIBS:microchip
@@ -39,7 +39,7 @@ LIBS:lm2574n-5
 LIBS:sn65hvd233-ht
 LIBS:adafruit_powerboost_500
 LIBS:ESP32ControlStand-cache
-EELAYER 27 0
+EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
@@ -78,7 +78,7 @@ F 4 "595-TCAN332DR" H 4100 3400 60  0001 C CNN "Mouser Part Number"
 	1    0    0    -1  
 $EndComp
 $Comp
-L +3.3V #PWR046
+L +3.3V-RESCUE-ESP32ControlStand #PWR046
 U 1 1 5D94A57B
 P 4100 2900
 F 0 "#PWR046" H 4100 3000 40  0001 C CNN
@@ -89,7 +89,7 @@ F 3 "" H 4100 2900 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L +3.3V #PWR047
+L +3.3V-RESCUE-ESP32ControlStand #PWR047
 U 1 1 5D94A57C
 P 4100 4050
 F 0 "#PWR047" H 4100 4150 40  0001 C CNN
@@ -100,7 +100,7 @@ F 3 "" H 4100 4050 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR048
+L GND-RESCUE-ESP32ControlStand #PWR048
 U 1 1 5D94A57D
 P 4100 3800
 F 0 "#PWR048" H 4100 3800 30  0001 C CNN
@@ -111,7 +111,7 @@ F 3 "" H 4100 3800 60  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR049
+L GND-RESCUE-ESP32ControlStand #PWR049
 U 1 1 5D94A57E
 P 4100 4950
 F 0 "#PWR049" H 4100 4950 30  0001 C CNN
@@ -154,7 +154,7 @@ Wire Wire Line
 	3750 3300 3750 4400
 Connection ~ 3750 4400
 $Comp
-L C C401
+L C-RESCUE-ESP32ControlStand C401
 U 1 1 5D94A57F
 P 4650 3800
 F 0 "C401" H 4650 3900 40  0000 L CNN
@@ -166,7 +166,7 @@ F 4 "21RZ310-RC" H 4650 3800 60  0001 C CNN "Mouser Part Number"
 	1    0    0    -1  
 $EndComp
 $Comp
-L CP1 C402
+L CP1-RESCUE-ESP32ControlStand C402
 U 1 1 5D94A580
 P 5000 3800
 F 0 "C402" H 5050 3900 50  0000 L CNN
@@ -209,7 +209,7 @@ CANH
 Text Label 5400 3250 0    25   ~ 0
 CANL
 $Comp
-L R R401
+L R-RESCUE-ESP32ControlStand R401
 U 1 1 5D94A581
 P 5850 3650
 F 0 "R401" V 5930 3650 40  0000 C CNN
@@ -221,7 +221,7 @@ F 4 "71-RN60C60R0B/R" H 5850 3650 60  0001 C CNN "Mouser Part Number"
 	1    0    0    -1  
 $EndComp
 $Comp
-L R R402
+L R-RESCUE-ESP32ControlStand R402
 U 1 1 5D94A582
 P 6550 3650
 F 0 "R402" V 6630 3650 40  0000 C CNN
@@ -262,7 +262,7 @@ Wire Wire Line
 Wire Wire Line
 	6700 4150 6600 4150
 $Comp
-L C C403
+L C-RESCUE-ESP32ControlStand C403
 U 1 1 5D94A584
 P 6200 4750
 F 0 "C403" H 6200 4850 40  0000 L CNN
@@ -274,7 +274,7 @@ F 4 "75-1C10Z5U473M050B" H 6200 4750 60  0001 C CNN "Mouser Part Number"
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR050
+L GND-RESCUE-ESP32ControlStand #PWR050
 U 1 1 5D94A585
 P 6200 5100
 F 0 "#PWR050" H 6200 5100 30  0001 C CNN
@@ -417,7 +417,7 @@ Wire Wire Line
 Wire Wire Line
 	7450 3000 7450 5050
 $Comp
-L GND #PWR051
+L GND-RESCUE-ESP32ControlStand #PWR051
 U 1 1 5D94A58A
 P 6750 2650
 F 0 "#PWR051" H 6750 2650 30  0001 C CNN
