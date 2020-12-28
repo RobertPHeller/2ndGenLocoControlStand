@@ -9,7 +9,7 @@
 #  Author        : $Author$
 #  Created By    : Robert Heller
 #  Created       : Sat Dec 19 08:19:18 2020
-#  Last Modified : <201225.1420>
+#  Last Modified : <201228.0941>
 #
 #  Description	
 #
@@ -129,6 +129,15 @@ class SecondGenLocoControlStandLid(RL6685Lid):
                                     bracketthick=3.0)
         self._throttleReverserBrakeBracket.cut(self._throttleEncoder._bushing)
         self._throttleReverserBrakeBracket.cut(self._throttleEncoder._noturn)
+        self._throttleLever = StraightControlLever(name+"_throttleLever",\
+                                    Base.Vector(tX,\
+                                                Y+(self.OutsideLength/2.0)+20,\
+                                                (tZ-33.5)),\
+                                    shaftlength=30,\
+                                    handlecolor=tuple([0.0,0.0,1.0]),\
+                                    dholediameter=6.35,\
+                                    dholeflatsize=5.56,\
+                                    direction='DZ')
         rX = reverserSlotOrigin.x
         rY = reverserSlotOrigin.y
         rZ = reverserSlotOrigin.z
@@ -139,6 +148,16 @@ class SecondGenLocoControlStandLid(RL6685Lid):
                                        bracketthick=3.0)
         self._throttleReverserBrakeBracket.cut(self._reverserEncoder._bushing)
         self._throttleReverserBrakeBracket.cut(self._reverserEncoder.NoTurnHole())
+        self._reverserLever = StraightControlLever(name+"_reverserLever",\
+                                    Base.Vector(rX,\
+                                                Y+(self.OutsideLength/2.0)-7.5,\
+                                                (rZ-22)),\
+                                    shaftlength=20,\
+                                    handlecolor=tuple([0.0,0.0,0.0]),\
+                                    dholediameter=6,\
+                                    dholeflatsize=4.5,\
+                                    direction='DZ')
+                                                   
         bX = brakeSlotOrigin.x
         bY = brakeSlotOrigin.y
         bZ = brakeSlotOrigin.z
@@ -150,6 +169,14 @@ class SecondGenLocoControlStandLid(RL6685Lid):
         self._throttleReverserBrakeBracket.cut(self._brakePotentiometer._bushing)
         self._throttleReverserBrakeBracket.cut(self._brakePotentiometer._tab1)
         self._throttleReverserBrakeBracket.cut(self._brakePotentiometer._tab2)
+        self._brakeLever = StraightControlLever(name+"_brakeLever",\
+                                                Base.Vector(bX,\
+                                                            Y+(self.OutsideLength/2.0)-10,\
+                                                            (rZ-23.5)),\
+                                                shaftlength=20,\
+                                                handlecolor=tuple([1.0,0.0,0.0]),\
+                                                dholediameter=6.35,dholeflatsize=3.96,\
+                                                direction='DZ')
         buttonDisplayBoard_X = X + (self.OutsideWidth/2.0) - \
                                     (ButtonDisplayBoard.Width()/2.0)
         buttonDisplayBoard_Y = Y + self.InsideBoxLength - \
@@ -212,6 +239,12 @@ class SecondGenLocoControlStandLid(RL6685Lid):
         self._hornBracket.cut(self._hornPotentiometer._bushing)
         self._hornBracket.cut(self._hornPotentiometer._tab1)
         self._hornBracket.cut(self._hornPotentiometer._tab2)
+        self._hornHandle = BentControlLeverYZX(name+"_hornHandle",\
+                                  Base.Vector(hX,hY,hZ-24.5),\
+                                  shaftlength1=20,shaftlength2=30,\
+                                  handlecolor=tuple([50.0/255.0,50.0/255.0,\
+                                                     50.0/255.0]),\
+                                  dholediameter=6.35,dholeflatsize=3.96)
         buttonLEDBoardX = X + (self.OutsideWidth/2.0) - (ButtonLEDBoard.Width()/2.0)
         buttonLEDBoardY = Y + (self.OutsideLength - self.InsideBoxLength)
         self._buttonLEDBoard = \
@@ -252,8 +285,11 @@ class SecondGenLocoControlStandLid(RL6685Lid):
         RL6685Lid.show(self)
         self._throttleReverserBrakeBracket.show()
         self._throttleEncoder.show()
+        self._throttleLever.show()
         self._reverserEncoder.show()
+        self._reverserLever.show()
         self._brakePotentiometer.show()
+        self._brakeLever.show()
         self._buttonDisplayBoard.show()
         doc = App.activeDocument()
         for i in range(1,5):
@@ -263,6 +299,7 @@ class SecondGenLocoControlStandLid(RL6685Lid):
             obj.ViewObject.ShapeColor=tuple([1.0,1.0,1.0])
         self._hornBracket.show()
         self._hornPotentiometer.show()
+        self._hornHandle.show()
         self._buttonLEDBoard.show()
         for i in range(1,5):
             obj = doc.addObject("Part::Feature",self.name+"_buttonLEDBoardStandoff"+IntToString(i))
@@ -284,32 +321,6 @@ if __name__ == '__main__':
     controlstandlid = SecondGenLocoControlStandLid("ControlStandLid",\
                                                    Base.Vector(0,0,0))
     controlstandlid.show()
-    throttleHandle = StraightControlLever("ThrottleHandle",\
-                                          Base.Vector(200,0,0),\
-                                          shaftlength=30,\
-                                          handlecolor=tuple([0.0,0.0,1.0]),\
-                                          dholediameter=6.35,\
-                                          dholeflatsize=5.56)
-    throttleHandle.show()
-    reverserHandle = StraightControlLever("ReverserHandle",\
-                                          Base.Vector(200,50,0),\
-                                          shaftlength=20,\
-                                          handlecolor=tuple([0.0,0.0,0.0]),\
-                                          dholediameter=6,\
-                                          dholeflatsize=4.5)
-    reverserHandle.show()
-    brakeHandle = StraightControlLever("BrakeHandle",\
-                                       Base.Vector(200,100,0),\
-                                       shaftlength=20,\
-                                       handlecolor=tuple([1.0,0.0,0.0]),\
-                                       dholediameter=6.35,dholeflatsize=3.96)
-    brakeHandle.show()
-    hornHandle = BentControlLever("HornHandle",Base.Vector(200,150,0),\
-                                  shaftlength1=20,shaftlength2=30,\
-                                  handlecolor=tuple([50.0/255.0,50.0/255.0,\
-                                                     50.0/255.0]),\
-                                  dholediameter=6.35,dholeflatsize=3.96)
-    hornHandle.show()
     Gui.SendMsgToActiveView("ViewFit")
-    Gui.activeDocument().activeView().viewIsometric()
-    doc.saveAs("2ndGenLocoControlStand.fcstd")
+    #Gui.activeDocument().activeView().viewTopView()
+    #doc.saveAs("2ndGenLocoControlStand.fcstd")
