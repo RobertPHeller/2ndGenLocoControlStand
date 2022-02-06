@@ -1,5 +1,4 @@
 EESchema Schematic File Version 2
-LIBS:ESP32ControlStand-rescue
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -1113,4 +1112,44 @@ Wire Wire Line
 	5400 2100 5400 1800
 Connection ~ 5400 1800
 NoConn ~ 4900 4200
+$Comp
+L R R1
+U 1 1 62002E5D
+P 6200 3600
+F 0 "R1" V 6280 3600 50  0000 C CNN
+F 1 "2.4K Ohms" V 6200 3600 50  0000 C CNN
+F 2 "Resistors_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical" V 6130 3600 50  0001 C CNN
+F 3 "" H 6200 3600 50  0001 C CNN
+	1    6200 3600
+	0    1    1    0   
+$EndComp
+$Comp
+L R R2
+U 1 1 62002FC0
+P 6200 3750
+F 0 "R2" V 6280 3750 50  0000 C CNN
+F 1 "2.4K Ohms" V 6200 3750 50  0000 C CNN
+F 2 "Resistors_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical" V 6130 3750 50  0001 C CNN
+F 3 "" H 6200 3750 50  0001 C CNN
+	1    6200 3750
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	6050 3600 5800 3600
+Wire Wire Line
+	6050 3750 5800 3750
+Wire Wire Line
+	6350 3500 6350 3750
+$Comp
+L +3.3V-RESCUE-ESP32ControlStand #PWR024
+U 1 1 62003529
+P 6350 3500
+F 0 "#PWR024" H 6350 3460 30  0001 C CNN
+F 1 "+3.3V" H 6350 3610 30  0000 C CNN
+F 2 "" H 6350 3500 60  0000 C CNN
+F 3 "" H 6350 3500 60  0000 C CNN
+	1    6350 3500
+	1    0    0    -1  
+$EndComp
+Connection ~ 6350 3600
 $EndSCHEMATC
