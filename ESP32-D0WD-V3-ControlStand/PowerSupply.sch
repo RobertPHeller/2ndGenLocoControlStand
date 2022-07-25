@@ -1,0 +1,173 @@
+EESchema Schematic File Version 2
+LIBS:power
+LIBS:device
+LIBS:switches
+LIBS:relays
+LIBS:motors
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+LIBS:ESP32-D0WD-V3
+LIBS:W25Q32JVSSIQ
+LIBS:ESP32-D0WD-V3-ControlStand-cache
+EELAYER 25 0
+EELAYER END
+$Descr E 44000 34000
+encoding utf-8
+Sheet 5 6
+Title "ESP32-D0WD-V3-ControlStand"
+Date "2022-07-25"
+Rev "1.0"
+Comp "Deepwoods Software"
+Comment1 "Power Supply"
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L LM2574N-5.0 U?
+U 1 1 62DF1552
+P 5200 2800
+F 0 "U?" H 5200 2850 60  0000 C CNN
+F 1 "LM2574N-5.0" H 5200 2950 21  0000 C CNN
+F 2 "~" H 5200 2800 60  0000 C CNN
+F 3 "~" H 5200 2800 60  0000 C CNN
+F 4 "926-LM2574N-5.0/NOPB" H 5200 2800 60  0001 C CNN "Mouser Part Number"
+	1    5200 2800
+	1    0    0    -1  
+$EndComp
+$Comp
+L CP1-RESCUE-ESP32ControlStand C?
+U 1 1 62DF1553
+P 5950 2900
+F 0 "C?" H 6000 3000 50  0000 L CNN
+F 1 "22 uf 100V" H 6000 2800 50  0000 L CNN
+F 2 "~" H 5950 2900 60  0000 C CNN
+F 3 "~" H 5950 2900 60  0000 C CNN
+F 4 "140-REA220M2ABK0811P" H 5950 2900 60  0001 C CNN "Mouser Part Number"
+	1    5950 2900
+	1    0    0    -1  
+$EndComp
+$Comp
+L CP1-RESCUE-ESP32ControlStand C?
+U 1 1 62DF1554
+P 3700 2800
+F 0 "C?" H 3750 2900 50  0000 L CNN
+F 1 "220 uf 25V" H 3750 2700 50  0000 L CNN
+F 2 "~" H 3700 2800 60  0000 C CNN
+F 3 "~" H 3700 2800 60  0000 C CNN
+F 4 "140-REA221M1EBK0811P" H 3700 2800 60  0001 C CNN "Mouser Part Number"
+	1    3700 2800
+	1    0    0    -1  
+$EndComp
+$Comp
+L INDUCTOR_SMALL L?
+U 1 1 62DF1555
+P 4550 2900
+F 0 "L?" H 4550 3000 50  0000 C CNN
+F 1 "330 uh" H 4550 2850 50  0000 C CNN
+F 2 "~" H 4550 2900 60  0000 C CNN
+F 3 "~" H 4550 2900 60  0000 C CNN
+F 4 "PE-52627NL" H 4550 2900 60  0001 C CNN "Mouser Part Number"
+	1    4550 2900
+	1    0    0    -1  
+$EndComp
+$Comp
+L DIODESCH D?
+U 1 1 62DF1556
+P 4850 3100
+F 0 "D?" H 4850 3200 40  0000 C CNN
+F 1 "SB160-E3/54" H 4850 3000 40  0000 C CNN
+F 2 "~" H 4850 3100 60  0000 C CNN
+F 3 "~" H 4850 3100 60  0000 C CNN
+F 4 "625-SB160-E3" H 4850 3100 60  0001 C CNN "Mouser Part Number"
+	1    4850 3100
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	5950 2700 5500 2700
+Wire Wire Line
+	4900 2600 3700 2600
+Wire Wire Line
+	4300 2900 4300 2600
+Connection ~ 4300 2600
+Wire Wire Line
+	4800 2900 4900 2900
+Connection ~ 4850 2900
+Wire Wire Line
+	5950 3150 5950 3100
+Wire Wire Line
+	5150 3150 5950 3150
+Connection ~ 5350 3150
+Connection ~ 5250 3150
+Wire Wire Line
+	5150 3300 5150 3150
+Wire Wire Line
+	3700 3300 5150 3300
+Wire Wire Line
+	3700 3300 3700 3000
+Connection ~ 4850 3300
+$Comp
+L GND-RESCUE-ESP32ControlStand #PWR?
+U 1 1 62DF1557
+P 4850 3400
+F 0 "#PWR?" H 4850 3400 30  0001 C CNN
+F 1 "GND" H 4850 3330 30  0001 C CNN
+F 2 "" H 4850 3400 60  0000 C CNN
+F 3 "" H 4850 3400 60  0000 C CNN
+	1    4850 3400
+	1    0    0    -1  
+$EndComp
+$Comp
+L +12V #PWR?
+U 1 1 62DF1558
+P 5950 2550
+F 0 "#PWR?" H 5950 2500 20  0001 C CNN
+F 1 "+12V" H 5950 2650 30  0000 C CNN
+F 2 "" H 5950 2550 60  0000 C CNN
+F 3 "" H 5950 2550 60  0000 C CNN
+	1    5950 2550
+	1    0    0    -1  
+$EndComp
+$Comp
+L +5V #PWR?
+U 1 1 62DF1559
+P 3700 2450
+F 0 "#PWR?" H 3700 2540 20  0001 C CNN
+F 1 "+5V" H 3700 2540 30  0000 C CNN
+F 2 "" H 3700 2450 60  0000 C CNN
+F 3 "" H 3700 2450 60  0000 C CNN
+	1    3700 2450
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5950 2550 5950 2700
+Wire Wire Line
+	3700 2600 3700 2450
+Wire Wire Line
+	4850 3300 4850 3400
+$EndSCHEMATC
