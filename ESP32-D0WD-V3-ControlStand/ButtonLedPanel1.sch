@@ -38,7 +38,7 @@ EELAYER 25 0
 EELAYER END
 $Descr USLetter 11000 8500
 encoding utf-8
-Sheet 2 6
+Sheet 2 7
 Title "ESP32-D0WD-V3-ControlStand"
 Date "2022-07-25"
 Rev "1.0"

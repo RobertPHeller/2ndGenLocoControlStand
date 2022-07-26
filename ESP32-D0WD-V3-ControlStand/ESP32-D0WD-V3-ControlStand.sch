@@ -38,7 +38,7 @@ EELAYER 25 0
 EELAYER END
 $Descr USLetter 11000 8500
 encoding utf-8
-Sheet 1 6
+Sheet 1 7
 Title "ESP32-D0WD-V3-ControlStand"
 Date "2022-07-25"
 Rev "1.0"
@@ -813,104 +813,35 @@ Connection ~ 5050 1800
 Wire Wire Line
 	5550 1800 5550 1750
 Connection ~ 5250 1800
-$Comp
-L TTGO-T1 U?
-U 1 1 62DF044B
-P 5350 3950
-F 0 "U?" H 5350 3950 60  0000 C CNN
-F 1 "TTGO-T1" H 5350 4500 60  0000 C CNN
-F 2 "~" H 5350 3950 60  0000 C CNN
-F 3 "~" H 5350 3950 60  0000 C CNN
-	1    5350 3950
-	1    0    0    -1  
-$EndComp
-$Comp
-L +3.3V-RESCUE-ESP32ControlStand #PWR?
-U 1 1 62DF044C
-P 4900 3400
-F 0 "#PWR?" H 4900 3360 30  0001 C CNN
-F 1 "+3.3V" H 4900 3510 30  0000 C CNN
-F 2 "" H 4900 3400 60  0000 C CNN
-F 3 "" H 4900 3400 60  0000 C CNN
-	1    4900 3400
-	1    0    0    -1  
-$EndComp
-$Comp
-L +5V #PWR?
-U 1 1 62DF044D
-P 5900 3800
-F 0 "#PWR?" H 5900 3890 20  0001 C CNN
-F 1 "+5V" H 5900 3890 30  0000 C CNN
-F 2 "" H 5900 3800 60  0000 C CNN
-F 3 "" H 5900 3800 60  0000 C CNN
-	1    5900 3800
-	0    1    1    0   
-$EndComp
-$Comp
-L GND-RESCUE-ESP32ControlStand #PWR?
-U 1 1 62DF044E
-P 5900 3500
-F 0 "#PWR?" H 5900 3500 30  0001 C CNN
-F 1 "GND" H 5900 3430 30  0001 C CNN
-F 2 "" H 5900 3500 60  0000 C CNN
-F 3 "" H 5900 3500 60  0000 C CNN
-	1    5900 3500
-	0    -1   -1   0   
-$EndComp
-$Comp
-L GND-RESCUE-ESP32ControlStand #PWR?
-U 1 1 62DF044F
-P 4750 4150
-F 0 "#PWR?" H 4750 4150 30  0001 C CNN
-F 1 "GND" H 4750 4080 30  0001 C CNN
-F 2 "" H 4750 4150 60  0000 C CNN
-F 3 "" H 4750 4150 60  0000 C CNN
-	1    4750 4150
-	0    1    1    0   
-$EndComp
-Wire Wire Line
-	4900 3500 4900 3400
-Wire Wire Line
-	5900 3500 5800 3500
-Wire Wire Line
-	5900 3800 5800 3800
-Wire Wire Line
-	4750 4150 4900 4150
-Text Label 5800 3950 0    25   ~ 0
+Text Label 4100 3400 2    61   ~ 0
 CAN_TX
-Text Label 5800 4100 0    25   ~ 0
+Text Label 4100 3250 2    61   ~ 0
 CAN_RX
-Text Label 5800 3750 0    25   ~ 0
+Text Label 4100 3650 2    61   ~ 0
 SDA
-Text Label 5800 3600 0    25   ~ 0
+Text Label 4100 3550 2    61   ~ 0
 SCL
-Text Label 5800 4200 0    25   ~ 0
-MISO
-Text Label 5800 4250 0    25   ~ 0
-MOSI
-Text Label 4900 4050 2    25   ~ 0
-SCLK
 Text Label 2600 3700 0    60   ~ 0
 CAN_TX
 Text Label 2600 4000 0    60   ~ 0
 CAN_RX
-Text Label 4900 3550 2    25   ~ 0
+Text Label 4100 4050 2    61   ~ 0
 RST
 Text Label 8000 2250 2    60   ~ 0
 Horn
 Text Label 8000 3050 2    60   ~ 0
 Brake
-Text Label 4900 3600 2    25   ~ 0
+Text Label 4100 3800 2    61   ~ 0
 Horn
-Text Label 4900 3650 2    25   ~ 0
+Text Label 4100 3900 2    61   ~ 0
 Brake
 Text Label 8100 3850 2    60   ~ 0
 ThrottleA
 Text Label 8100 4050 2    60   ~ 0
 ThrottleB
-Text Label 5800 3550 0    25   ~ 0
+Text Label 5950 3400 0    61   ~ 0
 ThrottleA
-Text Label 5800 3850 0    25   ~ 0
+Text Label 5950 3500 0    61   ~ 0
 ThrottleB
 $Comp
 L R-RESCUE-ESP32ControlStand R?
@@ -996,7 +927,7 @@ Wire Wire Line
 	6750 5200 6750 5300
 Text Label 6750 4700 2    60   ~ 0
 Reverser
-Text Label 4900 4000 2    25   ~ 0
+Text Label 5950 3300 0    61   ~ 0
 Reverser
 Text Label 8000 1100 2    60   ~ 0
 L_Off
@@ -1020,41 +951,31 @@ Text Label 3450 1850 0    60   ~ 0
 Status_G
 Text Label 3450 1950 0    60   ~ 0
 Status_R
-Text Label 4900 3700 2    25   ~ 0
+Text Label 4100 4400 2    61   ~ 0
 Button_A
-Text Label 4900 3750 2    25   ~ 0
+Text Label 4100 4500 2    61   ~ 0
 Button_B
-Text Label 4900 3850 2    25   ~ 0
+Text Label 4100 4600 2    61   ~ 0
 Button_C
-Text Label 4900 3900 2    25   ~ 0
+Text Label 4100 4700 2    61   ~ 0
 Button_D
-Text Label 4900 3950 2    25   ~ 0
+Text Label 5950 3200 0    61   ~ 0
 Bell
-Text Label 5800 3900 0    25   ~ 0
+Text Label 5950 3650 0    61   ~ 0
 L_Off
-Text Label 5800 4000 0    25   ~ 0
+Text Label 5950 3750 0    61   ~ 0
 L_Dim
-Text Label 5800 4050 0    25   ~ 0
+Text Label 5950 3850 0    61   ~ 0
 L_Bright
-Text Label 5800 4150 0    25   ~ 0
+Text Label 5950 3950 0    61   ~ 0
 L_Ditch
-Text Label 4900 4100 2    25   ~ 0
+Text Label 4100 4300 2    61   ~ 0
 Status_R
-Text Label 4900 3800 2    25   ~ 0
+Text Label 4100 4200 2    61   ~ 0
 Status_G
 NoConn ~ 5650 1750
 NoConn ~ 5450 1750
 NoConn ~ 5150 1750
-NoConn ~ 4900 4250
-NoConn ~ 4900 4300
-NoConn ~ 4900 4350
-NoConn ~ 5800 4350
-NoConn ~ 5800 4300
-NoConn ~ 5800 3650
-NoConn ~ 4900 4050
-NoConn ~ 5800 4200
-NoConn ~ 5800 4250
-NoConn ~ 5800 3700
 $Comp
 L BARREL_JACK CON?
 U 1 1 62DF0456
@@ -1107,51 +1028,31 @@ Wire Wire Line
 Wire Wire Line
 	5400 2100 5400 1800
 Connection ~ 5400 1800
-NoConn ~ 4900 4200
-$Comp
-L R R?
-U 1 1 62DF0459
-P 6200 3600
-F 0 "R?" V 6280 3600 50  0000 C CNN
-F 1 "2.4K Ohms" V 6200 3600 50  0000 C CNN
-F 2 "Resistors_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical" V 6130 3600 50  0001 C CNN
-F 3 "" H 6200 3600 50  0001 C CNN
-	1    6200 3600
-	0    1    1    0   
-$EndComp
-$Comp
-L R R?
-U 1 1 62DF045A
-P 6200 3750
-F 0 "R?" V 6280 3750 50  0000 C CNN
-F 1 "2.4K Ohms" V 6200 3750 50  0000 C CNN
-F 2 "Resistors_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical" V 6130 3750 50  0001 C CNN
-F 3 "" H 6200 3750 50  0001 C CNN
-	1    6200 3750
-	0    1    1    0   
-$EndComp
-Wire Wire Line
-	6050 3600 5800 3600
-Wire Wire Line
-	6050 3750 5800 3750
-Wire Wire Line
-	6350 3500 6350 3750
-$Comp
-L +3.3V-RESCUE-ESP32ControlStand #PWR?
-U 1 1 62DF045B
-P 6350 3500
-F 0 "#PWR?" H 6350 3460 30  0001 C CNN
-F 1 "+3.3V" H 6350 3610 30  0000 C CNN
-F 2 "" H 6350 3500 60  0000 C CNN
-F 3 "" H 6350 3500 60  0000 C CNN
-	1    6350 3500
-	1    0    0    -1  
-$EndComp
-Connection ~ 6350 3600
 $Sheet
 S 4100 3100 1850 1800
 U 62DF1EBA
 F0 "Processor Section" 60
 F1 "ProcessorSection.sch" 60
+F2 "CAN_RX" I L 4100 3250 60 
+F3 "SCL" I L 4100 3550 60 
+F4 "SDA" B L 4100 3650 60 
+F5 "CAN_TX" O L 4100 3400 60 
+F6 "VP" I L 4100 3800 60 
+F7 "VN" I L 4100 3900 60 
+F8 "Reset" B L 4100 4050 60 
+F9 "32" O L 4100 4200 60 
+F10 "12" O L 4100 4300 60 
+F11 "33" I L 4100 4600 60 
+F12 "34" I L 4100 4400 60 
+F13 "35" I L 4100 4500 60 
+F14 "25" I L 4100 4700 60 
+F15 "26" I R 5950 3200 60 
+F16 "27" I R 5950 3300 60 
+F17 "23" I R 5950 3400 60 
+F18 "19" I R 5950 3500 60 
+F19 "18" I R 5950 3650 60 
+F20 "17" I R 5950 3750 60 
+F21 "16" I R 5950 3850 60 
+F22 "0" I R 5950 3950 60 
 $EndSheet
 $EndSCHEMATC

@@ -38,7 +38,7 @@ EELAYER 25 0
 EELAYER END
 $Descr USLetter 11000 8500
 encoding utf-8
-Sheet 6 6
+Sheet 6 7
 Title "ESP32-D0WD-V3-ControlStand"
 Date "2022-07-25"
 Rev "1.0"
@@ -48,22 +48,6 @@ Comment2 ""
 Comment3 ""
 Comment4 ""
 $EndDescr
-$Comp
-L ESP32-D0WD-V3 U?
-U 1 1 62DF2385
-P 4850 3200
-F 0 "U?" H 5600 2950 50  0000 L CNN
-F 1 "ESP32-D0WD-V3" H 5400 3300 50  0000 L CNN
-F 2 "ESP32-D0WD-V3:QFN35P500X500X90-49N-D" H 6500 3700 50  0001 L CNN
-F 3 "https://www.espressif.com/sites/default/files/documentation/esp32_datasheet_en.pdf" H 6500 3600 50  0001 L CNN
-F 4 "WiFi Development Tools (802.11) SMD IC WiFi Dual Core BT Combo" H 6500 3500 50  0001 L CNN "Description"
-F 5 "0.9" H 6500 3400 50  0001 L CNN "Height"
-F 6 "Espressif Systems" H 6500 3100 50  0001 L CNN "Manufacturer_Name"
-F 7 "ESP32-D0WD-V3" H 6500 3000 50  0001 L CNN "Manufacturer_Part_Number"
-F 8 "356-ESP32-D0WD-V3 " H 4850 3200 60  0001 C CNN "Mouser Part Number"
-	1    4850 3200
-	1    0    0    -1  
-$EndComp
 $Comp
 L W25Q32JVSSIQ U?
 U 1 1 62DF2386
@@ -103,48 +87,8 @@ F 3 "" H 7000 4400 50  0001 C CNN
 	1    7000 4400
 	1    0    0    -1  
 $EndComp
-$Comp
-L Conn_02x03_Odd_Even J?
-U 1 1 62DF2389
-P 7350 2700
-F 0 "J?" H 7400 2900 50  0000 C CNN
-F 1 "Programming Header" H 7400 2500 50  0000 C CNN
-F 2 "Pin_Headers:Pin_Header_Straight_2x03_Pitch2.54mm" H 7350 2700 50  0001 C CNN
-F 3 "" H 7350 2700 50  0001 C CNN
-F 4 "523-G800LQ593032HR " H 7350 2700 60  0001 C CNN "Mouser Part Number"
-	1    7350 2700
-	1    0    0    -1  
-$EndComp
-$Comp
-L +3.3V #PWR?
-U 1 1 62DF238A
-P 7150 2500
-F 0 "#PWR?" H 7150 2350 50  0001 C CNN
-F 1 "+3.3V" H 7150 2640 50  0000 C CNN
-F 2 "" H 7150 2500 50  0001 C CNN
-F 3 "" H 7150 2500 50  0001 C CNN
-	1    7150 2500
-	1    0    0    -1  
-$EndComp
-$Comp
-L GND #PWR?
-U 1 1 62DF238B
-P 7650 3000
-F 0 "#PWR?" H 7650 2750 50  0001 C CNN
-F 1 "GND" H 7650 2850 50  0000 C CNN
-F 2 "" H 7650 3000 50  0001 C CNN
-F 3 "" H 7650 3000 50  0001 C CNN
-	1    7650 3000
-	1    0    0    -1  
-$EndComp
-Text Label 7650 2600 0    60   ~ 0
+Text Label 7950 2350 2    60   ~ 0
 BOOTMODE
-Text Label 7650 2700 0    60   ~ 0
-RESET
-Text Label 7150 2700 2    60   ~ 0
-TX
-Text Label 7150 2800 2    60   ~ 0
-RX
 Text Label 6050 5500 3    60   ~ 0
 BOOTMODE
 Text Label 4700 4000 2    60   ~ 0
@@ -406,10 +350,6 @@ Wire Wire Line
 	8900 4400 8900 3900
 Wire Wire Line
 	8900 3900 8600 3900
-Wire Wire Line
-	7650 2800 7650 3000
-Wire Wire Line
-	7150 2600 7150 2500
 Wire Wire Line
 	6050 5500 6050 5400
 Wire Wire Line
@@ -779,54 +719,12 @@ Text Notes 3600 2250 0    60   ~ 0
 Pin 19
 Text Notes 4000 2250 0    60   ~ 0
 Pin 37
-Text HLabel 6650 3600 2    60   Output ~ 0
-CAN_TX
 Text HLabel 6150 5400 3    60   Input ~ 0
 CAN_RX
 Text HLabel 6250 2500 1    60   Input ~ 0
 SCL
 Text HLabel 5950 2500 1    60   BiDi ~ 0
 SDA
-Text HLabel 6650 3200 2    60   Output ~ 0
-GPIO19(LEDS3)
-Text HLabel 6650 3400 2    60   Output ~ 0
-GPIO23(LEDS4)
-Text HLabel 6650 3500 2    60   Output ~ 0
-GPIO18(LEDS2)
-Text HLabel 6650 4300 2    60   Output ~ 0
-GPIO17(LEDS1)
-Text HLabel 6650 4500 2    60   Input ~ 0
-GPIO16(Buttons4)
-Text HLabel 6050 5400 3    60   Input ~ 0
-GPIO0(Buttons1)
-Text HLabel 4850 3800 0    60   Input ~ 0
-GPIO38(Buttons2)
-Text HLabel 5350 5400 3    60   Input ~ 0
-GPIO27(Points4)
-Text HLabel 5250 5400 3    60   Output ~ 0
-GPIO26(Motor2)
-Text HLabel 4850 4500 0    60   Output ~ 0
-GPIO25(Motor1)
-Text HLabel 4850 4100 0    60   Input ~ 0
-GPIO34(OD1)
-Text HLabel 4850 4200 0    60   Input ~ 0
-GPIO35(OD2)
-Text HLabel 4850 3600 0    60   Input ~ 0
-GPIO36(OD3)
-Text HLabel 4850 3900 0    60   Input ~ 0
-GPIO39(OD4)
-Text HLabel 4850 4300 0    60   Output ~ 0
-GPIO32(Motor3)
-Text HLabel 4850 4400 0    60   Output ~ 0
-GPIO33(Motor4)
-Text HLabel 5550 5400 3    60   Input ~ 0
-GPIO12(Points1)
-Text HLabel 5750 5400 3    60   Input ~ 0
-GPIO13(Points2)
-Text HLabel 5450 5400 3    60   Input ~ 0
-GPIO14(Points3)
-Text HLabel 4850 3700 0    60   Input ~ 0
-GPIO37(Buttons3)
 Wire Wire Line
 	3650 4350 3150 4350
 $Comp
@@ -872,7 +770,6 @@ F 3 "" H 6250 1600 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	6250 1750 6250 1600
-NoConn ~ 4850 3300
 Text Label 3850 3150 0    60   ~ 0
 GPIO15(Act1)
 Text Label 3450 3150 2    60   ~ 0
@@ -949,4 +846,474 @@ Text Label 5950 5400 3    60   ~ 0
 GPIO2(Act2)
 Text Label 5850 5400 3    60   ~ 0
 GPIO15(Act1)
+$Comp
+L ESP32-D0WD-V3 U?
+U 1 1 62DF2385
+P 4850 3200
+F 0 "U?" H 5600 2950 50  0000 L CNN
+F 1 "ESP32-D0WD-V3" H 5400 3300 50  0000 L CNN
+F 2 "ESP32-D0WD-V3:QFN35P500X500X90-49N-D" H 6500 3700 50  0001 L CNN
+F 3 "https://www.espressif.com/sites/default/files/documentation/esp32_datasheet_en.pdf" H 6500 3600 50  0001 L CNN
+F 4 "WiFi Development Tools (802.11) SMD IC WiFi Dual Core BT Combo" H 6500 3500 50  0001 L CNN "Description"
+F 5 "0.9" H 6500 3400 50  0001 L CNN "Height"
+F 6 "Espressif Systems" H 6500 3100 50  0001 L CNN "Manufacturer_Name"
+F 7 "ESP32-D0WD-V3" H 6500 3000 50  0001 L CNN "Manufacturer_Part_Number"
+F 8 "356-ESP32-D0WD-V3 " H 4850 3200 60  0001 C CNN "Mouser Part Number"
+	1    4850 3200
+	1    0    0    -1  
+$EndComp
+Text HLabel 6650 3600 2    60   Output ~ 0
+CAN_TX
+$Comp
+L C_Small C?
+U 1 1 62E012C8
+P 4550 3700
+F 0 "C?" H 4560 3770 50  0000 L CNN
+F 1 "270pf" H 4560 3620 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0402" H 4550 3700 50  0001 C CNN
+F 3 "" H 4550 3700 50  0001 C CNN
+	1    4550 3700
+	0    1    1    0   
+$EndComp
+$Comp
+L C_Small C?
+U 1 1 62E0144E
+P 4250 3800
+F 0 "C?" H 4260 3870 50  0000 L CNN
+F 1 "270pf" H 4260 3720 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0402" H 4250 3800 50  0001 C CNN
+F 3 "" H 4250 3800 50  0001 C CNN
+	1    4250 3800
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	4850 3700 4650 3700
+Wire Wire Line
+	4450 3700 4450 3600
+Wire Wire Line
+	4450 3600 4850 3600
+Wire Wire Line
+	4850 3800 4350 3800
+Wire Wire Line
+	4150 3800 4150 3900
+Wire Wire Line
+	4150 3900 4850 3900
+Text HLabel 4450 3600 0    60   Input ~ 0
+VP
+Text HLabel 4150 3900 0    60   Input ~ 0
+VN
+Text HLabel 4850 4000 0    60   BiDi ~ 0
+Reset
+Text HLabel 4850 4300 0    60   Output ~ 0
+32
+Text HLabel 5550 5400 3    60   Output ~ 0
+12
+Text HLabel 4850 4400 0    60   Input ~ 0
+33
+Text HLabel 4850 4100 0    60   Input ~ 0
+34
+Text HLabel 4850 4200 0    60   Input ~ 0
+35
+Text HLabel 4850 4500 0    60   Input ~ 0
+25
+Text HLabel 5250 5400 3    60   Input ~ 0
+26
+Text HLabel 5350 5400 3    60   Input ~ 0
+27
+Text HLabel 6650 3400 2    60   Input ~ 0
+23
+Text HLabel 6650 3200 2    60   Input ~ 0
+19
+Text HLabel 6650 3500 2    60   Input ~ 0
+18
+Text HLabel 6650 4300 2    60   Input ~ 0
+17
+Text HLabel 6650 4500 2    60   Input ~ 0
+16
+Text HLabel 6050 5400 3    60   Input ~ 0
+0
+$Comp
+L USB_OTG J?
+U 1 1 62E118F7
+P 1050 6000
+F 0 "J?" H 850 6450 50  0000 L CNN
+F 1 "USB_OTG" H 850 6350 50  0000 L CNN
+F 2 "Connectors_USB:USB_Micro-B_Molex_47346-0001" H 1200 5950 50  0001 C CNN
+F 3 "" H 1200 5950 50  0001 C CNN
+F 4 "538-47346-0001" H 1050 6000 60  0001 C CNN "Mouser Part Number"
+	1    1050 6000
+	1    0    0    -1  
+$EndComp
+$Comp
+L FT231XS-R U?
+U 1 1 62E118F8
+P 3850 5200
+F 0 "U?" H 5000 5500 50  0000 L CNN
+F 1 "FT231XS-R" H 5000 5400 50  0000 L CNN
+F 2 "Housings_SSOP:SSOP-20_5.3x7.2mm_Pitch0.65mm" H 5000 5300 50  0001 L CNN
+F 3 "https://datasheet.lcsc.com/szlcsc/Future-Designs-FT231XS-R_C132160.pdf" H 5000 5200 50  0001 L CNN
+F 4 "USB SSOP-20 RoHS" H 5000 5100 50  0001 L CNN "Description"
+F 5 "1.753" H 5000 5000 50  0001 L CNN "Height"
+F 6 "Future Designs" H 5000 4700 50  0001 L CNN "Manufacturer_Name"
+F 7 "FT231XS-R" H 5000 4600 50  0001 L CNN "Manufacturer_Part_Number"
+	1    3850 5200
+	-1   0    0    -1  
+$EndComp
+$Comp
+L Ferrite_Bead_Small L?
+U 1 1 62E118FA
+P 2450 1850
+F 0 "L?" H 2525 1900 50  0000 L CNN
+F 1 "Ferrite Bead" H 2525 1800 50  0000 L CNN
+F 2 "Inductors_SMD:L_0402" V 2380 1850 50  0001 C CNN
+F 3 "" H 2450 1850 50  0001 C CNN
+F 4 "810-MMZ1005S800CTD25" H 2450 1850 60  0001 C CNN "Mouser Part Number"
+	1    2450 1850
+	0    1    1    0   
+$EndComp
+$Comp
+L UMH3N Q?
+U 1 1 62E11915
+P 8250 1750
+F 0 "Q?" H 8450 1800 50  0000 L CNN
+F 1 "UMH3N" H 8450 1700 50  0000 L CNN
+F 2 "TO_SOT_Packages_SMD:SOT-363_SC-70-6" H 8450 1850 50  0001 C CNN
+F 3 "" H 8250 1750 50  0001 C CNN
+F 4 "755-UMH3NFHATN " H 8250 1750 60  0001 C CNN "Mouser Part Number"
+	1    8250 1750
+	1    0    0    -1  
+$EndComp
+$Comp
+L UMH3N Q?
+U 2 1 62E14AAD
+P 8050 2150
+F 0 "Q?" H 8250 2200 50  0000 L CNN
+F 1 "UMH3N" H 8250 2100 50  0000 L CNN
+F 2 "TO_SOT_Packages_SMD:SOT-363_SC-70-6" H 8250 2250 50  0001 C CNN
+F 3 "" H 8050 2150 50  0001 C CNN
+F 4 "755-UMH3NFHATN " H 8050 2150 60  0001 C CNN "Mouser Part Number"
+	2    8050 2150
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	8350 1950 8350 2150
+Wire Wire Line
+	8350 2150 8250 2150
+Wire Wire Line
+	8050 1750 7950 1750
+Wire Wire Line
+	7950 1750 7950 1950
+Text Label 8350 1550 0    60   ~ 0
+RESET
+Text Label 7950 1750 2    60   ~ 0
+DTR
+Text Label 8350 2150 0    60   ~ 0
+RTS
+Text Label 3850 5200 0    60   ~ 0
+DTR
+Text Label 3850 5300 0    60   ~ 0
+RTS
+Text Label 3850 5500 0    60   ~ 0
+RX
+NoConn ~ 3850 5600
+NoConn ~ 3850 5800
+NoConn ~ 3850 5900
+NoConn ~ 3850 6000
+$Comp
+L GND #PWR?
+U 1 1 62E17368
+P 3950 5700
+F 0 "#PWR?" H 3950 5450 50  0001 C CNN
+F 1 "GND" H 3950 5550 50  0000 C CNN
+F 2 "" H 3950 5700 50  0001 C CNN
+F 3 "" H 3950 5700 50  0001 C CNN
+	1    3950 5700
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	3950 5700 3850 5700
+Text Label 2550 5200 2    60   ~ 0
+TX
+NoConn ~ 2550 5400
+NoConn ~ 2550 5300
+$Comp
+L GND #PWR?
+U 1 1 62E179B5
+P 2450 5600
+F 0 "#PWR?" H 2450 5350 50  0001 C CNN
+F 1 "GND" H 2450 5450 50  0000 C CNN
+F 2 "" H 2450 5600 50  0001 C CNN
+F 3 "" H 2450 5600 50  0001 C CNN
+	1    2450 5600
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	2550 5600 2450 5600
+$Comp
+L R R?
+U 1 1 62E181DA
+P 2150 6000
+F 0 "R?" V 2230 6000 50  0000 C CNN
+F 1 "27" V 2150 6000 50  0000 C CNN
+F 2 "Resistors_SMD:R_0402" V 2080 6000 50  0001 C CNN
+F 3 "" H 2150 6000 50  0001 C CNN
+F 4 "603-RT0402FRE0727RL" V 2150 6000 60  0001 C CNN "Mouser Part Number"
+	1    2150 6000
+	0    1    1    0   
+$EndComp
+$Comp
+L R R?
+U 1 1 62E18314
+P 2150 6100
+F 0 "R?" V 2230 6100 50  0000 C CNN
+F 1 "27" V 2150 6100 50  0000 C CNN
+F 2 "Resistors_SMD:R_0402" V 2080 6100 50  0001 C CNN
+F 3 "" H 2150 6100 50  0001 C CNN
+F 4 "603-RT0402FRE0727RL" V 2150 6100 60  0001 C CNN "Mouser Part Number"
+	1    2150 6100
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	1350 6000 1750 6000
+Wire Wire Line
+	1750 6000 1750 6100
+Wire Wire Line
+	1750 6100 2000 6100
+Wire Wire Line
+	2300 6100 2550 6100
+Wire Wire Line
+	2300 6000 2550 6000
+Wire Wire Line
+	1350 6100 1600 6100
+Wire Wire Line
+	1600 6100 1600 6050
+Wire Wire Line
+	1600 6050 1850 6050
+Wire Wire Line
+	1850 6050 1850 6000
+Wire Wire Line
+	1850 6000 2000 6000
+Wire Wire Line
+	950  6400 1050 6400
+$Comp
+L GND #PWR?
+U 1 1 62E187A2
+P 1050 6550
+F 0 "#PWR?" H 1050 6300 50  0001 C CNN
+F 1 "GND" H 1050 6400 50  0000 C CNN
+F 2 "" H 1050 6550 50  0001 C CNN
+F 3 "" H 1050 6550 50  0001 C CNN
+	1    1050 6550
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1050 6400 1050 6550
+$Comp
+L C_Small C?
+U 1 1 62E188D8
+P 1900 6300
+F 0 "C?" H 1910 6370 50  0000 L CNN
+F 1 "47pf" H 1910 6220 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0402" H 1900 6300 50  0001 C CNN
+F 3 "" H 1900 6300 50  0001 C CNN
+F 4 "80-C0402C470K5RAUTO" H 1900 6300 60  0001 C CNN "Mouser Part Number"
+	1    1900 6300
+	1    0    0    -1  
+$EndComp
+$Comp
+L C_Small C?
+U 1 1 62E18B78
+P 1500 6300
+F 0 "C?" H 1510 6370 50  0000 L CNN
+F 1 "47pf" H 1510 6220 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0402" H 1500 6300 50  0001 C CNN
+F 3 "" H 1500 6300 50  0001 C CNN
+F 4 "80-C0402C470K5RAUTO" H 1500 6300 60  0001 C CNN "Mouser Part Number"
+	1    1500 6300
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1900 6200 1900 6100
+Connection ~ 1900 6100
+Wire Wire Line
+	1500 6200 1500 6100
+Connection ~ 1500 6100
+Wire Wire Line
+	1900 6400 1500 6400
+Wire Wire Line
+	1050 6550 1500 6550
+Wire Wire Line
+	1500 6550 1500 6400
+$Comp
+L Ferrite_Bead_Small L?
+U 1 1 62E18F10
+P 1600 5800
+F 0 "L?" V 1675 5850 50  0000 L CNN
+F 1 "Ferrite Bead" V 1750 5700 50  0000 L CNN
+F 2 "Inductors_SMD:L_0402" V 1530 5800 50  0001 C CNN
+F 3 "" H 1600 5800 50  0001 C CNN
+F 4 "810-MMZ1005S800CTD25" H 1600 5800 60  0001 C CNN "Mouser Part Number"
+	1    1600 5800
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	1350 5800 1500 5800
+Wire Wire Line
+	2550 5700 1950 5700
+Wire Wire Line
+	1950 5700 1950 5800
+Wire Wire Line
+	1950 5800 1700 5800
+Wire Wire Line
+	2550 5800 2550 5900
+Wire Wire Line
+	2550 5900 2400 5900
+Wire Wire Line
+	2400 5900 2400 6500
+Wire Wire Line
+	2400 6500 4100 6500
+Wire Wire Line
+	4100 6500 4100 5400
+Wire Wire Line
+	4100 5400 3850 5400
+$Comp
+L C_Small C?
+U 1 1 62E19681
+P 1400 5600
+F 0 "C?" H 1410 5670 50  0000 L CNN
+F 1 "10pf" H 1410 5520 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0402" H 1400 5600 50  0001 C CNN
+F 3 "" H 1400 5600 50  0001 C CNN
+F 4 "80-C0402C100K5RAUTO" H 1400 5600 60  0001 C CNN "Mouser Part Number"
+	1    1400 5600
+	1    0    0    -1  
+$EndComp
+$Comp
+L C_Small C?
+U 1 1 62E196EC
+P 1750 5600
+F 0 "C?" H 1760 5670 50  0000 L CNN
+F 1 "100nf" H 1760 5520 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0402" H 1750 5600 50  0001 C CNN
+F 3 "" H 1750 5600 50  0001 C CNN
+F 4 "80-C0402C104K8R" H 1750 5600 60  0001 C CNN "Mouser Part Number"
+	1    1750 5600
+	1    0    0    -1  
+$EndComp
+$Comp
+L CP1_Small C?
+U 1 1 62E1975B
+P 2000 5500
+F 0 "C?" H 2010 5570 50  0000 L CNN
+F 1 "4.7uf" H 2010 5420 50  0000 L CNN
+F 2 "Capacitors_SMD:CP_Elec_4x5.7" H 2000 5500 50  0001 C CNN
+F 3 "" H 2000 5500 50  0001 C CNN
+F 4 "710-865080540002" H 2000 5500 60  0001 C CNN "Mouser Part Number"
+	1    2000 5500
+	-1   0    0    1   
+$EndComp
+$Comp
+L C_Small C?
+U 1 1 62E19965
+P 3100 6750
+F 0 "C?" H 3110 6820 50  0000 L CNN
+F 1 "100nf" H 3110 6670 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0402" H 3100 6750 50  0001 C CNN
+F 3 "" H 3100 6750 50  0001 C CNN
+F 4 "80-C0402C104K8R" H 3100 6750 60  0001 C CNN "Mouser Part Number"
+	1    3100 6750
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1400 5700 1400 5800
+Connection ~ 1400 5800
+Wire Wire Line
+	1750 5700 1750 5800
+Connection ~ 1750 5800
+Wire Wire Line
+	2000 5600 2000 5700
+Connection ~ 2000 5700
+Wire Wire Line
+	1400 5500 1750 5500
+Wire Wire Line
+	1750 5500 1750 5400
+Wire Wire Line
+	1750 5400 2000 5400
+$Comp
+L GND #PWR?
+U 1 1 62E1A0F6
+P 2000 5300
+F 0 "#PWR?" H 2000 5050 50  0001 C CNN
+F 1 "GND" H 2000 5150 50  0000 C CNN
+F 2 "" H 2000 5300 50  0001 C CNN
+F 3 "" H 2000 5300 50  0001 C CNN
+	1    2000 5300
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	2000 5400 2000 5300
+Wire Wire Line
+	3100 6500 3100 6650
+Connection ~ 3100 6500
+$Comp
+L GND #PWR?
+U 1 1 62E1A448
+P 3100 7000
+F 0 "#PWR?" H 3100 6750 50  0001 C CNN
+F 1 "GND" H 3100 6850 50  0000 C CNN
+F 2 "" H 3100 7000 50  0001 C CNN
+F 3 "" H 3100 7000 50  0001 C CNN
+	1    3100 7000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3100 6850 3100 7000
+Text GLabel 2250 5300 1    60   Input ~ 0
+VBUS
+Wire Wire Line
+	2250 5300 2250 5700
+Connection ~ 2250 5700
+NoConn ~ 3850 6100
+NoConn ~ 2550 5500
+Text Label 4850 3300 2    60   ~ 0
+Antenna
+$Comp
+L C_Small C?
+U 1 1 62E1E615
+P 2800 3450
+F 0 "C?" H 2810 3520 50  0000 L CNN
+F 1 "5.8pf" H 2810 3370 50  0000 L CNN
+F 2 "Capacitors_SMD:C_0402" H 2800 3450 50  0001 C CNN
+F 3 "" H 2800 3450 50  0001 C CNN
+	1    2800 3450
+	0    1    1    0   
+$EndComp
+Text Label 2900 3450 0    60   ~ 0
+Antenna
+$Comp
+L Antenna_Shield AE?
+U 1 1 62E1E999
+P 2450 3450
+F 0 "AE?" H 2375 3625 50  0000 R CNN
+F 1 "Antenna_Shield" H 2375 3550 50  0000 R CNN
+F 2 "Antenna:Antenna" H 2450 3550 50  0001 C CNN
+F 3 "" H 2450 3550 50  0001 C CNN
+	1    2450 3450
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	2700 3450 2650 3450
+$Comp
+L GND #PWR?
+U 1 1 62E1EC1A
+P 2650 3300
+F 0 "#PWR?" H 2650 3050 50  0001 C CNN
+F 1 "GND" H 2650 3150 50  0000 C CNN
+F 2 "" H 2650 3300 50  0001 C CNN
+F 3 "" H 2650 3300 50  0001 C CNN
+	1    2650 3300
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	2650 3300 2650 3350
 $EndSCHEMATC

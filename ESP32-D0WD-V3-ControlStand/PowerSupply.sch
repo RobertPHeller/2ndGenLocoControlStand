@@ -38,7 +38,7 @@ EELAYER 25 0
 EELAYER END
 $Descr E 44000 34000
 encoding utf-8
-Sheet 5 6
+Sheet 5 7
 Title "ESP32-D0WD-V3-ControlStand"
 Date "2022-07-25"
 Rev "1.0"
@@ -163,6 +163,21 @@ F 2 "" H 3700 2450 60  0000 C CNN
 F 3 "" H 3700 2450 60  0000 C CNN
 	1    3700 2450
 	1    0    0    -1  
+$EndComp
+$Comp
+L TC1263-3.3VOATR U?
+U 1 1 62E1190F
+P 5500 4800
+F 0 "U?" H 6650 5100 50  0000 L CNN
+F 1 "TC1263-3.3VOATR" H 6650 5000 50  0000 L CNN
+F 2 "Housings_SOIC:SO-8_5.3x6.2mm_Pitch1.27mm" H 6650 4900 50  0001 L CNN
+F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/21374D.pdf" H 6650 4800 50  0001 L CNN
+F 4 "LDO Voltage Regulators 500mA Fixed Out Adj" H 6650 4700 50  0001 L CNN "Description"
+F 5 "1.75" H 6650 4600 50  0001 L CNN "Height"
+F 6 "Microchip" H 6650 4300 50  0001 L CNN "Manufacturer_Name"
+F 7 "TC1263-3.3VOATR" H 6650 4200 50  0001 L CNN "Manufacturer_Part_Number"
+	1    5500 4800
+	-1   0    0    -1  
 $EndComp
 Wire Wire Line
 	5950 2550 5950 2700
