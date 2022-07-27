@@ -38,7 +38,7 @@ EELAYER 25 0
 EELAYER END
 $Descr USLetter 11000 8500
 encoding utf-8
-Sheet 1 7
+Sheet 1 6
 Title "ESP32-D0WD-V3-ControlStand"
 Date "2022-07-25"
 Rev "1.0"
@@ -260,17 +260,6 @@ F 3 "~" H 9900 1300 60  0000 C CNN
 	-1   0    0    -1  
 $EndComp
 $Comp
-L CONN_6 J?
-U 1 1 62DF0425
-P 8350 5450
-F 0 "J?" V 8300 5450 50  0000 C CNN
-F 1 "I2C Display" V 8400 5450 50  0000 C CNN
-F 2 "~" H 8350 5450 60  0000 C CNN
-F 3 "~" H 8350 5450 60  0000 C CNN
-	1    8350 5450
-	1    0    0    -1  
-$EndComp
-$Comp
 L CONN_5 J?
 U 1 1 62DF0426
 P 3950 5800
@@ -331,53 +320,16 @@ U 62DF0429
 F0 " Button and LED Panel" 50
 F1 "ButtonLedPanel1.sch" 50
 $EndSheet
-$Comp
-L CONN_6 P?
-U 1 1 62DF042A
-P 8950 5450
-F 0 "P?" V 8900 5450 50  0000 C CNN
-F 1 "CONN_6" V 9000 5450 50  0000 C CNN
-F 2 "~" H 8950 5450 60  0000 C CNN
-F 3 "~" H 8950 5450 60  0000 C CNN
-	1    8950 5450
-	-1   0    0    -1  
-$EndComp
-$Comp
-L I2C_Display MOD?
-U 1 1 62DF042B
-P 9900 5450
-F 0 "MOD?" H 10050 5650 60  0000 C CNN
-F 1 "I2C_DISPLAY" H 10000 5350 60  0000 C CNN
-F 2 "~" H 9900 5450 60  0000 C CNN
-F 3 "~" H 9900 5450 60  0000 C CNN
-	1    9900 5450
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	9550 5200 9300 5200
-Wire Wire Line
-	9550 5300 9300 5300
-Wire Wire Line
-	9550 5400 9300 5400
-Wire Wire Line
-	9550 5500 9300 5500
-Wire Wire Line
-	9550 5600 9300 5600
-Wire Wire Line
-	9550 5700 9300 5700
 Text Label 3550 5900 2    60   ~ 0
 SCL
 Text Label 3550 6000 2    60   ~ 0
 SDA
-Text Label 8000 5400 2    60   ~ 0
+Text Label 8050 6100 2    60   ~ 0
 GND
-Text Label 8000 5500 2    60   ~ 0
-RST
-Text Label 8000 5600 2    60   ~ 0
+Text Label 8050 6400 2    60   ~ 0
 SCL
-Text Label 8000 5700 2    60   ~ 0
+Text Label 8050 6300 2    60   ~ 0
 SDA
-NoConn ~ 8000 5300
 $Comp
 L GND-RESCUE-ESP32ControlStand #PWR?
 U 1 1 62DF042C
@@ -663,12 +615,12 @@ $EndSheet
 $Comp
 L +5V #PWR?
 U 1 1 62DF0440
-P 8000 5100
-F 0 "#PWR?" H 8000 5190 20  0001 C CNN
-F 1 "+5V" H 8000 5190 30  0000 C CNN
-F 2 "" H 8000 5100 60  0000 C CNN
-F 3 "" H 8000 5100 60  0000 C CNN
-	1    8000 5100
+P 7750 6050
+F 0 "#PWR?" H 7750 6140 20  0001 C CNN
+F 1 "+5V" H 7750 6140 30  0000 C CNN
+F 2 "" H 7750 6050 60  0000 C CNN
+F 3 "" H 7750 6050 60  0000 C CNN
+	1    7750 6050
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -682,8 +634,6 @@ F 3 "" H 3550 5500 60  0000 C CNN
 	1    3550 5500
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	8000 5100 8000 5200
 Wire Wire Line
 	3550 5500 3550 5600
 $Comp
@@ -1055,4 +1005,21 @@ F20 "17" I R 5950 3750 60
 F21 "16" I R 5950 3850 60 
 F22 "0" I R 5950 3950 60 
 $EndSheet
+$Comp
+L Conn_01x04 J?
+U 1 1 62E14860
+P 8250 6200
+F 0 "J?" H 8250 6400 50  0000 C CNN
+F 1 "STEMMA (Display)" H 8250 5900 50  0000 C CNN
+F 2 "Connectors_JST:JST_PH_S4B-PH-SM4-TB_04x2.00mm_Angled" H 8250 6200 50  0001 C CNN
+F 3 "" H 8250 6200 50  0001 C CNN
+F 4 "JST" H 8250 6200 60  0001 C CNN "Manufacturer_Name"
+F 5 "S4B-PH-SM4-TB" H 8250 6200 60  0001 C CNN "Manufacturer_Part_Number"
+	1    8250 6200
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7750 6050 7750 6200
+Wire Wire Line
+	7750 6200 8050 6200
 $EndSCHEMATC
