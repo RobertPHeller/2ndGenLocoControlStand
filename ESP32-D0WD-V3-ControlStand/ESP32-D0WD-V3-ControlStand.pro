@@ -1,4 +1,4 @@
-update=Tue 26 Jul 2022 10:05:39 AM EDT
+update=Thu 28 Jul 2022 01:20:19 PM EDT
 version=1
 last_client=kicad
 [pcbnew]
@@ -63,3 +63,5 @@ LibName31=contrib
 LibName32=valves
 LibName33=ESP32-D0WD-V3
 LibName34=W25Q32JVSSIQ
+LibName35=mcp73871
+LibName36=/home/heller/2ndGenLocoControlStand/ESP32ControlStand/lm2574n-5

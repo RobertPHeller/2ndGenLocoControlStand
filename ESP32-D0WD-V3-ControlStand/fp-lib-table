@@ -1,4 +1,5 @@
 (fp_lib_table
   (lib (name ESP32-D0WD-V3)(type KiCad)(uri "$(KIPRJMOD)/ESP32-D0WD-V3.pretty")(options "")(descr ""))
   (lib (name Antenna)(type KiCad)(uri "$(KIPRJMOD)/Antenna.pretty")(options "")(descr ""))
+  (lib (name SRN1060)(type Legacy)(uri "$(KIPRJMOD)/SRN1060.mod")(options "")(descr ""))
 )
