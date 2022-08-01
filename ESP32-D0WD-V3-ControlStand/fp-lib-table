@@ -12,4 +12,5 @@
   (lib (name DWSLogoBCU)(type Legacy)(uri /home/heller/2ndGenLocoControlStand/DWSLogoBCU.mod)(options "")(descr ""))
   (lib (name DWSLogoSilk)(type Legacy)(uri /home/heller/2ndGenLocoControlStand/DWSLogoSilk.mod)(options "")(descr ""))
   (lib (name Encoders)(type KiCad)(uri /home/heller/2ndGenLocoControlStand/ESP32ControlStand/Encoders.pretty)(options "")(descr ""))
+  (lib (name AdafruitDisplays)(type KiCad)(uri "$(KIPRJMOD)/AdafruitDisplays.pretty")(options "")(descr ""))
 )
