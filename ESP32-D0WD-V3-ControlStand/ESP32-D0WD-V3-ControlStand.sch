@@ -949,15 +949,9 @@ Wire Wire Line
 Wire Wire Line
 	8050 4500 8050 4600
 Wire Wire Line
-	9550 4550 9250 4550
-Wire Wire Line
 	9250 4550 9250 4600
 Wire Wire Line
-	9550 4750 9250 4750
-Wire Wire Line
 	9250 4750 9250 4700
-Wire Wire Line
-	9550 4950 9250 4950
 Wire Wire Line
 	9250 4950 9250 4800
 $Comp
@@ -1125,4 +1119,10 @@ F 3 "" H 9450 6050 50  0001 C CNN
 	1    9450 6050
 	1    0    0    -1  
 $EndComp
+Wire Wire Line
+	9550 4950 9250 4950
+Wire Wire Line
+	9550 4750 9250 4750
+Wire Wire Line
+	9550 4550 9250 4550
 $EndSCHEMATC
