@@ -1075,50 +1075,6 @@ F 3 "" H 5800 1150 50  0001 C CNN
 	1    5800 1150
 	1    0    0    -1  
 $EndComp
-$Comp
-L Mounting_Hole MK21
-U 1 1 62E7A85B
-P 8700 6050
-F 0 "MK21" H 8700 6250 50  0000 C CNN
-F 1 "Mounting_Hole" H 8700 6175 50  0000 C CNN
-F 2 "Mounting_Holes:MountingHole_2.5mm" H 8700 6050 50  0001 C CNN
-F 3 "" H 8700 6050 50  0001 C CNN
-	1    8700 6050
-	1    0    0    -1  
-$EndComp
-$Comp
-L Mounting_Hole MK22
-U 1 1 62E7A95E
-P 8950 6050
-F 0 "MK22" H 8950 6250 50  0000 C CNN
-F 1 "Mounting_Hole" H 8950 6175 50  0000 C CNN
-F 2 "Mounting_Holes:MountingHole_2.5mm" H 8950 6050 50  0001 C CNN
-F 3 "" H 8950 6050 50  0001 C CNN
-	1    8950 6050
-	1    0    0    -1  
-$EndComp
-$Comp
-L Mounting_Hole MK23
-U 1 1 62E7AA57
-P 9200 6050
-F 0 "MK23" H 9200 6250 50  0000 C CNN
-F 1 "Mounting_Hole" H 9200 6175 50  0000 C CNN
-F 2 "Mounting_Holes:MountingHole_2.5mm" H 9200 6050 50  0001 C CNN
-F 3 "" H 9200 6050 50  0001 C CNN
-	1    9200 6050
-	1    0    0    -1  
-$EndComp
-$Comp
-L Mounting_Hole MK24
-U 1 1 62E7AB60
-P 9450 6050
-F 0 "MK24" H 9450 6250 50  0000 C CNN
-F 1 "Mounting_Hole" H 9450 6175 50  0000 C CNN
-F 2 "Mounting_Holes:MountingHole_2.5mm" H 9450 6050 50  0001 C CNN
-F 3 "" H 9450 6050 50  0001 C CNN
-	1    9450 6050
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	9550 4950 9250 4950
 Wire Wire Line

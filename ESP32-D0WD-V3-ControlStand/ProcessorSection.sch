@@ -1362,4 +1362,5 @@ F 3 "" H 8850 5300 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 NoConn ~ 5450 5400
+NoConn ~ 5750 5400
 $EndSCHEMATC
