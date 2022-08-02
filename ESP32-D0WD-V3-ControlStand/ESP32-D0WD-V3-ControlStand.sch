@@ -1048,7 +1048,7 @@ U 1 1 62E6F3CA
 P 4650 1150
 F 0 "FD1" H 4650 1350 50  0000 C CNN
 F 1 "FidMark" H 4650 1275 50  0000 C CNN
-F 2 "Fiducials:Fiducial_1mm_Dia_2.54mm_Outer_CopperBottom" H 4650 1150 50  0001 C CNN
+F 2 "Fiducials:Fiducial_1mm_Dia_2.54mm_Outer_CopperTop" H 4650 1150 50  0001 C CNN
 F 3 "" H 4650 1150 50  0001 C CNN
 	1    4650 1150
 	1    0    0    -1  
@@ -1059,7 +1059,7 @@ U 1 1 62E6F73D
 P 5150 1100
 F 0 "FD2" H 5150 1300 50  0000 C CNN
 F 1 "FidMark" H 5150 1225 50  0000 C CNN
-F 2 "Fiducials:Fiducial_1mm_Dia_2.54mm_Outer_CopperBottom" H 5150 1100 50  0001 C CNN
+F 2 "Fiducials:Fiducial_1mm_Dia_2.54mm_Outer_CopperTop" H 5150 1100 50  0001 C CNN
 F 3 "" H 5150 1100 50  0001 C CNN
 	1    5150 1100
 	1    0    0    -1  
@@ -1070,7 +1070,7 @@ U 1 1 62E6F8C4
 P 5800 1150
 F 0 "FD3" H 5800 1350 50  0000 C CNN
 F 1 "FidMark" H 5800 1275 50  0000 C CNN
-F 2 "Fiducials:Fiducial_1mm_Dia_2.54mm_Outer_CopperBottom" H 5800 1150 50  0001 C CNN
+F 2 "Fiducials:Fiducial_1mm_Dia_2.54mm_Outer_CopperTop" H 5800 1150 50  0001 C CNN
 F 3 "" H 5800 1150 50  0001 C CNN
 	1    5800 1150
 	1    0    0    -1  
