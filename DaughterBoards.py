@@ -8,7 +8,7 @@
 #  Author        : $Author$
 #  Created By    : Robert Heller
 #  Created       : Tue Dec 22 00:56:49 2020
-#  Last Modified : <201223.2317>
+#  Last Modified : <220803.1227>
 #
 #  Description	
 #
@@ -47,6 +47,8 @@ import FreeCAD as App
 import os
 import sys
 sys.path.append(os.path.dirname(__file__))
+
+from ButtonPlungers import *
 
 import datetime
 
@@ -140,6 +142,147 @@ class ButtonDisplayBoard(object):
                                                    holebottom)))\
                         .extrude(Base.Vector(0,0,height))
 
+class NewButtonDisplayBoard(object):
+    @staticmethod
+    def Length():
+        return 64.77
+    @staticmethod
+    def Width():
+        return 50.8
+    _boardThick = 1.5875
+    _boardMHXY = [(5.08, 3.81), (46.99, 3.81), (46.990, 60.96), (5.08, 60.96)]
+    _holeDiameter = 2.5
+    _displayCutoutCornerXY = (8.128, 30.353)
+    _displayCutoutCornerWidth = 1.36*25.4
+    _displayCutoutCornerLength = 0.91*25.4
+    _displayMountingHolesXY = [(10.16, 27.94), (10.16, 55.88), (40.64, 55.88), (40.64, 27.94)]
+    _displayMountingHoleDiameter = 2.54
+    _buttonHolesXY = [(13.97, 20.32), (21.59, 20.32), (29.21, 20.32), (36.83, 20.32), (25.4, 10.16)]
+    _buttonHoleDiameter = 5.58
+    _buttonBodyWLZHD = (6,6.5,1.8,2.5,3)
+    _statusLEDHoleXY = (13.05, 10.76)
+    _statusLEDHoleDiameter = 5.08
+    _statusLEDWLH = (.8,1.6,.5)
+    def __init__(self,name,origin):
+        self.name = name
+        if not isinstance(origin,Base.Vector):
+            raise RuntimeError("origin is not a Vector!")
+        self.origin = origin
+        self._board = Part.makePlane(NewButtonDisplayBoard.Width(),\
+                                     NewButtonDisplayBoard.Length(),\
+                                     self.origin).extrude(Base.Vector(0,0,self._boardThick))
+        Z = self.origin.z
+        for i in range(1,5):
+            self._board = self._board.cut(self.mountingHole(i,Z,self._boardThick))
+        for i in range(1,5):
+            self._board = self._board.cut(self.displayMountingHole(i,Z,self._boardThick))
+        self._board = self._board.cut(self.displayCutoutHole(Z,self._boardThick))
+        self._buttons = list()
+        for i in range(1,6):
+            self._buttons.append(self._button(i))
+        self._status = self._statusLED()
+    def show(self):
+        doc = App.activeDocument()
+        obj = doc.addObject("Part::Feature",self.name+"_board")
+        obj.Shape=self._board
+        obj.Label=self.name+"_board"
+        obj.ViewObject.ShapeColor=tuple([0.0,1.0,0.0])
+        i = 1
+        for b in self._buttons:
+            body,plunger = b
+            ntemp = self.name+"_button"+format(i,"d")
+            obj = doc.addObject("Part::Feature",ntemp)
+            obj.Shape=body
+            obj.Label=ntemp
+            obj.ViewObject.ShapeColor=tuple([0.0,0.0,0.0])
+            ntemp = self.name+"_plunger"+format(i,"d")
+            obj = doc.addObject("Part::Feature",ntemp)
+            obj.Shape=plunger
+            obj.Label=ntemp
+            obj.ViewObject.ShapeColor=tuple([1.0,1.0,1.0])
+        ntemp = self.name+"_status"
+        obj = doc.addObject("Part::Feature",ntemp)
+        obj.Shape=self._status
+        obj.Label=ntemp
+        obj.ViewObject.ShapeColor=tuple([0.7,0.7,0.0])
+        obj.ViewObject.Transparency=25
+    def mountingHole(self,i,base,height):
+        holeX,holeY = self._boardMHXY[i-1]
+        holeX+=self.origin.x
+        holeY+=self.origin.y
+        holebottom=Base.Vector(holeX,holeY,base)
+        return Part.Face(Part.Wire(Part.makeCircle(self._holeDiameter/2.0,\
+                                                   holebottom)))\
+                        .extrude(Base.Vector(0,0,height))
+    def standoff(self,i,base,height,diameter=6):
+        holeX,holeY = self._boardMHXY[i-1]
+        holeX+=self.origin.x
+        holeY+=self.origin.y
+        holebottom=Base.Vector(holeX,holeY,base)
+        return Part.Face(Part.Wire(Part.makeCircle(diameter/2.0,\
+                                                   holebottom)))\
+                        .extrude(Base.Vector(0,0,height))
+    def buttonHoleOrigin(self,i,base):
+        holeX,holeY = self._buttonHolesXY[i-1]
+        holeX+=self.origin.x
+        holeY+=self.origin.y
+        return Base.Vector(holeX,holeY,base)
+    def buttonHole(self,i,base,height):
+        holebottom=self.buttonHoleOrigin(i,base)
+        return Part.Face(Part.Wire(Part.makeCircle(self._buttonHoleDiameter/2.0,\
+                                                   holebottom)))\
+                        .extrude(Base.Vector(0,0,height))
+    def _button(self,i):
+        centerX,centerY = self._buttonHolesXY[i-1]
+        if (i == 5):
+            bodyL,bodyW,bodyH,buttonH,buttonD = self._buttonBodyWLZHD
+        else:
+            bodyW,bodyL,bodyH,buttonH,buttonD = self._buttonBodyWLZHD
+        base = self._boardThick
+        borigin = self.origin.add(Base.Vector(centerX-bodyW/2.0,\
+                                              centerY-bodyL/2.0,\
+                                              base))
+        body = Part.makePlane(bodyW,bodyL,borigin).extrude(Base.Vector(0,0,bodyH))
+        borigin = self.origin.add(Base.Vector(centerX,centerY,base))
+        plunger = Part.Face(Part.Wire(Part.makeCircle(buttonD/2.0,borigin))).extrude(Base.Vector(0,0,buttonH))
+        return (body,plunger)
+    def statusLEDHoleOrigin(self,base):
+        holeX,holeY = self._statusLEDHoleXY
+        holeX+=self.origin.x
+        holeY+=self.origin.y
+        return Base.Vector(holeX,holeY,base)
+    def statusLEDHole(self,base,height):
+        holebottom=self.statusLEDHoleOrigin(base)
+        return Part.Face(Part.Wire(Part.makeCircle(self._statusLEDHoleDiameter/2.0,\
+                                                   holebottom)))\
+                        .extrude(Base.Vector(0,0,height))
+    def _statusLED(self):
+        centerX,centerY = self._statusLEDHoleXY
+        bodyW,bodyL,bodyH = self._statusLEDWLH
+        base = self._boardThick
+        borigin = self.origin.add(Base.Vector(centerX-bodyW/2.0,\
+                                              centerY-bodyL/2.0,\
+                                              base))
+        body = Part.makePlane(bodyW,bodyL,borigin).extrude(Base.Vector(0,0,bodyH))
+        return body
+    def displayCutoutHole(self,base,height):
+        cornerX,cornerY = self._displayCutoutCornerXY
+        cornerX+=self.origin.x
+        cornerY+=self.origin.y
+        corner = Base.Vector(cornerX,cornerY,base)
+        return Part.makePlane(self._displayCutoutCornerWidth,\
+                              self._displayCutoutCornerLength,\
+                              corner).extrude(Base.Vector(0,0,height))
+    def displayMountingHole(self,i,base,height):
+        holeX,holeY = self._displayMountingHolesXY[i-1]
+        holeX+=self.origin.x
+        holeY+=self.origin.y
+        holebottom=Base.Vector(holeX,holeY,base)
+        return Part.Face(Part.Wire(Part.makeCircle(self._displayMountingHoleDiameter/2.0,\
+                                                   holebottom)))\
+                        .extrude(Base.Vector(0,0,height))
+
+
 class ButtonLEDBoard(object):
     @staticmethod
     def Length():
@@ -223,3 +366,12 @@ class ButtonLEDBoard(object):
                     Part.makeCircle(self._LEDHoleDiameter/2.0,\
                                     self.LEDHoleOrigin(i,base))))\
                     .extrude(Base.Vector(0,0,height))
+
+
+if __name__ == '__main__':
+    App.ActiveDocument=App.newDocument("Temp")
+    doc = App.activeDocument()
+    newbdboard = NewButtonDisplayBoard("buttondisplay",Base.Vector(0,0,0))
+    newbdboard.show()
+    Gui.SendMsgToActiveView("ViewFit")
+    
