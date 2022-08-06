@@ -7,8 +7,8 @@
 #  Date          : $Date$
 #  Author        : $Author$
 #  Created By    : Robert Heller
-#  Created       : Wed Dec 23 10:39:33 2020
-#  Last Modified : <220806.1444>
+#  Created       : Sat Aug 6 14:31:00 2022
+#  Last Modified : <220806.1452>
 #
 #  Description	
 #
@@ -18,7 +18,7 @@
 #	
 #*****************************************************************************
 #
-#    Copyright (C) 2020  Robert Heller D/B/A Deepwoods Software
+#    Copyright (C) 2022  Robert Heller D/B/A Deepwoods Software
 #			51 Locke Hill Road
 #			Wendell, MA 01379-9728
 #
@@ -50,43 +50,26 @@ sys.path.append(os.path.dirname(__file__))
 
 import datetime
 
-class LED_5MMHead(object):
-    _Diameter = 5
-    _baseDiameter = 5.8
-    _baseHeight = 1.0
-    _totalHeight = 7.7
-    _cylinderHeight = 7.7 - (5.8/2.0)
-    _domeStep = .1
-    def __init__(self,name,origin,color=tuple([1.0,0.0,0.0])):
+class TS02(object):
+    @staticmethod
+    def BodyWL():
+        return 6
+    _bodyHeight = 3.5
+    _buttonDia = 4 # guess
+    def __init__(self,name,origin,H=6.0):
         self.name = name
         if not isinstance(origin,Base.Vector):
             raise RuntimeError("origin is not a Vector!")
         self.origin = origin
-        self.color = color
-        self._led = Part.Face(Part.Wire(Part.makeCircle(self._Diameter/2.0,\
-                                                        self.origin)))\
-                             .extrude(Base.Vector(0,0,self._cylinderHeight))
-        r = self._Diameter/2.0
-        h = r
-        bottom = Base.Vector(origin.x,origin.y,origin.z+self._cylinderHeight)
-        while (r > 0.0001) and (h > 0.0001):
-            h1 = h * self._domeStep
-            hvect = Base.Vector(0,0,h1)
-            r1 = r * self._domeStep
-            basedisk = Part.Face(Part.Wire(Part.makeCircle(r,bottom)))
-            c1 = basedisk.extrude(hvect)
-            self._led = self._led.fuse(c1)
-            r = r1
-            bottom = bottom.add(hvect)
-            h -= h1
-        base = Part.Face(Part.Wire(Part.makeCircle(self._baseDiameter/2.0,\
-                                                   origin)))\
-                        .extrude(Base.Vector(0,0,self._baseHeight))
-        self._led = self._led.fuse(base)
+        WL = TS02.BodyWL()
+        center = origin.add(Base.Vector(-(WL/2.0),-(WL/2.0),0))
+        self._body = Part.makePlane(WL,WL,center).extrude(Base.Vector(0,0,self._bodyHeight))
+        self._body = self._body.fuse(Part.Face(Part.Wire(Part.makeCircle(self._buttonDia/2,origin))).extrude(Base.Vector(0,0,H)))
     def show(self):
         doc = App.activeDocument()
         obj = doc.addObject("Part::Feature",self.name)
-        obj.Shape=self._led
+        obj.Shape=self._body
         obj.Label=self.name
-        obj.ViewObject.ShapeColor=self.color
-                            
+        obj.ViewObject.ShapeColor=tuple([0.0,0.0,0.0])
+        
+        
