@@ -8,7 +8,7 @@
 #  Author        : $Author$
 #  Created By    : Robert Heller
 #  Created       : Sun Aug 7 12:10:55 2022
-#  Last Modified : <220807.1727>
+#  Last Modified : <220807.1811>
 #
 #  Description	
 #
@@ -48,6 +48,7 @@ import FreeCAD as App
 import os
 import sys
 sys.path.append(os.path.dirname(__file__))
+import Mesh
 
 import datetime
 
@@ -233,13 +234,31 @@ class HandHeldBoxNoLEDBottons(HandHeldBoxCommon):
         holebottom = Base.Vector(self.origin.x+centerX,self.origin.y+centerY,z)
         return Part.Face(Part.Wire(Part.makeCircle(self._postholediameter/2.0,\
                                                    holebottom)))\
-                        .extrude(Base.Vector(0,0,self._wallThick))    
+                        .extrude(Base.Vector(0,0,self._wallThick))
+    def MakeBottomSTL(self,filename):
+        objs=[]
+        doc = App.activeDocument()
+        obj = doc.addObject("Part::Feature","temp")
+        obj.Shape=self._bottom
+        objs.append(obj)
+        Mesh.export(objs,filename)
+        doc.removeObject(obj.Label)
+    def MakeTopSTL(self,filename):
+        objs=[]
+        doc = App.activeDocument()
+        obj = doc.addObject("Part::Feature","temp")
+        obj.Shape=self._top.copy().rotate(Base.Vector(0,0,0),Base.Vector(0,1,0),180)
+        objs.append(obj)
+        Mesh.export(objs,filename)
+        doc.removeObject(obj.Label)
 
 if __name__ == '__main__':
     App.ActiveDocument=App.newDocument("Temp")
     doc = App.activeDocument()
     box = HandHeldBoxNoLEDBottons("box",Base.Vector(0,0,0))
     box.show()
+    box.MakeBottomSTL("HandHeldBoxNoLEDBottons_bottom.stl")
+    box.MakeTopSTL("HandHeldBoxNoLEDBottons_top.stl")
     Gui.SendMsgToActiveView("ViewFit")
 
 
