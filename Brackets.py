@@ -8,7 +8,7 @@
 #  Author        : $Author$
 #  Created By    : Robert Heller
 #  Created       : Sat Dec 19 11:33:54 2020
-#  Last Modified : <201219.1448>
+#  Last Modified : <220809.1124>
 #
 #  Description	
 #
@@ -94,3 +94,5 @@ class Bracket(object):
         obj.ViewObject.ShapeColor=tuple([200.0/255.0,200.0/255.0,200.0/255.0])
     def cut(self,obj):
         self._bracket = self._bracket.cut(obj)
+    def fuseto(self,obj):
+        return obj.fuse(self._bracket)

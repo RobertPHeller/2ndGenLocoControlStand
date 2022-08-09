@@ -8,7 +8,7 @@
 #  Author        : $Author$
 #  Created By    : Robert Heller
 #  Created       : Sun Aug 7 12:10:55 2022
-#  Last Modified : <220807.1811>
+#  Last Modified : <220809.1239>
 #
 #  Description	
 #
@@ -63,27 +63,54 @@ from MechEncoders import *
 
 from abc import ABCMeta, abstractmethod, abstractproperty
 
+def IntToString(i):
+    return "%d" % i
+
+def Slot(origin,width=0.0,length=0.0,depth=0.0,orientation='horizontal'):
+    if not isinstance(origin,Base.Vector):
+        raise RuntimeError("origin is not a Vector!")
+    X = origin.x
+    Y = origin.y
+    Z = origin.z
+    L = length
+    W = width
+    D = depth
+    if orientation == "horizontal":
+        corner = Base.Vector(X-(L/2.0),Y-(W/2.0),Z)
+        v1 = L
+        v2 = W
+    elif orientation == "vertical":
+        corner = Base.Vector(X-(W/2.0),Y-(L/2.0),Z)
+        v1 = W
+        v2 = L
+    else:
+        raise RuntimeError("orientation is not horizontal or vertical!")
+    return Part.makePlane(v1,v2,corner).extrude(Base.Vector(0,0,D))
+
+
+
+
 class HandHeldBoxCommon(object):
     __metaclass__ = ABCMeta
     _wallThick = (1/16)*25.4
     _innerWidth = NewMainBoard.Width()
     _outerWidth = NewMainBoard.Width()+2*(1/16)*25.4 
-    _totalInnerHeight = 1.5*25.4
-    _totalOuterHeight = 1.5*25.4+2*(1/16)*25.4 
+    _totalInnerHeight = 2.5*25.4
+    _totalOuterHeight = 2.5*25.4+2*(1/16)*25.4 
     _bottomInnerHeight = ((3/8)*25.4)+NewMainBoard.BoardThickness()
-    _topInnerHeight    = (1.5*25.4)-((3/8)*25.4+NewMainBoard.BoardThickness())
+    _topInnerHeight    = (2.5*25.4)-((3/8)*25.4+NewMainBoard.BoardThickness())
     _bottomOuterHeight = ((3/8)*25.4)+((1/16)*25.4)\
                                 +NewMainBoard.BoardThickness()
-    _topOuterHeight = (1.5*25.4+2*(1/16)*25.4)-\
+    _topOuterHeight = (2.5*25.4+2*(1/16)*25.4)-\
                       (((3/8)*25.4)+((1/16)*25.4)+NewMainBoard.BoardThickness())
                             
 
 class HandHeldBoxNoLEDBottons(HandHeldBoxCommon):
-    _length = NewMainBoard.Length()+25.4
+    _length = NewMainBoard.Length()+50.8
     _postsXY = [(5.08, 5.08), (HandHeldBoxCommon._outerWidth-5.08, 5.08), \
-                 (5.08, (NewMainBoard.Length()+25.4)-5.08), \
+                 (5.08, (NewMainBoard.Length()+50.8)-5.08), \
                  ((HandHeldBoxCommon._outerWidth-5.08, \
-                  (NewMainBoard.Length()+25.4)-5.08))]
+                  (NewMainBoard.Length()+50.8)-5.08))]
     _postdiameter = 6.0
     _postholediameter = 2.5
     def __init__(self,name,origin):
@@ -121,7 +148,7 @@ class HandHeldBoxNoLEDBottons(HandHeldBoxCommon):
             self._bottom = self._bottom.cut(self._postHole(i,origin.z))
                 
         mborigin = origin.add(Base.Vector(self._wallThick,\
-                                          self._wallThick+12.7,\
+                                          self._wallThick+38.1,\
             self._bottomInnerHeight-NewMainBoard.BoardThickness()))
         self._mainboard = NewMainBoard(name+"_mainboard",mborigin)
         sheight = self._bottomInnerHeight-(NewMainBoard.BoardThickness()+self._wallThick)
@@ -187,13 +214,86 @@ class HandHeldBoxNoLEDBottons(HandHeldBoxCommon):
                                       NewButtonDisplayBoard.StatusLedHeight(),\
                                       5.08-NewButtonDisplayBoard.StatusLedHeight(),
                                       self._wallThick)
+        X = self.origin.x
+        Y = self.origin.y
+        Z = self.origin.z
+        throttleSlotOrigin = Base.Vector(X + (self._outerWidth/2.0)-10,\
+                                         dispY - 10,\
+                                         toporig.z)
+        self._top = self._top.cut(Slot(throttleSlotOrigin,width=6,\
+                                       orientation="horizontal",\
+                                       length = 25.4+6,\
+                                       depth=self._wallThick))
+        reverserSlotOrigin = Base.Vector(X+(self._outerWidth/2.0)+15,\
+                                         dispY - 25,\
+                                         toporig.z)
+        self._top = self._top.cut(Slot(reverserSlotOrigin,width=6,\
+                                       orientation="horizontal",\
+                                       length=15.24 + 6,\
+                                       depth=self._wallThick))
+        brakeSlotOrigin = Base.Vector(X+(self._outerWidth/2.0)-10,\
+                                      dispY - 38,\
+                                      toporig.z)
+        self._top = self._top.cut(Slot(brakeSlotOrigin,width=6,\
+                                       orientation="horizontal",\
+                                       length=15.24 + 6,\
+                                       depth=self._wallThick))
+        throttleReverserBrakeBracket = \
+                Bracket(name+"_throttleReverserBrakeBracket",\
+                        Base.Vector(X+(self._outerWidth/2.0),\
+                                    dispY - 20,\
+                                    toporig.z-self._wallThick),\
+                        orientation="horizontal",\
+                        bracketthick=3.0,\
+                        bracketdepth=35,bracketwidth=self._innerWidth)
+        self._top = throttleReverserBrakeBracket.fuseto(self._top)
+        tX = throttleSlotOrigin.x
+        tY = throttleSlotOrigin.y
+        tZ = throttleSlotOrigin.z
+        self._throttleEncoder = \
+                Mech_Encoder_25L(name+"_throttle",\
+                                 Base.Vector(tX,\
+                                             tY - 10,\
+                                             (tZ-25.4)+self._wallThick),\
+                                 bracketthick=3.0)
+        self._top = self._top.cut(self._throttleEncoder._bushing)
+        self._top = self._top.cut(self._throttleEncoder._noturn)
+        self._throttleLever = StraightControlLever(name+"_throttleLever",\
+                                    Base.Vector(tX,\
+                                                tY,\
+                                                (tZ-33.5)),\
+                                    shaftlength=30,\
+                                    handlecolor=tuple([0.0,0.0,1.0]),\
+                                    dholediameter=6.35,\
+                                    dholeflatsize=5.56,\
+                                    direction='DZ')
+        rX = reverserSlotOrigin.x
+        rY = reverserSlotOrigin.y
+        rZ = reverserSlotOrigin.z
+        self._reverserEncoder = PEC12R(name+"_reverser",\
+                                       Base.Vector(rX,\
+                                                   rY + 5,\
+                                                   (rZ-13.2)+self._wallThick),\
+                                       bracketthick=3.0)
+        self._top = self._top.cut(self._reverserEncoder._bushing)
+        self._top = self._top.cut(self._reverserEncoder.NoTurnHole())
+        self._reverserLever = StraightControlLever(name+"_reverserLever",\
+                                    Base.Vector(rX,\
+                                                rY,\
+                                                (rZ-22)),\
+                                    shaftlength=20,\
+                                    handlecolor=tuple([0.0,0.0,0.0]),\
+                                    dholediameter=6,\
+                                    dholeflatsize=4.5,\
+                                    direction='DZ')
+                                                   
         
     def show(self):
         doc = App.activeDocument()
-        obj = doc.addObject("Part::Feature",self.name+"_bottom")
-        obj.Shape=self._bottom
-        obj.Label=self.name+"_bottom"
-        obj.ViewObject.ShapeColor=tuple([1.0,1.0,0.0])
+        #obj = doc.addObject("Part::Feature",self.name+"_bottom")
+        #obj.Shape=self._bottom
+        #obj.Label=self.name+"_bottom"
+        #obj.ViewObject.ShapeColor=tuple([1.0,1.0,0.0])
         obj = doc.addObject("Part::Feature",self.name+"_top")
         obj.Shape=self._top
         obj.Label=self.name+"_top"
@@ -203,10 +303,14 @@ class HandHeldBoxNoLEDBottons(HandHeldBoxCommon):
         obj.Label=self.name+"_statusLense"
         obj.ViewObject.ShapeColor=tuple([1.0,1.0,1.0])
         obj.ViewObject.Transparency=60
-        self._mainboard.show()
+        #self._mainboard.show()
         self._dispboard.show()
         for i in range(1,6):
             self._plungers[i-1].show()
+        self._throttleEncoder.show()
+        self._throttleLever.show()
+        self._reverserEncoder.show()
+        self._reverserLever.show()
     def _bottomPost(self,i):
         centerX,centerY = self._postsXY[i-1]
         postbottom = self.origin.add(Base.Vector(centerX,centerY,\
@@ -260,7 +364,7 @@ if __name__ == '__main__':
     box.MakeBottomSTL("HandHeldBoxNoLEDBottons_bottom.stl")
     box.MakeTopSTL("HandHeldBoxNoLEDBottons_top.stl")
     Gui.SendMsgToActiveView("ViewFit")
-
+    Gui.activeDocument().activeView().viewBottom()
 
 
 
