@@ -38,12 +38,14 @@ LIBS:lm2574n-5
 LIBS:mcp73871
 LIBS:gct_usb4105
 LIBS:USBLC6-2SC6
+LIBS:tca8418
+LIBS:sw_push_small_gnd
 LIBS:ESP32-S3-WROOM-ControlStand-cache
 EELAYER 25 0
 EELAYER END
 $Descr USLetter 11000 8500
 encoding utf-8
-Sheet 1 6
+Sheet 1 7
 Title "ESP32-S3-WROOM-ControlStand"
 Date "2022-07-25"
 Rev "1.0"
@@ -455,7 +457,7 @@ F 4 "603-AC0603FR-07220RL" V 3200 1950 60  0001 C CNN "Mouser Part Number"
 	0    -1   -1   0   
 $EndComp
 $Sheet
-S 900  6450 1800 900 
+S 900  5925 1800 900 
 U 62DF043D
 F0 "Button Led Panel (2)" 50
 F1 "ButtonLedPanel2.sch" 50
@@ -855,9 +857,9 @@ Connection ~ 1050 1750
 Connection ~ 1050 2000
 Connection ~ 1050 2300
 Wire Wire Line
-	1700 1250 1700 900 
+	1700 900  1700 1250
 Wire Wire Line
-	1700 900  1050 900 
+	1050 900  1700 900 
 Connection ~ 1050 1200
 Wire Wire Line
 	1700 1350 1350 1350
@@ -1082,4 +1084,65 @@ Wire Wire Line
 	9550 4750 9250 4750
 Wire Wire Line
 	9550 4550 9250 4550
+$Comp
+L CONN_5 J101
+U 1 1 6394B610
+P 4225 7575
+F 0 "J101" V 4175 7575 50  0000 C CNN
+F 1 "Keypad Panel" V 4275 7575 50  0000 C CNN
+F 2 "Pin_Headers:Pin_Header_Straight_1x05_Pitch2.54mm" H 4225 7575 60  0001 C CNN
+F 3 "~" H 4225 7575 60  0000 C CNN
+F 4 "523-G800W303018EU" V 4225 7575 60  0001 C CNN "Mouser Part Number"
+	1    4225 7575
+	-1   0    0    -1  
+$EndComp
+Text Label 4625 7675 0    60   ~ 0
+SCL
+Text Label 4625 7775 0    60   ~ 0
+SDA
+$Comp
+L +5V #PWR018
+U 1 1 6394B618
+P 4625 7275
+F 0 "#PWR018" H 4625 7365 20  0001 C CNN
+F 1 "+5V" H 4625 7365 30  0000 C CNN
+F 2 "" H 4625 7275 60  0000 C CNN
+F 3 "" H 4625 7275 60  0000 C CNN
+	1    4625 7275
+	-1   0    0    -1  
+$EndComp
+$Comp
+L +3.3V #PWR019
+U 1 1 6394B61E
+P 4825 7475
+F 0 "#PWR019" H 4825 7435 30  0001 C CNN
+F 1 "+3.3V" H 4825 7585 30  0000 C CNN
+F 2 "" H 4825 7475 60  0000 C CNN
+F 3 "" H 4825 7475 60  0000 C CNN
+	1    4825 7475
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR020
+U 1 1 6394B624
+P 4875 7575
+F 0 "#PWR020" H 4875 7575 30  0001 C CNN
+F 1 "GND" H 4875 7505 30  0001 C CNN
+F 2 "" H 4875 7575 60  0000 C CNN
+F 3 "" H 4875 7575 60  0000 C CNN
+	1    4875 7575
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	4625 7275 4625 7375
+Wire Wire Line
+	4625 7475 4825 7475
+Wire Wire Line
+	4625 7575 4875 7575
+$Sheet
+S 900  7050 1775 825 
+U 6394C805
+F0 "Keypad Panel" 60
+F1 "KeypadPanel.sch" 60
+$EndSheet
 $EndSCHEMATC

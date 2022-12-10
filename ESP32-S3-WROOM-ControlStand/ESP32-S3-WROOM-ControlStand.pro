@@ -1,4 +1,4 @@
-update=Thu 08 Dec 2022 02:13:07 PM EST
+update=Sat 10 Dec 2022 11:11:55 AM EST
 version=1
 last_client=kicad
 [pcbnew]
@@ -68,3 +68,5 @@ LibName36=lm2574n-5
 LibName37=mcp73871
 LibName38=gct_usb4105
 LibName39=USBLC6-2SC6
+LibName40=tca8418
+LibName41=sw_push_small_gnd
