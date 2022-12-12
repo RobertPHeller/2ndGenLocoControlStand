@@ -1,0 +1,3 @@
+[submodule "ESP32-S3-WROOM-ControlStand/OpenMRNIDF"]
+	path = ESP32-S3-WROOM-ControlStand/OpenMRNIDF
+	url = https://github.com/atanisoft/OpenMRNIDF.git
