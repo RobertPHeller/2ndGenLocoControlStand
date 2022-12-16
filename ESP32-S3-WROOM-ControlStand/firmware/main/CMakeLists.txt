@@ -6,12 +6,15 @@ set(deps
     app_update
     spiffs
     OpenMRNIDF
+    graphics
+    I2CDriver
+    TCA8418
     json
     )
                             
 idf_component_register(SRCS esp32s3controlstand.cpp fs.cpp nvs_config.cpp
-                            Esp32HardwareI2C.cpp BootPauseHelper.cpp 
-                            SNIPClient.cpp
+                            BootPauseHelper.cpp ESP32ControlStand.cpp
+                            SNIPClient.cpp Button.cpp LightSwitch.cpp
                        REQUIRES "${deps}")
                        
 
@@ -34,3 +37,6 @@ set_source_files_properties(nvs_config.cpp PROPERTIES COMPILE_FLAGS "-Wno-implic
 set_source_files_properties(Esp32HardwareI2C.cpp PROPERTIES COMPILE_FLAGS "-Wno-implicit-fallthrough -Wno-ignored-qualifiers")
 set_source_files_properties(BootPauseHelper.cpp PROPERTIES COMPILE_FLAGS "-Wno-implicit-fallthrough -Wno-ignored-qualifiers")
 set_source_files_properties(SNIPClient.cpp PROPERTIES COMPILE_FLAGS "-Wno-implicit-fallthrough -Wno-ignored-qualifiers")
+set_source_files_properties(ESP32ControlStand.cpp PROPERTIES COMPILE_FLAGS "-Wno-implicit-fallthrough -Wno-ignored-qualifiers")
+set_source_files_properties(Button.cpp PROPERTIES COMPILE_FLAGS "-Wno-implicit-fallthrough -Wno-ignored-qualifiers")
+set_source_files_properties(LightSwitch.cpp PROPERTIES COMPILE_FLAGS "-Wno-implicit-fallthrough -Wno-ignored-qualifiers")

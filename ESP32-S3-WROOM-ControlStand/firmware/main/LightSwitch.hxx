@@ -7,8 +7,8 @@
 //  Date          : $Date$
 //  Author        : $Author$
 //  Created By    : Robert Heller
-//  Created       : Mon Dec 12 14:57:27 2022
-//  Last Modified : <221212.1515>
+//  Created       : Tue Oct 8 21:09:24 2019
+//  Last Modified : <221215.1159>
 //
 //  Description	
 //
@@ -18,7 +18,7 @@
 //	
 /////////////////////////////////////////////////////////////////////////////
 //
-//    Copyright (C) 2022  Robert Heller D/B/A Deepwoods Software
+//    Copyright (C) 2019  Robert Heller D/B/A Deepwoods Software
 //			51 Locke Hill Road
 //			Wendell, MA 01379-9728
 //
@@ -40,19 +40,32 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef __CDI_HXX
-#define __CDI_HXX
-#include "sdkconfig.h"
+#ifndef __LIGHTSWITCH_H
+#define __LIGHTSWITCH_H
 
-#include <freertos_drivers/esp32/Esp32WiFiConfiguration.hxx>
-#include "openlcb/ConfiguredConsumer.hxx"
-#include "openlcb/ConfiguredProducer.hxx"
-#include "openlcb/ConfigRepresentation.hxx"
-#include "openlcb/MemoryConfig.hxx"
-#include "ESP32ControlStand.hxx"
+#include <os/Gpio.hxx> 
 
 
+class LightSwitch {
+public:
+    enum Position {Unknown=0, Off, Dim, Bright, Ditch};
+    LightSwitch(const Gpio *offPin, const Gpio *dimPin, const Gpio *brightPin, 
+                const Gpio *ditchPin);
+    Position read();
+    bool has_changed();
+    bool isOff();
+    bool isDim();
+    bool isBright();
+    bool isDitch();
+private:
+    const Gpio *_offPin, *_dimPin, *_brightPin, *_ditchPin;
+    uint16_t _delay;
+    Position _state;
+    bool     _has_changed;
+    uint32_t _ignore_until;
+};
 
 
-#endif // __CDI_HXX
+
+#endif // __LIGHTSWITCH_H
 

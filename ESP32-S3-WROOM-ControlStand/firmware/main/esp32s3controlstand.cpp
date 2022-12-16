@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Dec 12 13:38:08 2022
-//  Last Modified : <221212.1529>
+//  Last Modified : <221215.1648>
 //
 //  Description	
 //
@@ -73,13 +73,16 @@ static const char rcsid[] = "@(#) : $Id$";
 #include <utils/format_utils.hxx>
 #include "Esp32HardwareI2C.hxx"
 #include "BootPauseHelper.hxx"
+#include "MCP23017Gpio.hxx"
+#include "Adafruit_TCA8418.hxx"
+
 ///////////////////////////////////////////////////////////////////////////////
 // Increase the CAN RX frame buffer size to reduce overruns when there is high
 // traffic load (ie: large datagram transport).
 ///////////////////////////////////////////////////////////////////////////////
 OVERRIDE_CONST(can_rx_buffer_size, 64);
 
-//esp32s3controlstand::ConfigDef cfg(0);
+esp32s3controlstand::ConfigDef cfg(0);
 Esp32HardwareTwai twai(CONFIG_TWAI_RX_PIN, CONFIG_TWAI_TX_PIN);
 Esp32HardwareI2C i2c0(CONFIG_SDA_PIN, CONFIG_SCL_PIN, 0, "/dev/i2c/i2c0");
 
@@ -93,8 +96,8 @@ namespace openlcb
     const char *const CONFIG_FILENAME = "/fs/config";
 
     // The size of the memory space to export over the above device.
-    //const size_t CONFIG_FILE_SIZE =
-    //    cfg.seg().size() + cfg.seg().offset();
+    const size_t CONFIG_FILE_SIZE =
+        cfg.seg().size() + cfg.seg().offset();
 
     // Default to store the dynamic SNIP data is stored in the same persistant
     // data file as general configuration data.
@@ -121,10 +124,38 @@ namespace openlcb
         SNIP_HW_VERSION,
         SNIP_SW_VERSION
     };
-    const char CDI_DATA[] = "";
 
 } // namespace openlcb
 
+extern "C"
+{
 
+/// Application main entry point.
+void app_main()
+{
+    const esp_app_desc_t *app_data = esp_ota_get_app_description();
+    LOG(INFO, "\n\nESP32 2ndGen Loco Control Stand (a LCC Throttle) starting up...");
+    LOG(INFO, "Compiled on %s %s using IDF %s", app_data->date, app_data->time,
+        app_data->idf_ver);
+    LOG(INFO, "Running from: %s", esp_ota_get_running_partition()->label);
+    LOG(INFO, "ESP32 2ndGen Loco Control Stand uses the OpenMRN library\n"
+        "Copyright (c) 2019-2022, OpenMRN\n"
+        "All rights reserved.");
+    LOG(INFO, "[SNIP] version:%d, manufacturer:%s, model:%s, hw-v:%s, sw-v:%s",
+        openlcb::SNIP_STATIC_DATA.version,
+        openlcb::SNIP_STATIC_DATA.manufacturer_name,
+        openlcb::SNIP_STATIC_DATA.model_name,
+        openlcb::SNIP_STATIC_DATA.hardware_version,
+        openlcb::SNIP_STATIC_DATA.software_version);
+    LOG(INFO, "[CDI] Size: %zu, Version:%04x", openlcb::CDI_SIZE, CDI_VERSION);
+    uint8_t reset_reason = Esp32SocInfo::print_soc_info();
+    GpioInit::hw_init();
+    Esp32HardwareI2C::Mount("/dev/i2c");
+    i2c0.hw_init();
+    
+    
+}
+
+}
 
 

@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Oct 7 18:47:11 2019
-//  Last Modified : <221212.1517>
+//  Last Modified : <221215.1423>
 //
 //  Description	
 //
@@ -47,13 +47,13 @@ static const char rcsid[] = "@(#) : $Id$";
 #include "openlcb/EventHandlerTemplates.hxx"
 #include "openlcb/EventService.hxx"
 #include "ESP32ControlStand.hxx"
-
+#include "hardware.hxx"
 
 bool ESP32ControlStand::checkThrottle()
 {
     bool changedP = false;
     uint8_t newQuadrature;
-    newQuadrature = digitalRead(THROTTLEA) | (digitalRead(THROTTLEB) << 1);
+    newQuadrature = throttlea_->read() | (throttleb_->read() << 1);
     uint8_t quadratureUp[] = {1, 3, 0, 2};
     uint8_t quadratureDown[] = {2, 0, 3, 1};
     if (newQuadrature != throttleQuadrature_)
@@ -77,7 +77,7 @@ bool ESP32ControlStand::checkThrottle()
 }
 
 bool ESP32ControlStand::readBrake() {
-    uint16_t newBrake = analogRead(BRAKE);
+    uint16_t newBrake = BRAKE_Pin::sample();
     if (newBrake != brake_) {
         brake_ = newBrake;
         return (true);
@@ -87,7 +87,7 @@ bool ESP32ControlStand::readBrake() {
 }
 
 bool ESP32ControlStand::readHorn() {
-    uint16_t newHorn = analogRead(HORN);
+    uint16_t newHorn = HORN_Pin::sample();
     if (newHorn != horn_) {
         horn_ = newHorn;
         return (true);
@@ -97,7 +97,7 @@ bool ESP32ControlStand::readHorn() {
 }
 
 bool ESP32ControlStand::readReverser() {
-    uint16_t newReverser = analogRead(REVERSER);
+    uint16_t newReverser = REVERSER_Pin::sample();
     if (newReverser != reverser_) {
         reverser_ = newReverser;
         return (true);
@@ -108,29 +108,18 @@ bool ESP32ControlStand::readReverser() {
 void ESP32ControlStand::hw_init()
 {
     // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
-    if(!display_.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // Address 0x3C for 128x32
-        Serial.println(F("SSD1306 allocation failed"));
+    if(!display_.begin("/dev/i2c/i2c0", SSD1306_SWITCHCAPVCC, 0x3C)) { // Address 0x3C for 128x32
+        LOG(FATAL,"SSD1306 allocation failed");
         // blink red
-        digitalWrite(STATUS_G,LOW);
-        for(;;) { // Don't proceed, loop forever
-            digitalWrite(STATUS_R,LOW);
-            delay(500);
-            digitalWrite(STATUS_R,HIGH);
-            delay(1000);
-        }
+        //STATUS_G_Pin::instance()->clr();
+        //for(;;) { // Don't proceed, loop forever
+        //    STATUS_R_Pin::instance()->clr();
+        //    delay(500);
+        //    STATUS_R_Pin::instance()->set();
+        //    delay(1000);
+        //}
     }
-    pinMode(HORN,INPUT);
-    pinMode(BRAKE,INPUT);
-    a_.begin();
-    b_.begin();
-    c_.begin();
-    d_.begin();
-    bell_.begin();
-    lightSwitch_.begin();
-    pinMode(REVERSER,INPUT);
-    pinMode(THROTTLEA,INPUT_PULLUP);
-    pinMode(THROTTLEB,INPUT_PULLUP);
-    throttleQuadrature_ = digitalRead(THROTTLEA) | (digitalRead(THROTTLEB) << 1);
+    throttleQuadrature_ = throttlea_->read() | (throttleb_->read() << 1);
 }
 
 void ESP32ControlStand::poll_33hz(openlcb::WriteHelper *helper, Notifiable *done)
@@ -179,8 +168,10 @@ void ESP32ControlStand::poll_33hz(openlcb::WriteHelper *helper, Notifiable *done
                 break;
             case LightSwitch::Ditch:
                 break;
+            default: break;
             }
             switch (newpos) {
+            default:
                 break;
             case LightSwitch::Off:
                 break;
@@ -294,6 +285,7 @@ void ESP32ControlStand::pollMenu()
             currentState_ = MainMenu;
             mainMenu();
             break;
+        default: break; // should never get here -- make the compiler happy
         }
         break;
     case Search:
@@ -317,7 +309,7 @@ void ESP32ControlStand::pollMenu()
                     display_.display();
                 }
             } else if (searchStringIndex_ < 20) {
-                char ch;
+                char ch = ' ';
                 if (letterIndex_ < 26) ch = 'A' + letterIndex_;
                 else if (letterIndex_ < 36) ch = '0' + (letterIndex_-26); 
                 else if (letterIndex_ == 36) ch = ' ';
@@ -351,6 +343,7 @@ void ESP32ControlStand::pollMenu()
                 idleScreen();
             }
             break;
+        default: break; // should never get here -- make the compiler happy
         }
         break;
     case Functions:
@@ -369,6 +362,7 @@ void ESP32ControlStand::pollMenu()
             currentState_ = MainMenu;
             mainMenu();
             break;
+        default: break; // should never get here -- make the compiler happy
         }
         break;
     case Consist:
@@ -423,8 +417,10 @@ void ESP32ControlStand::pollMenu()
             currentState_ = MainMenu;
             mainMenu();
             break;
+        default: break; // should never get here -- make the compiler happy
         }
         break;
+
     }
 }
 
@@ -541,7 +537,7 @@ void ESP32ControlStand::BrowseScreen()
     display_.setCursor(0,0);
     TrainIDMap::const_iterator iTrain = selectedTrain_;
     if (iTrain != trainsByID_.begin()) iTrain--;
-    for (int i = 0; i++; i < 3) {
+    for (int i = 0; i < 3; i++) {
         if (iTrain == selectedTrain_) display_.print(">>");
         else display_.print("  ");
         if (iTrain != trainsByID_.end()) 

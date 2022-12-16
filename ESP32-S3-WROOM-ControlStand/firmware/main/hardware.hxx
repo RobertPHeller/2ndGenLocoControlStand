@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Dec 12 12:18:47 2022
-//  Last Modified : <221212.1549>
+//  Last Modified : <221214.1106>
 //
 //  Description	
 //
@@ -63,8 +63,8 @@ GPIO_PIN(STATUS_R, GpioInputNP, GPIO_NUM_10);
 GPIO_PIN(STATUS_G, GpioInputNP, GPIO_NUM_11);
 
 // Throttle Encoder
-GPIO_PIN(THOTTLEA, GpioInputPU, GPIO_NUM_12);
-GPIO_PIN(THOTTLEB, GpioInputPU, GPIO_NUM_13);
+GPIO_PIN(THROTTLEA, GpioInputPU, GPIO_NUM_12);
+GPIO_PIN(THROTTLEB, GpioInputPU, GPIO_NUM_13);
 
 // Light switch
 GPIO_PIN(L_OFF,    GpioInputPU, GPIO_NUM_14);
@@ -90,7 +90,7 @@ GPIO_PIN(ACT2, GpioInputNP, GPIO_NUM_38);
 
 /// GPIO Pin initializer.
 typedef GpioInitializer<BUTTON_A_Pin, BUTTON_B_Pin, BUTTON_C_Pin, BUTTON_D_Pin,
-                        STATUS_R_Pin, STATUS_G_Pin, THOTTLEA_Pin, THOTTLEB_Pin,
+                        STATUS_R_Pin, STATUS_G_Pin, THROTTLEA_Pin, THROTTLEB_Pin,
                         L_OFF_Pin, L_DIM_Pin, L_BRIGHT_Pin, L_DITCH_Pin,
                         BELL_Pin, HORN_Pin, BRAKE_Pin, REVERSER_Pin,
                         ACT1_Pin, ACT2_Pin> GpioInit;

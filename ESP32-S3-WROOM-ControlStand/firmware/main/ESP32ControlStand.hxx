@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Oct 7 18:43:06 2019
-//  Last Modified : <221212.1536>
+//  Last Modified : <221215.1422>
 //
 //  Description	
 //
@@ -54,10 +54,15 @@
 #include "executor/StateFlow.hxx"
 #include "utils/ConfigUpdateListener.hxx"
 #include "utils/ConfigUpdateService.hxx"
-//#include "LightSwitch.h"
+#include "Adafruit_SSD1306.h"
+#include "Button.hxx"
+#include "LightSwitch.hxx"
+#ifndef CDIONLY
+#include "hardware.hxx"
+#endif
+#include "SNIPClient.hxx"
 #include <map>
 #include <string>
-#include "SNIPClient.hxx"
 
 /// CDI Configuration for a @ref ESP32ControlStand
 CDI_GROUP(ESP32ControlStandConfig)
@@ -74,22 +79,6 @@ CDI_GROUP_END();
 
 using TrainIDMap   = std::map<openlcb::NodeID, std::string>;
 
-#define HORN      A0
-#define BRAKE     A3
-#define BUTTON_A  34
-#define BUTTON_B  35
-#define BUTTON_C  33
-#define BUTTON_D  25
-#define BELL      26
-#define REVERSER  A17
-#define STATUS_R  12
-#define STATUS_G  32
-#define THROTTLEA 23
-#define THROTTLEB 19
-#define L_OFF     18
-#define L_DIM     17
-#define L_BRIGHT  16
-#define L_DITCH    0
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 32 // OLED display height, in pixels
@@ -124,17 +113,19 @@ using TrainIDMap   = std::map<openlcb::NodeID, std::string>;
 class ESP32ControlStand : public openlcb::TractionThrottle, public openlcb::Polling, openlcb::SimpleEventHandler, public ConfigUpdateListener {
 public:
     ESP32ControlStand(openlcb::Node *node, 
-                      const ESP32ControlStandConfig &cfg) 
+                      const ESP32ControlStandConfig &cfg)
                 : TractionThrottle(node)
           , cfg_(cfg)
-          //, display_(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET)
-          //, a_(BUTTON_A)
-          //, b_(BUTTON_B)
-          //, c_(BUTTON_C)
-          //, d_(BUTTON_D)          
-          //, bell_(BELL)
-          //, lightSwitch_(L_OFF,L_DIM,L_BRIGHT,L_DITCH)
-          //, currentLS_(LightSwitch::Unknown)
+          , display_(SCREEN_WIDTH, SCREEN_HEIGHT, OLED_RESET)
+          , throttlea_(THROTTLEA_Pin::instance())
+          , throttleb_(THROTTLEB_Pin::instance())
+          , a_(BUTTON_A_Pin::instance())
+          , b_(BUTTON_B_Pin::instance())
+          , c_(BUTTON_C_Pin::instance())
+          , d_(BUTTON_D_Pin::instance())          
+          , bell_(BELL_Pin::instance())
+          , lightSwitch_(L_OFF_Pin::instance(),L_DIM_Pin::instance(),L_BRIGHT_Pin::instance(),L_DITCH_Pin::instance())
+          , currentLS_(LightSwitch::Unknown)
           , throttlePosition_(0)
           , brake_(0)
           , horn_(0)
@@ -153,6 +144,7 @@ public:
         register_handler(); 
         ConfigUpdateService::instance()->register_update_listener(this);
     }
+
     ~ESP32ControlStand() 
     {
         unregister_handler();
@@ -197,14 +189,15 @@ public:
     
 private:
     const ESP32ControlStandConfig cfg_;
-    //Adafruit_SSD1306 display_;
-    //Button a_;
-    //Button b_;
-    //Button c_;
-    //Button d_;
-    //Button bell_;
-    //LightSwitch lightSwitch_;
-    //LightSwitch::Position currentLS_;
+    Adafruit_SSD1306 display_;
+    const Gpio *throttlea_, *throttleb_;
+    Button a_;
+    Button b_;
+    Button c_;
+    Button d_;
+    Button bell_;
+    LightSwitch lightSwitch_;
+    LightSwitch::Position currentLS_;
     uint8_t throttlePosition_;
     uint16_t brake_;
     uint16_t horn_;
@@ -235,76 +228,76 @@ private:
     void pollMenu();
     void ringBell() {}
     void updateReverserPosition() {}
-    //Pressed button() {
-    //    a_.read();
-    //    b_.read();
-    //    c_.read();
-    //    d_.read();
-    //    if (a_.pressed()) return(A);
-    //    else if (b_.pressed()) return(B);
-    //    else if (c_.pressed()) return(C);
-    //    else if (d_.pressed()) return(D);
-    //    else return(None);
-    //}
+    Pressed button() {
+        a_.read();
+        b_.read();
+        c_.read();
+        d_.read();
+        if (a_.pressed()) return(A);
+        else if (b_.pressed()) return(B);
+        else if (c_.pressed()) return(C);
+        else if (d_.pressed()) return(D);
+        else return(None);
+    }
     void mainMenu();
     void idleScreen();
     void BrowseScreen();
     void FunctionScreen();
     void ConsistScreen();
-    //void highlightChar() {
-    //    int y = 0;
-    //    int x = 6*searchStringIndex_;
-    //    if (searchStringIndex_ == 20) 
-    //        display_.drawChar(x,y,' ',BLACK,WHITE,1);
-    //    else
-    //        display_.drawChar(x,y,searchString_[searchStringIndex_],BLACK,WHITE,1);
-    //}
-    //void unHighlightChar() {
-    //    int y = 0;
-    //    int x = 6*searchStringIndex_;
-    //    if (searchStringIndex_ == 20)
-    //        display_.drawChar(x,y,' ',WHITE,BLACK,1);
-    //    else
-    //        display_.drawChar(x,y,searchString_[searchStringIndex_],WHITE,BLACK,1);
-    //}
-    //void highlightLetter() {
-    //    int x,y;
-    //    unsigned char ch;
-    //    if (letterIndex_ < 20) 
-    //    {
-    //        y = 8;
-    //        x = 6*letterIndex_;
-    //    } else {
-    //        y = 16;
-    //        x = 6*(letterIndex_-20);
-    //    }
-    //    if (letterIndex_ < 26) ch = 'A' + letterIndex_;
-    //    else if (letterIndex_ < 36) ch = '0' + (letterIndex_-26);
-    //    else if (letterIndex_ == 36) ch = ' ';
-    //    else if (letterIndex_ == 37) ch = '-';
-    //    else if (letterIndex_ == 38) ch = '.';
-    //    else if (letterIndex_ == 39) ch = '<';
-    //    display_.drawChar(x,y,searchString_[searchStringIndex_],BLACK,WHITE,1);
-    //}
-    //void unHighlightLetter() {
-    //    int x,y;
-    //    unsigned char ch;
-    //    if (letterIndex_ < 20) 
-    //    {
-    //        y = 8;
-    //        x = 6*letterIndex_;
-    //    } else {
-    //        y = 16;
-    //        x = 6*(letterIndex_-20);
-    //    }
-    //    if (letterIndex_ < 26) ch = 'A' + letterIndex_;
-    //    else if (letterIndex_ < 36) ch = '0' + (letterIndex_-26);
-    //    else if (letterIndex_ == 36) ch = ' ';
-    //    else if (letterIndex_ == 37) ch = '-';
-    //    else if (letterIndex_ == 38) ch = '.';
-    //    else if (letterIndex_ == 39) ch = '<';
-    //    display_.drawChar(x,y,searchString_[searchStringIndex_],WHITE,BLACK,1);
-    //}
+    void highlightChar() {
+        int y = 0;
+        int x = 6*searchStringIndex_;
+        if (searchStringIndex_ == 20) 
+            display_.drawChar(x,y,' ',BLACK,WHITE,1);
+        else
+            display_.drawChar(x,y,searchString_[searchStringIndex_],BLACK,WHITE,1);
+    }
+    void unHighlightChar() {
+        int y = 0;
+        int x = 6*searchStringIndex_;
+        if (searchStringIndex_ == 20)
+            display_.drawChar(x,y,' ',WHITE,BLACK,1);
+        else
+            display_.drawChar(x,y,searchString_[searchStringIndex_],WHITE,BLACK,1);
+    }
+    void highlightLetter() {
+        int x,y;
+        //unsigned char ch;
+        if (letterIndex_ < 20) 
+        {
+            y = 8;
+            x = 6*letterIndex_;
+        } else {
+            y = 16;
+            x = 6*(letterIndex_-20);
+        }
+        //if (letterIndex_ < 26) ch = 'A' + letterIndex_;
+        //else if (letterIndex_ < 36) ch = '0' + (letterIndex_-26);
+        //else if (letterIndex_ == 36) ch = ' ';
+        //else if (letterIndex_ == 37) ch = '-';
+        //else if (letterIndex_ == 38) ch = '.';
+        //else if (letterIndex_ == 39) ch = '<';
+        display_.drawChar(x,y,searchString_[searchStringIndex_],BLACK,WHITE,1);
+    }
+    void unHighlightLetter() {
+        int x,y;
+        //unsigned char ch;
+        if (letterIndex_ < 20) 
+        {
+            y = 8;
+            x = 6*letterIndex_;
+        } else {
+            y = 16;
+            x = 6*(letterIndex_-20);
+        }
+        //if (letterIndex_ < 26) ch = 'A' + letterIndex_;
+        //else if (letterIndex_ < 36) ch = '0' + (letterIndex_-26);
+        //else if (letterIndex_ == 36) ch = ' ';
+        //else if (letterIndex_ == 37) ch = '-';
+        //else if (letterIndex_ == 38) ch = '.';
+        //else if (letterIndex_ == 39) ch = '<';
+        display_.drawChar(x,y,searchString_[searchStringIndex_],WHITE,BLACK,1);
+    }
     bool match_(std::string trainname)
     {
         for (int i=0;i < searchStringIndex_; i++) {
