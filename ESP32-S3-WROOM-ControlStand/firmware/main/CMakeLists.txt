@@ -1,18 +1,18 @@
 set(deps
     driver
     heap
-    nvs_flash
-    vfs
     app_update
     spiffs
     OpenMRNIDF
     graphics
     I2CDriver
     TCA8418
+    NvsManager
+    Config
     json
     )
                             
-idf_component_register(SRCS esp32s3controlstand.cpp fs.cpp nvs_config.cpp
+idf_component_register(SRCS esp32s3controlstand.cpp fs.cpp
                             BootPauseHelper.cpp ESP32ControlStand.cpp
                             SNIPClient.cpp Button.cpp LightSwitch.cpp
                        REQUIRES "${deps}")
@@ -33,7 +33,6 @@ set(CDI_VERSION "0x0102")
 set_source_files_properties(esp32s3controlstand.cpp PROPERTIES COMPILE_DEFINITIONS "SNIP_PROJECT_PAGE=\"${SNIP_PROJECT_PAGE}\"; SNIP_HW_VERSION=\"${SNIP_HW_VERSION}\"; SNIP_SW_VERSION=\"${SNIP_SW_VERSION}\"; SNIP_PROJECT_NAME=\"${SNIP_PROJECT_NAME}\"; CDI_VERSION=${CDI_VERSION}")
 set_source_files_properties(esp32s3controlstand.cpp PROPERTIES COMPILE_FLAGS "-Wno-implicit-fallthrough -Wno-ignored-qualifiers")
 set_source_files_properties(fs.cpp PROPERTIES COMPILE_FLAGS "-Wno-implicit-fallthrough -Wno-ignored-qualifiers")
-set_source_files_properties(nvs_config.cpp PROPERTIES COMPILE_FLAGS "-Wno-implicit-fallthrough -Wno-ignored-qualifiers")
 set_source_files_properties(Esp32HardwareI2C.cpp PROPERTIES COMPILE_FLAGS "-Wno-implicit-fallthrough -Wno-ignored-qualifiers")
 set_source_files_properties(BootPauseHelper.cpp PROPERTIES COMPILE_FLAGS "-Wno-implicit-fallthrough -Wno-ignored-qualifiers")
 set_source_files_properties(SNIPClient.cpp PROPERTIES COMPILE_FLAGS "-Wno-implicit-fallthrough -Wno-ignored-qualifiers")

@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Dec 12 14:57:27 2022
-//  Last Modified : <221215.1230>
+//  Last Modified : <221216.1336>
 //
 //  Description	
 //
@@ -44,12 +44,13 @@
 #define __CDI_HXX
 #include "sdkconfig.h"
 
-#include <freertos_drivers/esp32/Esp32WiFiConfiguration.hxx>
+#include "NodeIdConfigurationGroup.hxx"
+#include "WiFiConfigurationGroup.hxx"
+#include "ControlStandConfigurationGroup.hxx"
 #include "openlcb/ConfiguredConsumer.hxx"
 #include "openlcb/ConfiguredProducer.hxx"
 #include "openlcb/ConfigRepresentation.hxx"
 #include "openlcb/MemoryConfig.hxx"
-#include "ESP32ControlStand.hxx"
 
 namespace esp32s3controlstand
 {
@@ -78,9 +79,6 @@ CDI_GROUP_ENTRY(mcp0,mcpConfiguration,Name("MCP23017 #1 Configuration"));
 #if defined(CONFIG_IO_BUTTON_LED_BOARD_2)
 CDI_GROUP_ENTRY(mcp1,mcpConfiguration,Name("MCP23017 #2 Configuration"));
 #endif
-#if defined(CONFIG_ESP32_WIFI_ENABLED)
-CDI_GROUP_ENTRY(wifi, WiFiConfiguration, Name("WiFi Configuration"));
-#endif
 CDI_GROUP_ENTRY(controlstand,ESP32ControlStandConfig,Name("ESP32 Control Stand Configuration"));
 CDI_GROUP_END();
 /// This segment is only needed temporarily until there is program code to set
@@ -103,21 +101,27 @@ CDI_GROUP_ENTRY(acdi, openlcb::Acdi);
 CDI_GROUP_ENTRY(userinfo, openlcb::UserInfoSegment,Name("User Info"));
 /// Adds the main configuration segment.
 CDI_GROUP_ENTRY(seg, IoBoardSegment,Name("General Configuration Settings"));
+CDI_GROUP_ENTRY(node, NodeIdConfig, Name("Node ID"));
+#if defined(CONFIG_ESP32_WIFI_ENABLED)
+CDI_GROUP_ENTRY(wifi, WiFiConfiguration, Name("WiFi Configuration"));
+#endif
 /// Adds the versioning segment.
 CDI_GROUP_ENTRY(version, VersionSeg);
 CDI_GROUP_END();
 
 }
 
+// CONTENT BELOW IS GENERATED, DO NOT DIRECTLY EDIT!
 namespace openlcb {
 
 extern const char CDI_DATA[];
+// This is a C++11 raw string.
 const char CDI_DATA[] = R"xmlpayload(<?xml version="1.0" encoding="utf-8"?>
 <cdi xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://openlcb.org/schema/cdi/1/1/cdi.xsd">
 <identification>
 <manufacturer>)xmlpayload" SNIP_PROJECT_PAGE R"xmlpayload(</manufacturer>
 <model>)xmlpayload" SNIP_PROJECT_NAME R"xmlpayload(</model>
-<hardwareVersion>)xmlpayload" SNIP_HW_VERSION R"xmlpayload(</hardwareVersion>
+<hardwareVersion>)xmlpayload" SNIP_HW_VERSION " " CONFIG_IDF_TARGET R"xmlpayload(</hardwareVersion>
 <softwareVersion>)xmlpayload" SNIP_SW_VERSION R"xmlpayload(</softwareVersion>
 </identification>
 <acdi/>
@@ -144,7 +148,7 @@ const char CDI_DATA[] = R"xmlpayload(<?xml version="1.0" encoding="utf-8"?>
 <name>Next event ID</name>
 </int>
 </group>)xmlpayload"
-#if defined(CONFIG_IO_BUTTON_LED_BOARD_1)
+#ifdef CONFIG_IO_BUTTON_LED_BOARD_1
 R"xmlpayload(<group>
 <name>MCP23017 #1 Configuration</name>
 <group replication='8'>
@@ -187,7 +191,7 @@ Formally, the parameter tells how many times of tries, each 30 msec apart, the i
 </group>
 </group>)xmlpayload"
 #endif
-#if defined(CONFIG_IO_BUTTON_LED_BOARD_2)
+#ifdef CONFIG_IO_BUTTON_LED_BOARD_2
 R"xmlpayload(<group>
 <name>MCP23017 #2 Configuration</name>
 <group replication='8'>
@@ -230,94 +234,6 @@ Formally, the parameter tells how many times of tries, each 30 msec apart, the i
 </group>
 </group>)xmlpayload"
 #endif
-#if defined(CONFIG_ESP32_WIFI_ENABLED)
-R"xmlpayload(<group>
-<name>WiFi Configuration</name>
-<int size='1'>
-<name>WiFi Power Savings Mode</name>
-<description>When enabled this allows the ESP32 WiFi radio to use power savings mode which puts the radio to sleep except to receive beacon updates from the connected SSID. This should generally not need to be enabled unless you are powering the ESP32 from a battery.</description>
-<min>0</min>
-<max>1</max>
-<default>0</default>
-<map><relation><property>0</property><value>No</value></relation><relation><property>1</property><value>Yes</value></relation></map>
-</int>
-<int size='1'>
-<name>Connection Mode</name>
-<description>Defines whether to allow accepting connections (according to the Hub configuration), making a connection (according to the Uplink configuration), or both.
-This setting can be set to Disabled if the ESP32 will be using the TWAI (CAN) driver instead for the connection to other nodes.
-Note: it is not recommended to enable the Hub functionality on single-core ESP32 models.</description>
-<min>0</min>
-<max>3</max>
-<default>1</default>
-<map><relation><property>0</property><value>Disabled</value></relation><relation><property>1</property><value>Uplink Only</value></relation><relation><property>2</property><value>Hub Only</value></relation><relation><property>3</property><value>Hub+Uplink</value></relation></map>
-</int>
-<group>
-<name>Hub Configuration</name>
-<description>Configuration settings for an OpenLCB Hub</description>
-<int size='2'>
-<name>Hub Listener Port</name>
-<description>Defines the TCP/IP listener port this node will use when operating as a hub. Most of the time this does not need to be changed.</description>
-<min>1</min>
-<max>65535</max>
-<default>12021</default>
-</int>
-<string size='48'>
-<name>mDNS Service</name>
-<description>mDNS or Bonjour service name, such as _openlcb-can._tcp</description>
-</string>
-<group offset='6'/>
-</group>
-<group>
-<name>Node Uplink Configuration</name>
-<description>Configures how this node will connect to other nodes.</description>
-<int size='1'>
-<name>Search Mode</name>
-<description>Defines the order of how to locate the server to connect to. 'auto' uses the mDNS protocol to find the IP address automatically. 'manual' uses the IP address entered in this settings.</description>
-<min>0</min>
-<max>3</max>
-<default>0</default>
-<map><relation><property>0</property><value>Auto, Manual</value></relation><relation><property>1</property><value>Manual, Auto</value></relation><relation><property>2</property><value>Auto Only</value></relation><relation><property>3</property><value>Manual Only</value></relation></map>
-</int>
-<group>
-<name>Manual Address</name>
-<description>Set IP address here if auto-detection does not work.</description>
-<string size='32'>
-<name>IP Address</name>
-<description>Enter the server IP address. Example: 192.168.0.55</description>
-</string>
-<int size='2'>
-<name>Port Number</name>
-<description>TCP port number of the server. Most of the time this does not need to be changed.</description>
-<min>1</min>
-<max>65535</max>
-<default>12021</default>
-</int>
-</group>
-<group>
-<name>Auto Address</name>
-<description>Advanced settings for the server IP address auto-detection (mDNS).</description>
-<string size='48'>
-<name>mDNS Service</name>
-<description>mDNS or Bonjour service name, such as _openlcb-can._tcp</description>
-</string>
-<string size='48'>
-<name>Only Hostname</name>
-<description>Use when multiple servers provide the same service on the network. If set, selects this specific host name; the connection will fail if none of the servers have this hostname (use correct capitalization!). Example: My JMRI Railroad</description>
-</string>
-</group>
-<int size='1'>
-<name>Reconnect</name>
-<description>If enabled, tries the last known good IP address before searching for the server.</description>
-<min>0</min>
-<max>1</max>
-<default>1</default>
-<map><relation><property>0</property><value>Disabled</value></relation><relation><property>1</property><value>Enabled</value></relation></map>
-</int>
-<group offset='34'/>
-</group>
-<group offset='6'/>
-</group>)xmlpayload"
-#endif
 R"xmlpayload(<group>
 <name>ESP32 Control Stand Configuration</name>
 <int size='1'>
@@ -338,29 +254,64 @@ R"xmlpayload(<group>
 </int>
 </group>
 </segment>
+<segment space='170'>
+<name>Node ID</name>
+<string size='32'>
+<name>Node ID</name>
+<description>Identifier to use for this device.
+NOTE: Changing this value will force a factory reset.</description>
+</string>
+</segment>)xmlpayload"
+#ifdef CONFIG_ESP32_WIFI_ENABLED
+R"xmlpayload(<segment space='171' origin='250'>
+<name>WiFi Configuration</name>
+<int size='1'>
+<name>WiFi mode</name>
+<description>Configures the WiFi operating mode.</description>
+<min>0</min>
+<max>3</max>
+<default>2</default>
+<map><relation><property>0</property><value>Off</value></relation>
+<relation><property>1</property><value>Station Only</value></relation></map>
+</int>
+<string size='21'>
+<name>Hostname prefix</name>
+<description>Configures the hostname prefix used by the node.
+Note: the node ID will be appended to this value.</description>
+</string>
+<group>
+<name>Station Configuration</name>
+<description>Configures the station WiFi interface on the ESP32 node.
+This is used to have the ESP32 join an existing WiFi network.</description>
+<string size='32'>
+<name>SSID</name>
+<description>Configures the SSID that the ESP32 will connect to.</description>
+</string>
+<string size='128'>
+<name>Password</name>
+<description>Configures the password that the ESP32 will use for the station SSID.</description>
+</string>
+</group>
+</segment>
 <segment space='253'>
 <name>Version information</name>
 <int size='1'>
 <name>ACDI User Data version</name>
 <description>Set to 2 and do not change.</description>
 </int>
-</segment>
-</cdi>)xmlpayload";
+</segment>)xmlpayload"
+#endif
+R"xmlpayload(</cdi>
+)xmlpayload";
 extern const size_t CDI_SIZE;
 const size_t CDI_SIZE = sizeof(CDI_DATA);
-extern const uint16_t CDI_EVENT_OFFSETS[] = {
-#if defined(CONFIG_IO_BUTTON_LED_BOARD_1)
-    140, 148, 164, 172, 188, 196, 212, 220, 236, 244, 260, 268, 284, 292, 308,
-    316, 340, 348, 372, 380, 404, 412, 436, 444, 468, 476, 500, 508, 532, 540, 
-    564, 572, 
-#endif
-#if defined(CONFIG_IO_BUTTON_LED_BOARD_2)
-    588, 596, 612, 620, 636, 644, 660, 668, 684, 692, 708, 716, 732, 740, 756, 
-    764, 788, 796, 820, 828, 852, 860, 884, 892, 916, 924, 948, 956, 980, 988, 
-    1012, 1020, 
-#endif
-    0};
-} // namespace openlcb
 
+}  // namespace openlcb
+
+// skipping config 1
+namespace openlcb {
+extern const uint16_t CDI_EVENT_OFFSETS[] = {
+  140, 148, 164, 172, 188, 196, 212, 220, 236, 244, 260, 268, 284, 292, 308, 316, 340, 348, 372, 380, 404, 412, 436, 444, 468, 476, 500, 508, 532, 540, 564, 572, 588, 596, 612, 620, 636, 644, 660, 668, 684, 692, 708, 716, 732, 740, 756, 764, 788, 796, 820, 828, 852, 860, 884, 892, 916, 924, 948, 956, 980, 988, 1012, 1020, 0};
+}  // namespace openlcb
 #endif // __CDI_HXX
 

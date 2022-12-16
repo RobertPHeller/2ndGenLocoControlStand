@@ -8,7 +8,7 @@
 #  Author        : $Author$
 #  Created By    : Robert Heller
 #  Created       : Wed Sep 21 11:39:10 2022
-#  Last Modified : <221215.1157>
+#  Last Modified : <221216.1326>
 #
 #  Description	
 #
@@ -45,21 +45,22 @@
 OPENMRNPATH=$(HOME)/openmrn
 OPENMRNIDFPATH=../../OpenMRNIDF
 
-CDI.xmlout : compile_cdi
-	./compile_cdi >/dev/null
+cdidata.hxx : compile_cdi 
+	./compile_cdi >cdidata.hxx
 	
 EXTRAFLAGS= -DSNIP_PROJECT_PAGE=\"https://www.deepsoft.com/\" \
             -DSNIP_HW_VERSION=\"1.0.0\" \
             -DSNIP_SW_VERSION=\"1.0\" \
             -DSNIP_PROJECT_NAME=\"Dummy\" \
             -DCDI_VERSION=\"0x0100\" \
-            -DCDIONLY=\"1\"
+            -DCONFIG_IO_BUTTON_LED_BOARD_1=\"1\" \
+            -DCONFIG_IO_BUTTON_LED_BOARD_2=\"1\" \
+            -DCONFIG_ESP32_WIFI_ENABLED=\"1\"
 
 
-compile_cdi: config.hxx CompileCdiMain.cxx
-	g++ -o $@ $(EXTRAFLAGS) -I. -I../build/config/ \
-		-I../components/graphics/include/ \
-		-I../main -I$(OPENMRNIDFPATH)/src -I$(OPENMRNPATH)/src \
+compile_cdi: ../include/cdi.hxx CompileCdiMain.cxx
+	g++ -o $@ $(EXTRAFLAGS) -I. -I../../../build/config/ \
+		-I../include -I$(OPENMRNIDFPATH)/src -I$(OPENMRNPATH)/src \
 		-I$(OPENMRNPATH)/include $(CDIEXTRA)  --std=c++11 -MMD \
 		-MF $@.d $(CXXFLAGSEXTRA) CompileCdiMain.cxx
 	

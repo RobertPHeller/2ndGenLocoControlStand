@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Oct 7 18:43:06 2019
-//  Last Modified : <221215.1422>
+//  Last Modified : <221216.1232>
 //
 //  Description	
 //
@@ -54,6 +54,7 @@
 #include "executor/StateFlow.hxx"
 #include "utils/ConfigUpdateListener.hxx"
 #include "utils/ConfigUpdateService.hxx"
+#include "ControlStandConfigurationGroup.hxx"
 #include "Adafruit_SSD1306.h"
 #include "Button.hxx"
 #include "LightSwitch.hxx"
@@ -63,19 +64,6 @@
 #include "SNIPClient.hxx"
 #include <map>
 #include <string>
-
-/// CDI Configuration for a @ref ESP32ControlStand
-CDI_GROUP(ESP32ControlStandConfig)
-CDI_GROUP_ENTRY(entropy,openlcb::Uint8ConfigEntry,
-                Name("Entropy Factor"),Default(1)); // about 2 scale mph
-CDI_GROUP_ENTRY(acceleration,openlcb::Uint8ConfigEntry,
-                Name("Acceleration Factor"),Default(1)); // about 2 scale mph
-CDI_GROUP_ENTRY(brake,openlcb::Uint8ConfigEntry,
-                Name("Brake Factor"),Default(1)); // about 2 scale mph
-CDI_GROUP_ENTRY(maximumspeed,openlcb::Uint8ConfigEntry,
-                Name("Maximum Speed"),Default(45)); // about 100 scale MPH
-CDI_GROUP_END();
-                
 
 using TrainIDMap   = std::map<openlcb::NodeID, std::string>;
 

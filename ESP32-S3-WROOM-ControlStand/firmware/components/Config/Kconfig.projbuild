@@ -25,6 +25,22 @@ menu "OpenLCB Configuration"
         bool "Enable TWAI (CAN) interface"
         default y
 
+    config OLCB_NODEID_MEMORY_SPACE_ID
+        hex
+        default 0xAA
+                            
+    config OLCB_NODEID_MEMORY_SPACE_OFFSET
+        int
+        default 0
+                                
+    config OLCB_WIFI_MEMORY_SPACE_ID
+        hex
+        default 0xAB
+                                
+    config OLCB_WIFI_MEMORY_SPACE_OFFSET
+        int
+        default 250
+
     menu "Advanced"
         choice OLCB_WIFI_MODE
             bool "WiFi Uplink/Hub Behavior"
@@ -102,6 +118,7 @@ menu "OpenLCB Configuration"
             int "Number of TWAI (CAN) packets to queue for TX"
             range 16 128
             default 32
+            
     endmenu
 endmenu
 
@@ -136,12 +153,8 @@ endmenu
 menu "WiFi Configuration"
     choice WIFI_MODE
         bool "WiFi Mode"
-        config WIFI_MODE_SOFTAP
-            bool "SoftAP only"
         config WIFI_MODE_STATION
             bool "Station only"
-        config WIFI_MODE_SOFTAP_STATION
-            bool "SoftAP and Station"
         config WIFI_MODE_OFF
             bool "Off"
     endchoice
@@ -150,76 +163,23 @@ menu "WiFi Configuration"
         int
         default 0 if WIFI_MODE_OFF
         default 1 if WIFI_MODE_STATION
-        default 2 if WIFI_MODE_SOFTAP
-        default 3 if WIFI_MODE_SOFTAP_STATION
 
     config WIFI_HOSTNAME_PREFIX
         string "Hostname prefix"
-        default "esp32cs_"
+        default "esp32thottle_"
         help
             The OpenLCB node identifier will be appended to this value, ie:
-            esp32cs_0502010300000.
+            esp32thottle_0502010300000.
             Note: The maximum hostname length is 32 characters.
-
-    config WIFI_SOFTAP_SSID
-        string "SoftAP SSID"
-        default "esp32cctlstand"
-        depends on WIFI_MODE_SOFTAP || WIFI_MODE_SOFTAP_STATION
-
-    config WIFI_SOFTAP_PASSWORD
-        string "SoftAP Password"
-        default "esp32cctlstand"
-        depends on WIFI_MODE_SOFTAP || WIFI_MODE_SOFTAP_STATION
-        help
-            Note: When the authentication mode uses WPA (any version) the
-            password must be at least eight characters in length.
-
-    config WIFI_SOFTAP_CHANNEL
-        int "SoftAP Channel"
-        default 1
-        range 1 14
-        depends on WIFI_MODE_SOFTAP || WIFI_MODE_SOFTAP_STATION
-        help
-            This configures the channel that will be used by the SoftAP. There
-            are fourteen channels available to pick from and some are better
-            than others. The best channels to pick from are: 1, 6, 11 since
-            these do not overlap with other channels.
 
     config WIFI_STATION_SSID
         string "Station SSID"
-        depends on WIFI_MODE_STATION || WIFI_MODE_SOFTAP_STATION
+        depends on WIFI_MODE_STATION
 
     config WIFI_STATION_PASSWORD
         string "Station Password"
-        depends on WIFI_MODE_STATION || WIFI_MODE_SOFTAP_STATION
+        depends on WIFI_MODE_STATION
 
-    config SNTP
-        bool "Enable SNTP synchronization"
-        default n
-        depends on WIFI_MODE_STATION || WIFI_MODE_SOFTAP_STATION
-        help
-            By enabling this option the ESP32 will attempt to synchronize the
-            system time with an external SNTP server once per hour.
-
-    config SNTP_SERVER
-        string "SNTP Server"
-        default "pool.ntp.org"
-        depends on SNTP
-
-    config TIMEZONE
-        string "Timezone"
-        default "UTC0"
-        depends on SNTP
-        help
-            This is the timezone that the ESP32 OpenLCB IO Board is running in.
-            The value must follow POSIX notation.
-            A few common values:
-            * PST8PDT,M3.2.0,M11.1.0 -- UTC-8 with automatic DST adjustment
-            * MST7MDT,M3.2.0,M11.1.0 -- UTC-7 with automatic DST adjustment
-            * CST6CDT,M3.2.0,M11.1.0 -- UTC-6 with automatic DST adjustment
-            * EST5EDT,M3.2.0,M11.1.0 -- UTC-5 with automatic DST adjustment
-            A complete list can be seen here in the second column:
-            https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv
 endmenu
 
 menu "Advanced Configuration"
