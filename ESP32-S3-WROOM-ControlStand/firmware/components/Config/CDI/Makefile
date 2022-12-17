@@ -8,7 +8,7 @@
 #  Author        : $Author$
 #  Created By    : Robert Heller
 #  Created       : Wed Sep 21 11:39:10 2022
-#  Last Modified : <221216.1326>
+#  Last Modified : <221217.1140>
 #
 #  Description	
 #
@@ -45,17 +45,10 @@
 OPENMRNPATH=$(HOME)/openmrn
 OPENMRNIDFPATH=../../OpenMRNIDF
 
-cdidata.hxx : compile_cdi 
-	./compile_cdi >cdidata.hxx
+../include/cdidata.hxx : compile_cdi SNIPEDIT.sed
+	./compile_cdi |sed -f SNIPEDIT.sed >../include/cdidata.hxx
 	
-EXTRAFLAGS= -DSNIP_PROJECT_PAGE=\"https://www.deepsoft.com/\" \
-            -DSNIP_HW_VERSION=\"1.0.0\" \
-            -DSNIP_SW_VERSION=\"1.0\" \
-            -DSNIP_PROJECT_NAME=\"Dummy\" \
-            -DCDI_VERSION=\"0x0100\" \
-            -DCONFIG_IO_BUTTON_LED_BOARD_1=\"1\" \
-            -DCONFIG_IO_BUTTON_LED_BOARD_2=\"1\" \
-            -DCONFIG_ESP32_WIFI_ENABLED=\"1\"
+EXTRAFLAGS= 
 
 
 compile_cdi: ../include/cdi.hxx CompileCdiMain.cxx

@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Dec 12 13:38:08 2022
-//  Last Modified : <221215.1648>
+//  Last Modified : <221217.1146>
 //
 //  Description	
 //
@@ -44,6 +44,7 @@ static const char rcsid[] = "@(#) : $Id$";
 
 #include "sdkconfig.h"
 #include "cdi.hxx"
+#include "cdidata.hxx"
 #include "DelayRebootHelper.hxx"
 #include "EventBroadcastHelper.hxx"
 #include "FactoryResetHelper.hxx"

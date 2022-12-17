@@ -25,10 +25,10 @@ namespace openlcb {
 const SimpleNodeStaticValues SNIP_STATIC_DATA =
     {
         4,
-        SNIP_PROJECT_PAGE,
-        SNIP_PROJECT_NAME,
-        SNIP_HW_VERSION,
-        SNIP_SW_VERSION
+        "@SNIP_PROJECT_PAGE@",
+        "@SNIP_PROJECT_NAME@",
+        "@SNIP_HW_VERSION@",
+        "@SNIP_SW_VERSION@"
     };
 
 }

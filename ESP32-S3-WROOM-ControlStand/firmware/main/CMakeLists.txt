@@ -39,3 +39,23 @@ set_source_files_properties(SNIPClient.cpp PROPERTIES COMPILE_FLAGS "-Wno-implic
 set_source_files_properties(ESP32ControlStand.cpp PROPERTIES COMPILE_FLAGS "-Wno-implicit-fallthrough -Wno-ignored-qualifiers")
 set_source_files_properties(Button.cpp PROPERTIES COMPILE_FLAGS "-Wno-implicit-fallthrough -Wno-ignored-qualifiers")
 set_source_files_properties(LightSwitch.cpp PROPERTIES COMPILE_FLAGS "-Wno-implicit-fallthrough -Wno-ignored-qualifiers")
+
+set(CDIDEPS
+    ${CMAKE_CURRENT_SOURCE_DIR}/../components/Config/include/ControlStandConfigurationGroup.hxx
+    ${CMAKE_CURRENT_SOURCE_DIR}/../components/Config/include/NodeIdConfigurationGroup.hxx
+    ${CMAKE_CURRENT_SOURCE_DIR}/../components/Config/include/WiFiConfigurationGroup.hxx
+    ${CMAKE_CURRENT_SOURCE_DIR}/../components/Config/include/cdi.hxx
+   )
+
+add_custom_command(OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/../components/Config/include/cdidata.hxx"
+                   COMMAND make -C ${CMAKE_CURRENT_SOURCE_DIR}/../components/Config/CDI 
+                   DEPENDS "${CDIDEPS}"
+                   VERBATIM
+                  )
+
+add_custom_target(FORCE 
+                  ALL
+                  DEPENDS                                                     
+                  "${CMAKE_CURRENT_SOURCE_DIR}/../components/Config/include/cdidata.hxx"
+                 )
+                                                                      
