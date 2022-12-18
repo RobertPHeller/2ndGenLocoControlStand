@@ -7,8 +7,8 @@
 //  Date          : $Date$
 //  Author        : $Author$
 //  Created By    : Robert Heller
-//  Created       : Mon Jul 18 13:22:30 2022
-//  Last Modified : <220921.1446>
+//  Created       : Sat Dec 17 14:34:03 2022
+//  Last Modified : <221218.1335>
 //
 //  Description	
 //
@@ -42,25 +42,24 @@
 
 static const char rcsid[] = "@(#) : $Id$";
 
-#include <algorithm>
-#include <ctype.h>
-#include <driver/i2c.h>
-#include <driver/uart.h>
 #include <esp_err.h>
 #include <esp_log.h>
 #include <esp_ota_ops.h>
 #include <esp_system.h>
 #include <esp_task_wdt.h>
 #include <esp32s3/rom/rtc.h>
-#include "nvs_config.hxx"
-#include "hardware.hxx"
-#include <freertos_includes.h>
+#include <driver/uart.h>
+#include "NvsManager.hxx"
 #include "BootPauseHelper.hxx"
+#include "utils/logging.h"
+#include "string.h"
+#include "NvsManager.hxx"
 
-
+namespace esp32s3controlstand
+{
 void BootPauseHelper::CheckPause()
 {
-    bool need_driver_unload = !uart_is_driver_installed(UART_NUM_0);
+        bool need_driver_unload = !uart_is_driver_installed(UART_NUM_0);
     LOG(VERBOSE,"[CheckPause] need_driver_unload = %d",need_driver_unload);
     if (need_driver_unload)
     {
@@ -90,6 +89,7 @@ void BootPauseHelper::CheckPause()
     if (bytesavailable > 0)
     {
         PauseConsole();
+        NvsManager::instance()->CheckPersist();
     }
     if (need_driver_unload)
     {
@@ -123,21 +123,31 @@ void BootPauseHelper::PauseConsole()
             {
                 uint64_t nid = ParseNode(&receivebuffer[1],len-1);
                 uart_write_bytes(UART_NUM_0,"\r\n",2);
-                set_node_id(nid);
+                NvsManager::instance()->node_id(nid);
                 int l = snprintf(transmitBuffer,sizeof(transmitBuffer),"\r\nSet Node ID: %0llx\r\n",nid);
                 uart_write_bytes(UART_NUM_0,transmitBuffer,l);
                 break;
             }
         case BOOTLOADER:
-            config_->bootloader_req = true;
-            save_config(config_);
+            NvsManager::instance()->force_bootloader();
             break;
         case EVENTRESET:
-            config_->reset_events_req = true;
-            save_config(config_);
+            NvsManager::instance()->force_reset_events();
             break;
         case FACTORYRESET:
-            force_factory_reset();
+            NvsManager::instance()->force_factory_reset();
+            break;
+        case SETSSID:
+            NvsManager::instance()->station_ssid(GetString(&receivebuffer[1],len-1));
+            break;
+        case SETPASS:
+            NvsManager::instance()->station_pass(GetString(&receivebuffer[1],len-1));
+            break;
+        case SETHOST:
+            NvsManager::instance()->hostname_prefix(GetString(&receivebuffer[1],len-1));
+            break;
+        case SETWIFI:
+            NvsManager::instance()->wifi_mode(GetMode(&receivebuffer[1],len-1));
             break;
         case RESUME:
             return;
@@ -219,3 +229,32 @@ size_t BootPauseHelper::ReadLine(uart_port_t uart_num,char *buffer,
     return numread;
 }
 
+wifi_mode_t BootPauseHelper::GetMode(char *buffer,size_t bufferlen)
+{
+    char *p = buffer;
+    char *end = buffer+bufferlen;
+    while (*p <= ' ' && p < end) p++;
+    if (p >= end) return WIFI_MODE_STA;
+    if (strncasecmp("ON",p,2) == 0) {return WIFI_MODE_STA;}
+    else if (strncasecmp("OFF",p,3) == 0) {return WIFI_MODE_NULL;}
+    else if (strncasecmp("YES",p,3) == 0) {return WIFI_MODE_STA;}
+    else if (strncasecmp("NO",p,2) == 0) {return WIFI_MODE_NULL;}
+    else {return WIFI_MODE_STA;}
+}
+
+const char *BootPauseHelper::GetString(char *buffer,size_t bufferlen)
+{
+    char *p = buffer;
+    char *end = buffer+bufferlen;
+    while (*p <= ' ' && p < end) p++;
+    if (p >= end) return "";
+    while (*(end-1) <= ' ' && end > p) end--;
+    *end = '\0';
+    return p;
+}
+
+
+
+DEFINE_SINGLETON_INSTANCE(BootPauseHelper);
+
+}

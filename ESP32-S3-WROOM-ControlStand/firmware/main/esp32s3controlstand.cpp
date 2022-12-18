@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Dec 12 13:38:08 2022
-//  Last Modified : <221217.1146>
+//  Last Modified : <221218.1336>
 //
 //  Description	
 //
@@ -52,7 +52,6 @@ static const char rcsid[] = "@(#) : $Id$";
 #include "fs.hxx"
 #include "hardware.hxx"
 #include "NodeRebootHelper.hxx"
-#include "nvs_config.hxx"
 
 #include <algorithm>
 #include <driver/i2c.h>
@@ -73,9 +72,10 @@ static const char rcsid[] = "@(#) : $Id$";
 #include <utils/constants.hxx>
 #include <utils/format_utils.hxx>
 #include "Esp32HardwareI2C.hxx"
-#include "BootPauseHelper.hxx"
 #include "MCP23017Gpio.hxx"
 #include "Adafruit_TCA8418.hxx"
+#include "NvsManager.hxx"
+#include "BootPauseHelper.hxx"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Increase the CAN RX frame buffer size to reduce overruns when there is high
@@ -154,6 +154,22 @@ void app_main()
     Esp32HardwareI2C::Mount("/dev/i2c");
     i2c0.hw_init();
     
+    esp32s3controlstand::NvsManager nvs;
+    nvs.init(reset_reason);
+    // Ensure the LEDs are both ON for PauseCheck
+    ACT1_Pin::instance()->set();
+    ACT2_Pin::instance()->set();
+    
+    LOG(INFO, "[BootPauseHelper] starting...");
+    
+    esp32s3controlstand::BootPauseHelper pause;
+    
+    pause.CheckPause();
+    LOG(INFO, "[BootPauseHelper] returned...");
+    
+    // Ensure the LEDs are both OFF when we startup.
+    ACT1_Pin::instance()->clr();
+    ACT2_Pin::instance()->clr();
     
 }
 

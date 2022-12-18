@@ -8,7 +8,7 @@
 #  Author        : $Author$
 #  Created By    : Robert Heller
 #  Created       : Wed Sep 21 11:39:10 2022
-#  Last Modified : <221217.1140>
+#  Last Modified : <221218.0815>
 #
 #  Description	
 #
@@ -51,7 +51,10 @@ OPENMRNIDFPATH=../../OpenMRNIDF
 EXTRAFLAGS= 
 
 
-compile_cdi: ../include/cdi.hxx CompileCdiMain.cxx
+compile_cdi: ../include/cdi.hxx ../include/ControlStandConfigurationGroup.hxx \
+	     ../include/WiFiConfigurationGroup.hxx \
+	     ../include/NodeIdConfigurationGroup.hxx CompileCdiMain.cxx \
+	     ../../../sdkconfig
 	g++ -o $@ $(EXTRAFLAGS) -I. -I../../../build/config/ \
 		-I../include -I$(OPENMRNIDFPATH)/src -I$(OPENMRNPATH)/src \
 		-I$(OPENMRNPATH)/include $(CDIEXTRA)  --std=c++11 -MMD \

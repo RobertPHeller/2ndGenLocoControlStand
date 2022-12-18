@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Dec 12 14:57:27 2022
-//  Last Modified : <221217.1137>
+//  Last Modified : <221218.1418>
 //
 //  Description	
 //
@@ -79,7 +79,7 @@ CDI_GROUP_ENTRY(mcp0,mcpConfiguration,Name("MCP23017 #1 Configuration"));
 #if defined(CONFIG_IO_BUTTON_LED_BOARD_2)
 CDI_GROUP_ENTRY(mcp1,mcpConfiguration,Name("MCP23017 #2 Configuration"));
 #endif
-CDI_GROUP_ENTRY(controlstand,ESP32ControlStandConfig,Name("ESP32 Control Stand Configuration"));
+CDI_GROUP_ENTRY(controlstand,ESP32ControlStandConfig,Name("ESP32 2nd Gen Control Stand (throttle) Configuration"));
 CDI_GROUP_END();
 /// This segment is only needed temporarily until there is program code to set
 /// the ACDI user data version byte.
