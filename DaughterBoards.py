@@ -8,7 +8,7 @@
 #  Author        : $Author$
 #  Created By    : Robert Heller
 #  Created       : Tue Dec 22 00:56:49 2020
-#  Last Modified : <220807.1717>
+#  Last Modified : <221219.1327>
 #
 #  Description	
 #
@@ -508,10 +508,148 @@ class NewButtonLEDBoard(object):
                 .extrude(Base.Vector(0,0,self._headerHeight))
 
 
+class KeypadBoard(object):
+    @staticmethod
+    def Length():
+        return 45.593
+    @staticmethod
+    def Width():
+        return 27.940
+    _boardMHXY = [(3.81, 3.81), (24.13, 3.81), (24.13, 41.91), (3.81, 41.91)]
+    _holeDiameter = 2.5
+    _boardThick = 1.5875
+    _headerXOffset = 6.985
+    _headerYOffset = 45.593+5.715-(6.706+5.588)
+    _headerWidth = 13.97
+    _headerLength = 6.706+5.588
+    # header is on the *bottom*
+    _headerHeight = 3.81
+    _buttonSpaceX = 5.08
+    _buttonSpaceY = 5.08
+    _buttonSQSz   = 3.81
+    _buttonSQHsz  = 4.445
+    _buttonSQFsz  = 4.76250
+    _buttonPlungerDia = 1.5
+    _buttonHeight = 1.2
+    _buttonPlungerHeight = 1.6
+    _button1YOffset = 22.860
+    _button1XOffset = 8.484
+    _buttonWidth    = 3
+    _buttonLength   = 2.5
+    ButtonNames = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "Star", "0", "Hash"]
+    def __init__(self,name,origin):
+        self.name = name
+        if not isinstance(origin,Base.Vector):
+            raise RuntimeError("origin is not a Vector!")
+        self.origin = origin
+        self._board = Part.makePlane(KeypadBoard.Width(),\
+                                     KeypadBoard.Length(),\
+                                     self.origin)\
+                            .extrude(Base.Vector(0,0,self._boardThick))
+        Z = self.origin.z
+        for i in range(1,5):
+            self._board = self._board.cut(self.mountingHole(i,Z,self._boardThick))
+        self._header = self._makeheader()
+        self._buttons = list()
+        self._plungers = list()
+        for by in range(4):
+            for bx in range(3):
+                self._makeButton(bx,by)
+    def show(self):
+        doc = App.activeDocument()
+        obj = doc.addObject("Part::Feature",self.name+"_board")
+        obj.Shape=self._board
+        obj.Label=self.name+"_board"
+        obj.ViewObject.ShapeColor=tuple([0.0,1.0,0.0])
+        ntemp = self.name+"_header"
+        obj = doc.addObject("Part::Feature",ntemp)
+        obj.Shape=self._header
+        obj.Label=self.name+"_header"
+        obj.ViewObject.ShapeColor=tuple([1.0,1.0,0.0])
+        for button,bname in zip(self._buttons,self.ButtonNames):
+            ntemp = self.name+"_button_"+bname
+            obj = doc.addObject("Part::Feature",ntemp)
+            obj.Shape=button
+            obj.Label=ntemp
+            obj.ViewObject.ShapeColor=tuple([.7,.7,.7])
+        for plunger,bname in zip(self._plungers,self.ButtonNames):
+            ntemp = self.name+"_plunger_"+bname
+            obj = doc.addObject("Part::Feature",ntemp)
+            obj.Shape=plunger
+            obj.Label=ntemp
+            obj.ViewObject.ShapeColor=tuple([0.0,0.0,0.0])
+    def mountingHole(self,i,base,height):
+        holeX,holeY = self._boardMHXY[i-1]
+        holeX+=self.origin.x
+        holeY+=self.origin.y
+        holebottom=Base.Vector(holeX,holeY,base)
+        return Part.Face(Part.Wire(Part.makeCircle(self._holeDiameter/2.0,\
+                                                   holebottom)))\
+                        .extrude(Base.Vector(0,0,height))
+    def standoff(self,i,base,height,diameter=6):
+        holeX,holeY = self._boardMHXY[i-1]
+        holeX+=self.origin.x
+        holeY+=self.origin.y
+        holebottom=Base.Vector(holeX,holeY,base)
+        return Part.Face(Part.Wire(Part.makeCircle(diameter/2.0,\
+                                                   holebottom)))\
+                        .extrude(Base.Vector(0,0,height))
+    def _makeheader(self):
+        offset = Base.Vector(self._headerXOffset,\
+                             self._headerYOffset,\
+                             -self._headerHeight)
+        horigin = self.origin.add(offset)
+        return Part.makePlane(self._headerWidth,self._headerLength,horigin)\
+                .extrude(Base.Vector(0,0,self._headerHeight))
+    def _makeButton(self,buttonXindex,buttonYindex):
+        centerX = self.origin.x+self._button1XOffset+(self._buttonSpaceX*buttonXindex)
+        centerY = self.origin.x+self._button1YOffset-(self._buttonSpaceY*buttonYindex)
+        baseOrigin = Base.Vector(centerX-(self._buttonWidth/2),\
+                                 centerY-(self._buttonLength/2),\
+                                 self.origin.z+self._boardThick)
+        self._buttons.append(Part.makePlane(self._buttonWidth,self._buttonLength,baseOrigin).extrude(Base.Vector(0,0,self._buttonHeight)))
+        plungerOrigin = Base.Vector(centerX,\
+                                    centerY,\
+                                    self.origin.z+self._boardThick+self._buttonHeight)
+        plungerHeight = self._buttonPlungerHeight-self._buttonHeight
+        self._plungers.append(\
+            Part.Face(Part.Wire(Part.makeCircle(\
+                                (self._buttonPlungerDia/2.0),\
+                                plungerOrigin)))\
+                     .extrude(Base.Vector(0,0,plungerHeight)))
+    def ButtonSQHole(self,buttonXindex,buttonYindex,Z,thick):
+        centerX = self.origin.x+self._button1XOffset+(self._buttonSpaceX*buttonXindex)
+        centerY = self.origin.x+self._button1YOffset-(self._buttonSpaceY*buttonYindex)
+        holeOrigin = Base.Vector(centerX-(self._buttonSQHsz/2.0),\
+                                 centerY-(self._buttonSQHsz/2.0),\
+                                 Z)
+        return Part.makePlane(self._buttonSQHsz,self._buttonSQHsz,holeOrigin) \
+                    .extrude(Base.Vector(0,0,thick))
+    def ButtonSQ(self,buttonXindex,buttonYindex,Z,thick=(1/16)*25.4):
+        centerX = self.origin.x+self._button1XOffset+(self._buttonSpaceX*buttonXindex)
+        centerY = self.origin.x+self._button1YOffset-(self._buttonSpaceY*buttonYindex)
+        sqZ=self.origin.z+self._boardThick+self._buttonPlungerHeight
+        plungerHeight = self._buttonPlungerHeight-self._buttonHeight
+        sqThick=(Z+thick+plungerHeight)-sqZ
+        squareOrigin = Base.Vector(centerX-(self._buttonSQSz/2.0),\
+                                   centerY-(self._buttonSQSz/2.0),\
+                                   sqZ)
+        sq = Part.makePlane(self._buttonSQSz,self._buttonSQSz,squareOrigin)\
+                .extrude(Base.Vector(0,0,sqThick))
+        squareOrigin = Base.Vector(centerX-(self._buttonSpaceX/2.0),\
+                                   centerY-(self._buttonSpaceX/2.0),\
+                                   sqZ)
+        sqThick=Z-sqZ
+        sq = sq.fuse(Part.makePlane(self._buttonSQFsz,\
+                                    self._buttonSQFsz,\
+                                    squareOrigin)\
+                         .extrude(Base.Vector(0,0,sqThick)))
+        return sq
+
 if __name__ == '__main__':
     App.ActiveDocument=App.newDocument("Temp")
     doc = App.activeDocument()
-    newblboard = NewButtonLEDBoard("buttonledboard",Base.Vector(0,0,0))
-    newblboard.show()
+    keypad = KeypadBoard("keypad",Base.Vector(0,0,0))
+    keypad.show()
     Gui.SendMsgToActiveView("ViewFit")
     

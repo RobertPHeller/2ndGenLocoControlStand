@@ -8,7 +8,7 @@
 #  Author        : $Author$
 #  Created By    : Robert Heller
 #  Created       : Sun Aug 7 12:10:55 2022
-#  Last Modified : <220809.1239>
+#  Last Modified : <221219.1355>
 #
 #  Description	
 #
@@ -106,11 +106,11 @@ class HandHeldBoxCommon(object):
                             
 
 class HandHeldBoxNoLEDBottons(HandHeldBoxCommon):
-    _length = NewMainBoard.Length()+50.8
+    _length = NewMainBoard.Length()+50.8+KeypadBoard.Length()
     _postsXY = [(5.08, 5.08), (HandHeldBoxCommon._outerWidth-5.08, 5.08), \
-                 (5.08, (NewMainBoard.Length()+50.8)-5.08), \
+                 (5.08, (NewMainBoard.Length()+50.8+KeypadBoard.Length())-5.08), \
                  ((HandHeldBoxCommon._outerWidth-5.08, \
-                  (NewMainBoard.Length()+50.8)-5.08))]
+                  (NewMainBoard.Length()+50.8+KeypadBoard.Length())-5.08))]
     _postdiameter = 6.0
     _postholediameter = 2.5
     def __init__(self,name,origin):
@@ -217,22 +217,23 @@ class HandHeldBoxNoLEDBottons(HandHeldBoxCommon):
         X = self.origin.x
         Y = self.origin.y
         Z = self.origin.z
+        slotsOffset = dispY - 16.35
         throttleSlotOrigin = Base.Vector(X + (self._outerWidth/2.0)-10,\
-                                         dispY - 10,\
+                                         slotsOffset,\
                                          toporig.z)
         self._top = self._top.cut(Slot(throttleSlotOrigin,width=6,\
                                        orientation="horizontal",\
                                        length = 25.4+6,\
                                        depth=self._wallThick))
         reverserSlotOrigin = Base.Vector(X+(self._outerWidth/2.0)+15,\
-                                         dispY - 25,\
+                                         slotsOffset - 15,\
                                          toporig.z)
         self._top = self._top.cut(Slot(reverserSlotOrigin,width=6,\
                                        orientation="horizontal",\
                                        length=15.24 + 6,\
                                        depth=self._wallThick))
         brakeSlotOrigin = Base.Vector(X+(self._outerWidth/2.0)-10,\
-                                      dispY - 38,\
+                                      slotsOffset - 28,\
                                       toporig.z)
         self._top = self._top.cut(Slot(brakeSlotOrigin,width=6,\
                                        orientation="horizontal",\
@@ -241,7 +242,7 @@ class HandHeldBoxNoLEDBottons(HandHeldBoxCommon):
         throttleReverserBrakeBracket = \
                 Bracket(name+"_throttleReverserBrakeBracket",\
                         Base.Vector(X+(self._outerWidth/2.0),\
-                                    dispY - 20,\
+                                    slotsOffset - 10,\
                                     toporig.z-self._wallThick),\
                         orientation="horizontal",\
                         bracketthick=3.0,\
@@ -261,7 +262,7 @@ class HandHeldBoxNoLEDBottons(HandHeldBoxCommon):
         self._throttleLever = StraightControlLever(name+"_throttleLever",\
                                     Base.Vector(tX,\
                                                 tY,\
-                                                (tZ-33.5)),\
+                                                (tZ-25.4-6.35)+self._wallThick),\
                                     shaftlength=30,\
                                     handlecolor=tuple([0.0,0.0,1.0]),\
                                     dholediameter=6.35,\
@@ -280,31 +281,51 @@ class HandHeldBoxNoLEDBottons(HandHeldBoxCommon):
         self._reverserLever = StraightControlLever(name+"_reverserLever",\
                                     Base.Vector(rX,\
                                                 rY,\
-                                                (rZ-22)),\
+                                                (rZ-13.2-6)+self._wallThick),\
                                     shaftlength=20,\
                                     handlecolor=tuple([0.0,0.0,0.0]),\
                                     dholediameter=6,\
                                     dholeflatsize=4.5,\
                                     direction='DZ')
-                                                   
-        
+        keypadorigin = toporig.add(Base.Vector(HandHeldBoxCommon._wallThick+((HandHeldBoxCommon._innerWidth-KeypadBoard.Width())/2.0),\
+                                               self._postdiameter,\
+                                               -(self._wallThick+5.08)))
+        self.keypad = KeypadBoard(name+"_keypad",keypadorigin)
+        self.buttons = list()
+        for by in range(4):
+            for bx in range(3):
+                self._top = self._top.cut(self.keypad.ButtonSQHole(bx,by,toporig.z,self._wallThick))
+                self.buttons.append(self.keypad.ButtonSQ(bx,by,toporig.z,self._wallThick))
+        for i in range(1,5):
+            self._top = self._top.cut(self.keypad.mountingHole(i,toporig.z,self._wallThick))
+            s = self.keypad.standoff(i,toporig.z-5.08,5.08)
+            self._top = self._top.fuse(s)
     def show(self):
         doc = App.activeDocument()
-        #obj = doc.addObject("Part::Feature",self.name+"_bottom")
-        #obj.Shape=self._bottom
-        #obj.Label=self.name+"_bottom"
-        #obj.ViewObject.ShapeColor=tuple([1.0,1.0,0.0])
+        obj = doc.addObject("Part::Feature",self.name+"_bottom")
+        obj.Shape=self._bottom
+        obj.Label=self.name+"_bottom"
+        obj.ViewObject.ShapeColor=tuple([1.0,1.0,0.0])
+        obj.ViewObject.Transparency=30
         obj = doc.addObject("Part::Feature",self.name+"_top")
         obj.Shape=self._top
         obj.Label=self.name+"_top"
         obj.ViewObject.ShapeColor=tuple([0.0,1.0,1.0])
+        obj.ViewObject.Transparency=30
         obj = doc.addObject("Part::Feature",self.name+"_statusLense");
         obj.Shape=self._statusLense
         obj.Label=self.name+"_statusLense"
         obj.ViewObject.ShapeColor=tuple([1.0,1.0,1.0])
         obj.ViewObject.Transparency=60
-        #self._mainboard.show()
+        self._mainboard.show()
         self._dispboard.show()
+        self.keypad.show()
+        for button,bname in zip(self.buttons,KeypadBoard.ButtonNames):
+            ntemp = self.name+"_button_"+bname
+            obj = doc.addObject("Part::Feature",ntemp)
+            obj.Shape=button
+            obj.Label=ntemp
+            obj.ViewObject.ShapeColor=tuple([0.0,0.0,0.0])
         for i in range(1,6):
             self._plungers[i-1].show()
         self._throttleEncoder.show()
@@ -364,7 +385,7 @@ if __name__ == '__main__':
     box.MakeBottomSTL("HandHeldBoxNoLEDBottons_bottom.stl")
     box.MakeTopSTL("HandHeldBoxNoLEDBottons_top.stl")
     Gui.SendMsgToActiveView("ViewFit")
-    Gui.activeDocument().activeView().viewBottom()
+    Gui.activeDocument().activeView().viewTop()
 
 
 
