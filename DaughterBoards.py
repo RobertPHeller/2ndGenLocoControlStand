@@ -8,7 +8,7 @@
 #  Author        : $Author$
 #  Created By    : Robert Heller
 #  Created       : Tue Dec 22 00:56:49 2020
-#  Last Modified : <221221.1057>
+#  Last Modified : <221221.1141>
 #
 #  Description	
 #
@@ -507,8 +507,6 @@ class NewButtonLEDBoard(object):
         return Part.makePlane(self._headerWidth,self._headerLength,horigin)\
                 .extrude(Base.Vector(0,0,self._headerHeight))
 
-import Draft
-
 class KeypadBoard(object):
     @staticmethod
     def Length():
@@ -542,7 +540,8 @@ class KeypadBoard(object):
     _lheight = 1
     ButtonNames = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "Star", "0", "Hash"]
     ButtonLabels = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "*", "0", "#"]
-    _buttonLabelFont = "/usr/share/fonts/truetype/open-sans/OpenSans-Bold.ttf"
+    _buttonLabelFontPath = "/usr/share/fonts/truetype/open-sans/"
+    _buttonLabelFontFile = "OpenSans-Bold.ttf"
     def __init__(self,name,origin):
         self.name = name
         if not isinstance(origin,Base.Vector):
@@ -655,11 +654,10 @@ class KeypadBoard(object):
                          .extrude(Base.Vector(0,0,sqThick)))
         return sq
     def _keyLabel(self,labindex,baseOrig):
-        ss=Draft.makeShapeString(String=self.ButtonLabels[labindex],\
-                                 FontFile=self._buttonLabelFont,\
-                                 Size=self._lsize,Tracking=0.0)
-        temp = ss.Shape.copy()
-        ss.Document.removeObject(ss.Label)
+        temp = Part.Face(Part.makeWireString(self.ButtonLabels[labindex],\
+                                             self._buttonLabelFontPath,\
+                                             self._buttonLabelFontFile,\
+                                             self._lsize,0.0)[0])
         return (temp.translate(baseOrig))\
                     .extrude(Base.Vector(0,0,self._lheight))
 
