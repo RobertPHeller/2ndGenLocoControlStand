@@ -8,7 +8,7 @@
 #  Author        : $Author$
 #  Created By    : Robert Heller
 #  Created       : Tue Dec 22 00:56:49 2020
-#  Last Modified : <221219.1327>
+#  Last Modified : <221221.1045>
 #
 #  Description	
 #
@@ -507,6 +507,7 @@ class NewButtonLEDBoard(object):
         return Part.makePlane(self._headerWidth,self._headerLength,horigin)\
                 .extrude(Base.Vector(0,0,self._headerHeight))
 
+import Draft
 
 class KeypadBoard(object):
     @staticmethod
@@ -536,7 +537,12 @@ class KeypadBoard(object):
     _button1XOffset = 8.484
     _buttonWidth    = 3
     _buttonLength   = 2.5
+    _lsize = 4
+    _loff = .76250/2.0
+    _lheight = 1
     ButtonNames = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "Star", "0", "Hash"]
+    ButtonLabels = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "*", "0", "#"]
+    _buttonLabelFont = "/usr/share/fonts/truetype/open-sans/OpenSans-Bold.ttf"
     def __init__(self,name,origin):
         self.name = name
         if not isinstance(origin,Base.Vector):
@@ -636,6 +642,9 @@ class KeypadBoard(object):
                                    sqZ)
         sq = Part.makePlane(self._buttonSQSz,self._buttonSQSz,squareOrigin)\
                 .extrude(Base.Vector(0,0,sqThick))
+        labOrig = squareOrigin.add(Base.Vector(self._loff,self._loff,sqThick))
+        labindex = buttonXindex+(buttonYindex*3)
+        sq = sq.fuse(self._keyLabel(labindex,labOrig))
         squareOrigin = Base.Vector(centerX-(self._buttonSpaceX/2.0),\
                                    centerY-(self._buttonSpaceX/2.0),\
                                    sqZ)
@@ -645,11 +654,24 @@ class KeypadBoard(object):
                                     squareOrigin)\
                          .extrude(Base.Vector(0,0,sqThick)))
         return sq
+    def _keyLabel(self,labindex,baseOrig):
+        ss=Draft.makeShapeString(String=self.ButtonLabels[labindex],\
+                                 FontFile=self._buttonLabelFont,\
+                                 Size=self._lsize,Tracking=0.0)
+        temp = ss.Shape.copy()
+        ss.Document.removeObject(ss.Label)
+        return (temp.translate(baseOrig)).extrude(Base.Vector(0,0,self._lheight))
 
 if __name__ == '__main__':
     App.ActiveDocument=App.newDocument("Temp")
     doc = App.activeDocument()
     keypad = KeypadBoard("keypad",Base.Vector(0,0,0))
     keypad.show()
+    b = keypad.ButtonSQ(0,0,6.35)
+    doc = App.activeDocument()
+    obj = doc.addObject("Part::Feature","buttonSQ")
+    obj.Shape=b
+    obj.Label="buttonSQ"
+    obj.ViewObject.ShapeColor=tuple([0.0,0.0,0.0])    
     Gui.SendMsgToActiveView("ViewFit")
     
