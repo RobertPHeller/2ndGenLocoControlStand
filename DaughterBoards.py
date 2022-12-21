@@ -8,7 +8,7 @@
 #  Author        : $Author$
 #  Created By    : Robert Heller
 #  Created       : Tue Dec 22 00:56:49 2020
-#  Last Modified : <221221.1045>
+#  Last Modified : <221221.1057>
 #
 #  Description	
 #
@@ -660,7 +660,8 @@ class KeypadBoard(object):
                                  Size=self._lsize,Tracking=0.0)
         temp = ss.Shape.copy()
         ss.Document.removeObject(ss.Label)
-        return (temp.translate(baseOrig)).extrude(Base.Vector(0,0,self._lheight))
+        return (temp.translate(baseOrig))\
+                    .extrude(Base.Vector(0,0,self._lheight))
 
 if __name__ == '__main__':
     App.ActiveDocument=App.newDocument("Temp")
