@@ -8,7 +8,7 @@
 #  Author        : $Author$
 #  Created By    : Robert Heller
 #  Created       : Wed Dec 23 18:45:09 2020
-#  Last Modified : <201228.0930>
+#  Last Modified : <221221.1416>
 #
 #  Description	
 #
@@ -48,6 +48,7 @@ import FreeCAD as App
 import os
 import sys
 sys.path.append(os.path.dirname(__file__))
+import Mesh
 
 import datetime
 
@@ -223,6 +224,12 @@ class StraightControlLever(object):
         obj.ViewObject.ShapeColor=self.handlecolor
 #        obj = doc.addObject("Part::Feature",self.name+"_fs")
 #        obj.Shape=self._fs
+    def MakeSTL(self,filename):
+        doc = App.activeDocument()
+        objs = list()
+        objs.append(doc.getObject(self.name+"_shaft"))
+        objs.append(doc.getObject(self.name+"_handle"))
+        Mesh.export(objs,filename)
 
 class BentControlLever(object):
     def __init__(self,name,origin,shaftlength1=0.0,shaftlength2=0.0,\
@@ -295,6 +302,12 @@ class BentControlLever(object):
         obj.Shape=self._handle
         obj.Label=self.name+"_handle"
         obj.ViewObject.ShapeColor=self.handlecolor
+    def MakeSTL(self,filename):
+        doc = App.activeDocument()
+        objs = list()
+        objs.append(doc.getObject(self.name+"_shaft"))
+        objs.append(doc.getObject(self.name+"_handle"))
+        Mesh.export(objs,filename)
         
 
 class BentControlLeverYZX(object):

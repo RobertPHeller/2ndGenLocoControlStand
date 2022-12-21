@@ -8,7 +8,7 @@
 #  Author        : $Author$
 #  Created By    : Robert Heller
 #  Created       : Sun Aug 7 12:10:55 2022
-#  Last Modified : <221219.1355>
+#  Last Modified : <221221.1418>
 #
 #  Description	
 #
@@ -363,11 +363,8 @@ class HandHeldBoxNoLEDBottons(HandHeldBoxCommon):
     def MakeBottomSTL(self,filename):
         objs=[]
         doc = App.activeDocument()
-        obj = doc.addObject("Part::Feature","temp")
-        obj.Shape=self._bottom
-        objs.append(obj)
+        objs.append(doc.getObject(self.name+"_bottom"))
         Mesh.export(objs,filename)
-        doc.removeObject(obj.Label)
     def MakeTopSTL(self,filename):
         objs=[]
         doc = App.activeDocument()
@@ -376,16 +373,32 @@ class HandHeldBoxNoLEDBottons(HandHeldBoxCommon):
         objs.append(obj)
         Mesh.export(objs,filename)
         doc.removeObject(obj.Label)
+    def MakePlungerSTL(self,filename):
+        self._plungers[0].MakeSTL(filename)
+    def MakeThrottleLeverSTL(self,filename):
+        self._throttleLever.MakeSTL(filename)
+    def MakeReverserLeverSTL(self,filename):
+        self._reverserLever.MakeSTL(filename)
+    def KeypadButtonsSTL(self,filenameFMT):
+        doc = App.activeDocument()
+        for button,bname in zip(self.buttons,KeypadBoard.ButtonNames):
+            objs=[]
+            objs.append(doc.getObject(self.name+"_button_"+bname))
+            Mesh.export(objs,filenameFMT % bname)
 
 if __name__ == '__main__':
     App.ActiveDocument=App.newDocument("Temp")
     doc = App.activeDocument()
     box = HandHeldBoxNoLEDBottons("box",Base.Vector(0,0,0))
     box.show()
-    box.MakeBottomSTL("HandHeldBoxNoLEDBottons_bottom.stl")
-    box.MakeTopSTL("HandHeldBoxNoLEDBottons_top.stl")
     Gui.SendMsgToActiveView("ViewFit")
     Gui.activeDocument().activeView().viewTop()
+    box.MakeBottomSTL("HandHeldBoxNoLEDButtons_bottom.stl")
+    box.MakeTopSTL("HandHeldBoxNoLEDButtons_top.stl")
+    box.MakePlungerSTL("HandHeldBoxNoLEDButtons_plunger.stl")
+    box.MakeThrottleLeverSTL("HandHeldBoxNoLEDButtons_throttleLever.stl")
+    box.MakeReverserLeverSTL("HandHeldBoxNoLEDButtons_reverserLever.stl")
+    box.KeypadButtonsSTL("HandHeldBoxNoLEDButtons_%s_button.stl")
 
 
 

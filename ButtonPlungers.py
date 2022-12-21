@@ -8,7 +8,7 @@
 #  Author        : $Author$
 #  Created By    : Robert Heller
 #  Created       : Wed Dec 23 10:39:56 2020
-#  Last Modified : <201224.0940>
+#  Last Modified : <221221.1416>
 #
 #  Description	
 #
@@ -47,6 +47,7 @@ import FreeCAD as App
 import os
 import sys
 sys.path.append(os.path.dirname(__file__))
+import Mesh
 
 import datetime
 
@@ -68,7 +69,12 @@ class ButtonPlunger(object):
         self._body = self._body.fuse(bottom)
     def show(self):
         doc = App.activeDocument()
-        obj = doc.addObject("Part::Feature",self.name+"_body")
+        obj = doc.addObject("Part::Feature",self.name)
         obj.Shape=self._body
-        obj.Label=self.name+"_body"
+        obj.Label=self.name
         obj.ViewObject.ShapeColor=tuple([.5,.5,.5])
+    def MakeSTL(self,filename):
+        doc = App.activeDocument()
+        objs = list()
+        objs.append(doc.getObject(self.name))
+        Mesh.export(objs,filename)
