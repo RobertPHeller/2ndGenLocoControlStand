@@ -8,7 +8,7 @@
 #  Author        : $Author$
 #  Created By    : Robert Heller
 #  Created       : Sat Dec 19 14:24:13 2020
-#  Last Modified : <201221.1357>
+#  Last Modified : <221222.1313>
 #
 #  Description	
 #
@@ -129,6 +129,12 @@ class Mech_Encoder_25L(object):
         obj.Shape=self._circuitBoard
         obj.Label=self.name+"_circuitBoard"
         obj.ViewObject.ShapeColor=tuple([0.0,1.0,0.0])
+    def BushingHole(self):
+        return self._bushing
+    def NoTurnHole(self):
+        return self._noturn
+
+
 
 class PEC12R(object):
     _bodyWidth = 12.4
@@ -244,6 +250,8 @@ class PEC12R(object):
         self._ntNut = self._ntNut.cut(self._noturnScrew)
     def NoTurnHole(self):
         return self._noturnHole
+    def BushingHole(self):
+        return self._bushing
     def show(self):
         doc = App.activeDocument()
         obj = doc.addObject("Part::Feature",self.name+"_body")
@@ -322,6 +330,33 @@ class Pot_450T328(object):
                                             Base.Vector(X+self._tabXoffset,Y,Z),\
                                             Base.Vector(0,1,0))))\
                             .extrude(Base.Vector(0,-bracketthick,0))
+        elif orientation=="revbrake":
+           Y -= bracketthick
+           self._body = Part.Face(Part.Wire(\
+                            Part.makeCircle(self._bodyDiameter/2.0,\
+                                            Base.Vector(X,Y,Z),\
+                                            Base.Vector(0,1,0))))\
+                            .extrude(Base.Vector(0,-self._bodyDepth,0))
+           self._bushing = Part.Face(Part.Wire(\
+                            Part.makeCircle(self._bushingDiameter/2.0,\
+                                            Base.Vector(X,Y,Z),\
+                                            Base.Vector(0,1,0))))\
+                            .extrude(Base.Vector(0,self._bushingLength,0))
+           self._shaft = Part.Face(Part.Wire(\
+                            Part.makeCircle(self._shaftDiameter/2.0,\
+                                            Base.Vector(X,Y+self._bushingLength,Z),\
+                                            Base.Vector(0,1,0))))\
+                            .extrude(Base.Vector(0,self._shaftLength,0))
+           self._tab1 = Part.Face(Part.Wire(\
+                            Part.makeCircle(self._tabHoleDiameter/2.0,\
+                                            Base.Vector(X-self._tabXoffset,Y,Z),\
+                                            Base.Vector(0,1,0))))\
+                            .extrude(Base.Vector(0,bracketthick,0))
+           self._tab2 = Part.Face(Part.Wire(\
+                            Part.makeCircle(self._tabHoleDiameter/2.0,\
+                                            Base.Vector(X+self._tabXoffset,Y,Z),\
+                                            Base.Vector(0,1,0))))\
+                            .extrude(Base.Vector(0,bracketthick,0))
         elif orientation=="horn":
            self._body = Part.Face(Part.Wire(\
                             Part.makeCircle(self._bodyDiameter/2.0,\
@@ -372,3 +407,10 @@ class Pot_450T328(object):
         obj.Shape=self._tab2
         obj.Label=self.name+"_tab2"
         obj.ViewObject.ShapeColor=tuple([1.0,1.0,1.0])        
+    def BushineHole(self):
+        return self._bushing
+    def TabHole1(self):
+        return self._tab1
+    def TabHole2(self):
+        return self._tab2
+        

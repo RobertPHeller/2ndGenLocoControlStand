@@ -8,7 +8,7 @@
 #  Author        : $Author$
 #  Created By    : Robert Heller
 #  Created       : Wed Dec 23 18:45:09 2020
-#  Last Modified : <221221.1416>
+#  Last Modified : <221222.1502>
 #
 #  Description	
 #
@@ -61,52 +61,64 @@ def FlattedShaft(origin,radius=1,flatdepth=0,height=1,\
         ovect=Base.Vector(0,0,1)
         shaft = Part.Face(Part.Wire(Part.makeCircle(radius,origin,ovect)))\
                          .extrude(Base.Vector(0,0,height))
-        Yl =  Yc - radius + flatdepth
-        Ylo = Yc - radius
-        Xl1 = Xc - radius
-        Xl2 = Xc + radius
-        poly = list()
-        poly.append(Base.Vector(Xl1,Yl,Zc))
-        poly.append(Base.Vector(Xl2,Yl,Zc))
-        poly.append(Base.Vector(Xl2,Ylo,Zc))
-        poly.append(Base.Vector(Xl1,Ylo,Zc))
-        poly.append(Base.Vector(Xl1,Yl,Zc))
-        flat = Part.Face(Part.makePolygon(poly)).extrude(Base.Vector(0,0,height))
+        if flatdepth > 0:
+            Yl =  Yc - radius + flatdepth
+            Ylo = Yc - radius
+            Xl1 = Xc - radius
+            Xl2 = Xc + radius
+            poly = list()
+            poly.append(Base.Vector(Xl1,Yl,Zc))
+            poly.append(Base.Vector(Xl2,Yl,Zc))
+            poly.append(Base.Vector(Xl2,Ylo,Zc))
+            poly.append(Base.Vector(Xl1,Ylo,Zc))
+            poly.append(Base.Vector(Xl1,Yl,Zc))
+            flat = Part.Face(Part.makePolygon(poly)).extrude(Base.Vector(0,0,height))
+        else:
+            flat = None
     elif direction=="DY":
         ovect=Base.Vector(0,1,0)
         shaft = Part.Face(Part.Wire(Part.makeCircle(radius,origin,ovect)))\
                          .extrude(Base.Vector(0,height,0))
-        Xl =  Xc - radius + flatdepth
-        Xlo = Xc - radius
-        Zl1 = Zc - radius
-        Zl2 = Zc + radius
-        poly = list()
-        poly.append(Base.Vector(Xl, Yc,Zl1))
-        poly.append(Base.Vector(Xl, Yc,Zl2))
-        poly.append(Base.Vector(Xlo,Yc,Zl2))
-        poly.append(Base.Vector(Xlo,Yc,Zl1))
-        poly.append(Base.Vector(Xl, Yc,Zl1))
-        flat = Part.Face(Part.makePolygon(poly)).extrude(Base.Vector(0,height,0))
+        if flatdepth > 0:
+            Xl =  Xc - radius + flatdepth
+            Xlo = Xc - radius
+            Zl1 = Zc - radius
+            Zl2 = Zc + radius
+            poly = list()
+            poly.append(Base.Vector(Xl, Yc,Zl1))
+            poly.append(Base.Vector(Xl, Yc,Zl2))
+            poly.append(Base.Vector(Xlo,Yc,Zl2))
+            poly.append(Base.Vector(Xlo,Yc,Zl1))
+            poly.append(Base.Vector(Xl, Yc,Zl1))
+            flat = Part.Face(Part.makePolygon(poly)).extrude(Base.Vector(0,height,0))
+        else:
+            flat = None
     elif direction=="DX":
         ovect=Base.Vector(1,0,0)
         shaft = Part.Face(Part.Wire(Part.makeCircle(radius,origin,ovect)))\
                          .extrude(Base.Vector(height,0,0))
-        Zl =  Zc - radius + flatdepth
-        Zlo = Zc - radius
-        Yl1 = Yc - radius
-        Yl2 = Yc + radius
-        poly = list()
-        poly.append(Base.Vector(Xc,Yl1,Zl))
-        poly.append(Base.Vector(Xc,Yl2,Zl))
-        poly.append(Base.Vector(Xc,Yl2,Zlo))
-        poly.append(Base.Vector(Xc,Yl1,Zlo))
-        poly.append(Base.Vector(Xc,Yl1,Zl))
-        flat = Part.Face(Part.makePolygon(poly)).extrude(Base.Vector(height,0,0))
+        if flatdepth > 0:
+            Zl =  Zc - radius + flatdepth
+            Zlo = Zc - radius
+            Yl1 = Yc - radius
+            Yl2 = Yc + radius
+            poly = list()
+            poly.append(Base.Vector(Xc,Yl1,Zl))
+            poly.append(Base.Vector(Xc,Yl2,Zl))
+            poly.append(Base.Vector(Xc,Yl2,Zlo))
+            poly.append(Base.Vector(Xc,Yl1,Zlo))
+            poly.append(Base.Vector(Xc,Yl1,Zl))
+            flat = Part.Face(Part.makePolygon(poly)).extrude(Base.Vector(height,0,0))
+        else:
+            flat = None
     else:
         raise RuntimeError("direction is not DZ, DY, or DX!")
     #return shaft
     #return flat
-    return shaft.cut(flat)
+    if flatdepth > 0:
+        return shaft.cut(flat)
+    else:
+        return shaft
 
 
 class StraightControlLever(object):
@@ -226,10 +238,26 @@ class StraightControlLever(object):
 #        obj.Shape=self._fs
     def MakeSTL(self,filename):
         doc = App.activeDocument()
+        totalShape = (self._shaft.fuse(self._handle)).translate(Base.Vector(-self.origin.x,-self.origin.y,-self.origin.z))
+        laydown = totalShape.rotate(Base.Vector(0,0,0),Base.Vector(1,0,0),90)
+        bb = laydown.BoundBox
+        zmin = bb.ZMin
+        zmax = bb.ZMax
+        zdelta = zmax-zmin
+        zcenter = zdelta/2.0
+        laydown.translate(Base.Vector(0,0,-zmin))
+        laydown.translate(Base.Vector(0,0,-zcenter))
+        bb = laydown.BoundBox
+        tempobj = Part.makePlane(bb.XLength,bb.YLength,\
+                                 Base.Vector(bb.XMin,bb.YMin,0))\
+                    .extrude(Base.Vector(0,0,-bb.ZLength))
+        tophalf = laydown.cut(tempobj)
+        obj = doc.addObject("Part::Feature","temp")
+        obj.Shape=tophalf
         objs = list()
-        objs.append(doc.getObject(self.name+"_shaft"))
-        objs.append(doc.getObject(self.name+"_handle"))
+        objs.append(obj)
         Mesh.export(objs,filename)
+        doc.removeObject(obj.Label)
 
 class BentControlLever(object):
     def __init__(self,name,origin,shaftlength1=0.0,shaftlength2=0.0,\

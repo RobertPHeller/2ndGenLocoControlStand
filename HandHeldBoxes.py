@@ -8,7 +8,7 @@
 #  Author        : $Author$
 #  Created By    : Robert Heller
 #  Created       : Sun Aug 7 12:10:55 2022
-#  Last Modified : <221221.1418>
+#  Last Modified : <221222.1456>
 #
 #  Description	
 #
@@ -239,15 +239,41 @@ class HandHeldBoxNoLEDBottons(HandHeldBoxCommon):
                                        orientation="horizontal",\
                                        length=15.24 + 6,\
                                        depth=self._wallThick))
-        throttleReverserBrakeBracket = \
-                Bracket(name+"_throttleReverserBrakeBracket",\
+        brakeBracket = \
+                Bracket(name+"_brakeBracket",\
+                        Base.Vector(brakeSlotOrigin.x,\
+                                    brakeSlotOrigin.y-12.5,\
+                                    toporig.z-self._wallThick),\
+                        orientation="horizontal",\
+                        bracketthick=3.0,\
+                        bracketdepth=40,bracketwidth=15.24 + 15)
+        self._top = brakeBracket.fuseto(self._top)
+        bX = brakeSlotOrigin.x
+        bY = brakeSlotOrigin.y
+        bZ = brakeSlotOrigin.z
+        self._brakePot = Pot_450T328(name+"_brakePot",\
+                    Base.Vector(bX,bY-9.5,bZ-25),\
+                    bracketthick=3.0,\
+                    orientation="revbrake")
+        self._top = self._top.cut(self._brakePot.BushineHole())
+        self._top = self._top.cut(self._brakePot.TabHole1())
+        self._top = self._top.cut(self._brakePot.TabHole2())
+        self._brakeLever = StraightControlLever(name+"_brakeLever",\
+                                    Base.Vector(bX,bY,bZ-25-6.35),\
+                                    shaftlength=30,\
+                                    handlecolor=tuple([1.0,0.0,0.0]),\
+                                    dholediameter=6.35,\
+                                    dholeflatsize=6.35,\
+                                    direction='DZ')
+        throttleReverserBracket = \
+                Bracket(name+"_throttleReverserBracket",\
                         Base.Vector(X+(self._outerWidth/2.0),\
                                     slotsOffset - 10,\
                                     toporig.z-self._wallThick),\
                         orientation="horizontal",\
                         bracketthick=3.0,\
                         bracketdepth=35,bracketwidth=self._innerWidth)
-        self._top = throttleReverserBrakeBracket.fuseto(self._top)
+        self._top = throttleReverserBracket.fuseto(self._top)
         tX = throttleSlotOrigin.x
         tY = throttleSlotOrigin.y
         tZ = throttleSlotOrigin.z
@@ -257,8 +283,8 @@ class HandHeldBoxNoLEDBottons(HandHeldBoxCommon):
                                              tY - 10,\
                                              (tZ-25.4)+self._wallThick),\
                                  bracketthick=3.0)
-        self._top = self._top.cut(self._throttleEncoder._bushing)
-        self._top = self._top.cut(self._throttleEncoder._noturn)
+        self._top = self._top.cut(self._throttleEncoder.BushingHole())
+        self._top = self._top.cut(self._throttleEncoder.NoTurnHole())
         self._throttleLever = StraightControlLever(name+"_throttleLever",\
                                     Base.Vector(tX,\
                                                 tY,\
@@ -276,19 +302,19 @@ class HandHeldBoxNoLEDBottons(HandHeldBoxCommon):
                                                    rY + 5,\
                                                    (rZ-13.2)+self._wallThick),\
                                        bracketthick=3.0)
-        self._top = self._top.cut(self._reverserEncoder._bushing)
+        self._top = self._top.cut(self._reverserEncoder.BushingHole())
         self._top = self._top.cut(self._reverserEncoder.NoTurnHole())
         self._reverserLever = StraightControlLever(name+"_reverserLever",\
                                     Base.Vector(rX,\
                                                 rY,\
-                                                (rZ-13.2-6)+self._wallThick),\
+                                                (rZ-13.2-6.35)+self._wallThick),\
                                     shaftlength=20,\
                                     handlecolor=tuple([0.0,0.0,0.0]),\
                                     dholediameter=6,\
                                     dholeflatsize=4.5,\
                                     direction='DZ')
-        keypadorigin = toporig.add(Base.Vector(HandHeldBoxCommon._wallThick+((HandHeldBoxCommon._innerWidth-KeypadBoard.Width())/2.0),\
-                                               self._postdiameter,\
+        keypadorigin = toporig.add(Base.Vector(HandHeldBoxCommon._wallThick+(HandHeldBoxCommon._innerWidth-KeypadBoard.Width()),\
+                                               self._postdiameter+self._wallThick,\
                                                -(self._wallThick+5.08)))
         self.keypad = KeypadBoard(name+"_keypad",keypadorigin)
         self.buttons = list()
@@ -332,6 +358,8 @@ class HandHeldBoxNoLEDBottons(HandHeldBoxCommon):
         self._throttleLever.show()
         self._reverserEncoder.show()
         self._reverserLever.show()
+        self._brakePot.show()
+        self._brakeLever.show()
     def _bottomPost(self,i):
         centerX,centerY = self._postsXY[i-1]
         postbottom = self.origin.add(Base.Vector(centerX,centerY,\
@@ -379,6 +407,8 @@ class HandHeldBoxNoLEDBottons(HandHeldBoxCommon):
         self._throttleLever.MakeSTL(filename)
     def MakeReverserLeverSTL(self,filename):
         self._reverserLever.MakeSTL(filename)
+    def MakeBrakeLeverSTL(self,filename):
+        self._brakeLever.MakeSTL(filename)
     def KeypadButtonsSTL(self,filenameFMT):
         doc = App.activeDocument()
         for button,bname in zip(self.buttons,KeypadBoard.ButtonNames):
@@ -398,6 +428,7 @@ if __name__ == '__main__':
     box.MakePlungerSTL("HandHeldBoxNoLEDButtons_plunger.stl")
     box.MakeThrottleLeverSTL("HandHeldBoxNoLEDButtons_throttleLever.stl")
     box.MakeReverserLeverSTL("HandHeldBoxNoLEDButtons_reverserLever.stl")
+    box.MakeBrakeLeverSTL("HandHeldBoxNoLEDButtons_brakeLever.stl")
     box.KeypadButtonsSTL("HandHeldBoxNoLEDButtons_%s_button.stl")
 
 
