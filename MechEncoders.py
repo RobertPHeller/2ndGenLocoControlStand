@@ -8,7 +8,7 @@
 #  Author        : $Author$
 #  Created By    : Robert Heller
 #  Created       : Sat Dec 19 14:24:13 2020
-#  Last Modified : <221222.1313>
+#  Last Modified : <221226.1403>
 #
 #  Description	
 #
@@ -383,6 +383,32 @@ class Pot_450T328(object):
                                             Base.Vector(X,Y+self._tabXoffset,Z),\
                                             Base.Vector(1,0,0))))\
                             .extrude(Base.Vector(bracketthick,0,0))
+        elif orientation=="revhorn":
+           self._body = Part.Face(Part.Wire(\
+                            Part.makeCircle(self._bodyDiameter/2.0,\
+                                            Base.Vector(X,Y,Z),
+                                            Base.Vector(1,0,0))))\
+                            .extrude(Base.Vector(self._bodyDepth,0,0))
+           self._bushing = Part.Face(Part.Wire(\
+                            Part.makeCircle(self._bushingDiameter/2.0,\
+                                            Base.Vector(X,Y,Z),\
+                                            Base.Vector(1,0,0))))\
+                            .extrude(Base.Vector(-self._bushingLength,0,0))
+           self._shaft = Part.Face(Part.Wire(\
+                            Part.makeCircle(self._shaftDiameter/2.0,\
+                                            Base.Vector(X-self._bushingLength,Y,Z),\
+                                            Base.Vector(1,0,0))))\
+                            .extrude(Base.Vector(-self._shaftLength,0,0))
+           self._tab1 = Part.Face(Part.Wire(\
+                            Part.makeCircle(self._tabHoleDiameter/2.0,\
+                                            Base.Vector(X,Y-self._tabXoffset,Z),\
+                                            Base.Vector(1,0,0))))\
+                            .extrude(Base.Vector(-bracketthick,0,0))
+           self._tab2 = Part.Face(Part.Wire(\
+                            Part.makeCircle(self._tabHoleDiameter/2.0,\
+                                            Base.Vector(X,Y+self._tabXoffset,Z),\
+                                            Base.Vector(1,0,0))))\
+                            .extrude(Base.Vector(-bracketthick,0,0))
         else:
             raise RuntimeError("orientation is not brake or horn!")
     def show(self):
