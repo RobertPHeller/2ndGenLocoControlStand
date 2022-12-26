@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Oct 7 18:43:06 2019
-//  Last Modified : <221216.1232>
+//  Last Modified : <221226.1235>
 //
 //  Description	
 //
@@ -56,14 +56,16 @@
 #include "utils/ConfigUpdateService.hxx"
 #include "ControlStandConfigurationGroup.hxx"
 #include "Adafruit_SSD1306.h"
+#include "Adafruit_TCA8418.hxx"
 #include "Button.hxx"
 #include "LightSwitch.hxx"
-#ifndef CDIONLY
 #include "hardware.hxx"
-#endif
 #include "SNIPClient.hxx"
 #include <map>
 #include <string>
+
+namespace esp32s3controlstand
+{
 
 using TrainIDMap   = std::map<openlcb::NodeID, std::string>;
 
@@ -137,7 +139,7 @@ public:
     {
         unregister_handler();
     }
-    void hw_init();
+    void hw_init(Adafruit_TCA8418 *keypad = NULL);
     void poll_33hz(openlcb::WriteHelper *helper, Notifiable *done) OVERRIDE;
     void welcomeScreen();
     void handle_event_report(const openlcb::EventRegistryEntry &entry, 
@@ -177,6 +179,7 @@ public:
     
 private:
     const ESP32ControlStandConfig cfg_;
+    Adafruit_TCA8418 *keypad_;
     Adafruit_SSD1306 display_;
     const Gpio *throttlea_, *throttleb_;
     Button a_;
@@ -209,6 +212,7 @@ private:
     uint8_t searchStringIndex_, letterIndex_;
     char searchString_[21];
     bool updateSetting_;
+    void checkKeypad();
     bool checkThrottle();
     bool readBrake();
     bool readHorn();
@@ -358,6 +362,6 @@ private:
         return release_and_exit();
     }
 };
-
+}
 #endif // __ESP32CONTROLSTAND_H
 

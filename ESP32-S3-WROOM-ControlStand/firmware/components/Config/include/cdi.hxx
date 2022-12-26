@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Dec 12 14:57:27 2022
-//  Last Modified : <221218.1418>
+//  Last Modified : <221226.1344>
 //
 //  Description	
 //
@@ -45,6 +45,7 @@
 #include "sdkconfig.h"
 
 #include "NodeIdConfigurationGroup.hxx"
+#include "freertos_drivers/esp32/Esp32WiFiConfiguration.hxx"
 #include "WiFiConfigurationGroup.hxx"
 #include "ControlStandConfigurationGroup.hxx"
 #include "openlcb/ConfiguredConsumer.hxx"
@@ -80,6 +81,9 @@ CDI_GROUP_ENTRY(mcp0,mcpConfiguration,Name("MCP23017 #1 Configuration"));
 CDI_GROUP_ENTRY(mcp1,mcpConfiguration,Name("MCP23017 #2 Configuration"));
 #endif
 CDI_GROUP_ENTRY(controlstand,ESP32ControlStandConfig,Name("ESP32 2nd Gen Control Stand (throttle) Configuration"));
+#ifdef CONFIG_ESP32_WIFI_ENABLED
+CDI_GROUP_ENTRY(olbcwifi, openmrn_arduino::WiFiConfiguration, Name("OLBC WiFi Configuration"));
+#endif
 CDI_GROUP_END();
 /// This segment is only needed temporarily until there is program code to set
 /// the ACDI user data version byte.
@@ -103,7 +107,7 @@ CDI_GROUP_ENTRY(userinfo, openlcb::UserInfoSegment,Name("User Info"));
 CDI_GROUP_ENTRY(seg, IoBoardSegment,Name("General Configuration Settings"));
 CDI_GROUP_ENTRY(node, NodeIdConfig, Name("Node ID"));
 #if defined(CONFIG_ESP32_WIFI_ENABLED)
-CDI_GROUP_ENTRY(wifi, WiFiConfiguration, Name("WiFi Configuration"));
+CDI_GROUP_ENTRY(wifi, esp32s3controlstand::WiFiConfiguration, Name("WiFi Configuration"));
 #endif
 /// Adds the versioning segment.
 CDI_GROUP_ENTRY(version, VersionSeg);

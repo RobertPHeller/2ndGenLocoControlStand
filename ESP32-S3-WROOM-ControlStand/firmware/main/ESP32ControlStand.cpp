@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Oct 7 18:47:11 2019
-//  Last Modified : <221215.1423>
+//  Last Modified : <221226.1239>
 //
 //  Description	
 //
@@ -48,6 +48,10 @@ static const char rcsid[] = "@(#) : $Id$";
 #include "openlcb/EventService.hxx"
 #include "ESP32ControlStand.hxx"
 #include "hardware.hxx"
+
+
+namespace esp32s3controlstand
+{
 
 bool ESP32ControlStand::checkThrottle()
 {
@@ -105,8 +109,9 @@ bool ESP32ControlStand::readReverser() {
         return (false);
     }
 }
-void ESP32ControlStand::hw_init()
+void ESP32ControlStand::hw_init(Adafruit_TCA8418 *keypad)
 {
+    keypad_ = keypad;
     // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
     if(!display_.begin("/dev/i2c/i2c0", SSD1306_SWITCHCAPVCC, 0x3C)) { // Address 0x3C for 128x32
         LOG(FATAL,"SSD1306 allocation failed");
@@ -124,6 +129,7 @@ void ESP32ControlStand::hw_init()
 
 void ESP32ControlStand::poll_33hz(openlcb::WriteHelper *helper, Notifiable *done)
 {
+    if (keypad_) checkKeypad();
     checkThrottle();
     readBrake();
     readHorn();
@@ -703,5 +709,10 @@ void ESP32ControlStand::handle_producer_identified(const openlcb::EventRegistryE
         AddTrain(event->src_node);
 }
 
+void ESP32ControlStand::checkKeypad()
+{
+    // TBD
+}
 
+}
 
