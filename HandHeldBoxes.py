@@ -8,7 +8,7 @@
 #  Author        : $Author$
 #  Created By    : Robert Heller
 #  Created       : Sun Aug 7 12:10:55 2022
-#  Last Modified : <221226.1408>
+#  Last Modified : <221227.0942>
 #
 #  Description	
 #
@@ -313,13 +313,13 @@ class HandHeldBoxNoLEDBottons(HandHeldBoxCommon):
                                     dholediameter=6,\
                                     dholeflatsize=4.5,\
                                     direction='DZ')
-        self._hornPot = Pot_450T328(name+"_hornPot",
-                        Base.Vector(origin.x+self._wallThick+25.4,\
-                                    origin.y+25.4,
-                                    toporig.z-25),\
-                                    bracketthick=3.0,\
-                                    orientation="revhorn")
-        keypadorigin = toporig.add(Base.Vector(HandHeldBoxCommon._wallThick+(HandHeldBoxCommon._innerWidth-KeypadBoard.Width()),\
+        self._hornButton = PS1057A(name+"_horn",\
+                    toporig.add(Base.Vector(self._wallThick+12.0,
+                                            25.4,
+                                            self._wallThick)))
+        self._top = self._top.cut(self._hornButton.Cutout(self._wallThick))
+
+        keypadorigin = toporig.add(Base.Vector(self._wallThick+(self._innerWidth-KeypadBoard.Width()),\
                                                self._postdiameter+self._wallThick,\
                                                -(self._wallThick+5.08)))
         self.keypad = KeypadBoard(name+"_keypad",keypadorigin)
@@ -366,7 +366,7 @@ class HandHeldBoxNoLEDBottons(HandHeldBoxCommon):
         self._reverserLever.show()
         self._brakePot.show()
         self._brakeLever.show()
-        self._hornPot.show()
+        self._hornButton.show()
     def _bottomPost(self,i):
         centerX,centerY = self._postsXY[i-1]
         postbottom = self.origin.add(Base.Vector(centerX,centerY,\

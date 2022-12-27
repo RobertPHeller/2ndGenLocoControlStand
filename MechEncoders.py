@@ -8,7 +8,7 @@
 #  Author        : $Author$
 #  Created By    : Robert Heller
 #  Created       : Sat Dec 19 14:24:13 2020
-#  Last Modified : <221226.1403>
+#  Last Modified : <221227.0941>
 #
 #  Description	
 #
@@ -440,3 +440,92 @@ class Pot_450T328(object):
     def TabHole2(self):
         return self._tab2
         
+class PS1057A(object):
+    _flangeWidth = 14.00
+    _buttonWidth = 8.50
+    _totalHeight = 26.00
+    _bodyFlangeHeight  = 17.00
+    _lugHeight = 5.90
+    _lugLength = 6.00
+    _lugWidth  = 4.00
+    _bodyWidth = 10.40
+    _bodyLength = 12.00
+    _cutoutWidth = 11.30
+    _cutoutLength = 12.60
+    # guess (not spec. on the datasheet)
+    _flangeHeight = 1.27 
+    def __init__(self,name,origin,buttoncolor=tuple([0.0,0.0,0.0])):
+        self.name = name
+        if not isinstance(origin,Base.Vector):
+            raise RuntimeError("origin is not a Vector!")
+        self.origin = origin
+        Xcenter = self.origin.x
+        Ycenter = self.origin.y
+        Zsurface = self.origin.z
+        flangeOrig = Base.Vector(Xcenter - (self._flangeWidth/2.0),\
+                                 Ycenter - (self._flangeWidth/2.0),\
+                                 Zsurface)
+        flange = Part.makePlane(self._flangeWidth,\
+                                self._flangeWidth,\
+                                flangeOrig)\
+                               .extrude(Base.Vector(0,\
+                                                    0,\
+                                                    self._flangeHeight))
+        bodyOrig = Base.Vector(Xcenter - (self._bodyLength/2.0),\
+                               Ycenter - (self._bodyWidth/2.0),\
+                               Zsurface)
+        body = Part.makePlane(self._bodyLength,\
+                              self._bodyWidth,\
+                              bodyOrig)\
+                             .extrude(Base.Vector(0,\
+                                                  0,\
+                                                  -(self._bodyFlangeHeight-\
+                                                    self._flangeHeight)))
+        body = body.fuse(flange)
+        lugsorig = Base.Vector(Xcenter - (self._lugLength/2.0),\
+                               Ycenter - (self._lugWidth/2.0),\
+                               Zsurface-(self._bodyFlangeHeight-\
+                                         self._flangeHeight))
+        lugs = Part.makePlane(self._lugLength,\
+                              self._lugWidth,\
+                              lugsorig)\
+                             .extrude(Base.Vector(0,\
+                                                  0,\
+                                                  -self._lugHeight))
+        buttonorig = Base.Vector(Xcenter-(self._buttonWidth/2.0),\
+                                 Ycenter-(self._buttonWidth/2.0),\
+                                 Zsurface+self._flangeHeight)
+        button = Part.makePlane(self._buttonWidth,\
+                                self._buttonWidth,\
+                                buttonorig)\
+                      .extrude(Base.Vector(0,\
+                                           0,\
+                                           (self._totalHeight-\
+                                            (self._bodyFlangeHeight+\
+                                             self._lugHeight))))
+        self._body = body
+        self._lugs = lugs
+        self._button = button
+        self._color = buttoncolor
+    def show(self):
+        doc = App.activeDocument()
+        obj = doc.addObject("Part::Feature",self.name+"_body")
+        obj.Shape=self._body
+        obj.Label=self.name+"_body"
+        obj.ViewObject.ShapeColor=tuple([0.0,0.0,0.0])
+        obj = doc.addObject("Part::Feature",self.name+"_lugs")
+        obj.Shape=self._lugs
+        obj.Label=self.name+"_lugs"
+        obj.ViewObject.ShapeColor=tuple([.85,.85,.85])
+        obj = doc.addObject("Part::Feature",self.name+"_button")
+        obj.Shape=self._button
+        obj.Label=self.name+"_button"
+        obj.ViewObject.ShapeColor=self._color
+    def Cutout(self,panelthick):
+        cutoutorig = self.origin.add(Base.Vector(-(self._cutoutLength/2.0),\
+                                                 -(self._cutoutWidth/2.0),\
+                                                 0))
+        return Part.makePlane(self._cutoutLength,self._cutoutWidth,cutoutorig)\
+                             .extrude(Base.Vector(0,0,-panelthick))
+                   
+
