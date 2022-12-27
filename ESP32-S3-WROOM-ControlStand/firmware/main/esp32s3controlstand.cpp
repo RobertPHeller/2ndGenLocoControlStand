@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Dec 12 13:38:08 2022
-//  Last Modified : <221226.1343>
+//  Last Modified : <221227.1057>
 //
 //  Description	
 //
@@ -453,6 +453,8 @@ void app_main()
 #ifdef CONFIG_IO_KEYPAD
         Adafruit_TCA8418 Keypad;
         Keypad.begin("/dev/i2c/i2c0");
+        Keypad.matrix(4,3);
+        Keypad.enableDebounce();
         stand.hw_init(&Keypad);
 #else
         stand.hw_init();

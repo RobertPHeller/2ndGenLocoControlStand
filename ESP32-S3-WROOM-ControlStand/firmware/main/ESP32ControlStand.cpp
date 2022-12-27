@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Oct 7 18:47:11 2019
-//  Last Modified : <221226.1239>
+//  Last Modified : <221227.1140>
 //
 //  Description	
 //
@@ -129,7 +129,6 @@ void ESP32ControlStand::hw_init(Adafruit_TCA8418 *keypad)
 
 void ESP32ControlStand::poll_33hz(openlcb::WriteHelper *helper, Notifiable *done)
 {
-    if (keypad_) checkKeypad();
     checkThrottle();
     readBrake();
     readHorn();
@@ -266,6 +265,22 @@ void ESP32ControlStand::pollMenu()
             idleScreen();
             break;
         case None: 
+            {
+                uint8_t key = checkKeypad();
+                if (key == 0) break;
+                bool pressed = (key & 0x80) == 0;
+                char k = key & 0x7f;
+                if (k >= '0' && k <= '9' && pressed)
+                {
+                    SearchScreen();
+                    currentState_ = Search;
+                    searchString_[searchStringIndex_] = k;
+                    unHighlightChar();
+                    searchStringIndex_++;
+                    highlightChar();
+                    display_.display();
+                }
+            }
             break;
         }
         break;
@@ -291,7 +306,14 @@ void ESP32ControlStand::pollMenu()
             currentState_ = MainMenu;
             mainMenu();
             break;
-        default: break; // should never get here -- make the compiler happy
+        case None:
+            {
+                uint8_t key = checkKeypad();
+                if (key == 0) break;
+                bool pressed = (key & 0x80) == 0;
+                char k = key & 0x7f;
+            }
+            break;
         }
         break;
     case Search:
@@ -349,7 +371,37 @@ void ESP32ControlStand::pollMenu()
                 idleScreen();
             }
             break;
-        default: break; // should never get here -- make the compiler happy
+        case None:
+            {
+                uint8_t key = checkKeypad();
+                if (key == 0) break;
+                bool pressed = (key & 0x80) == 0;
+                char k = key & 0x7f;
+                if (k == '#' && pressed)
+                {
+                    for (selectedTrain_ = trainsByID_.begin();
+                         selectedTrain_ != trainsByID_.end();
+                         selectedTrain_++) {
+                        if (match_(selectedTrain_->second)) break;
+                    }
+                    if (selectedTrain_ != trainsByID_.end())
+                    {
+                        AcquireTrain(selectedTrain_->first);
+                        currentState_ = Idle;
+                        idleScreen();
+                    }
+                    break;
+                }
+                if (k >= '0' && k <= '9' && pressed)
+                {
+                    searchString_[searchStringIndex_] = k;
+                    unHighlightChar();
+                    searchStringIndex_++;
+                    highlightChar();
+                    display_.display();
+                }
+            }
+            break;
         }
         break;
     case Functions:
@@ -368,7 +420,14 @@ void ESP32ControlStand::pollMenu()
             currentState_ = MainMenu;
             mainMenu();
             break;
-        default: break; // should never get here -- make the compiler happy
+        case None:
+            {
+                uint8_t key = checkKeypad();
+                if (key == 0) break;
+                bool pressed = (key & 0x80) == 0;
+                char k = key & 0x7f;
+            }
+            break;
         }
         break;
     case Consist:
@@ -423,7 +482,14 @@ void ESP32ControlStand::pollMenu()
             currentState_ = MainMenu;
             mainMenu();
             break;
-        default: break; // should never get here -- make the compiler happy
+        case None:
+            {
+                uint8_t key = checkKeypad();
+                if (key == 0) break;
+                bool pressed = (key & 0x80) == 0;
+                char k = key & 0x7f;
+            }
+            break;
         }
         break;
 
@@ -709,9 +775,32 @@ void ESP32ControlStand::handle_producer_identified(const openlcb::EventRegistryE
         AddTrain(event->src_node);
 }
 
-void ESP32ControlStand::checkKeypad()
+uint8_t ESP32ControlStand::checkKeypad()
 {
-    // TBD
+    if (keypad_ == NULL) return 0; // no keypad, so no key events
+    if (keypad_->available() > 0)
+    {
+        uint8_t event = keypad_->getEvent();
+        uint8_t key = (event & 0x7f)-1;
+        uint8_t kr = key / 10;
+        uint8_t kc = key % 10;
+        uint8_t thekey = ((kr*3)+kc)+'1'; // ASCII digits
+        if (kr == 3)
+        { // Bottom (4th) row is different: "* 0 #"
+            switch (kc)
+            {
+            case 0: thekey = '*'; break;
+            case 1: thekey = '0'; break;
+            case 2: thekey = '#'; break;
+            default: break;
+            }
+        }
+        return thekey | (event & 0x80);  // or in the pressed/released bit
+    }
+    else
+    {
+        return 0; // no key event
+    }
 }
 
 }

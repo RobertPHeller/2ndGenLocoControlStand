@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Oct 7 18:43:06 2019
-//  Last Modified : <221226.1235>
+//  Last Modified : <221227.1115>
 //
 //  Description	
 //
@@ -212,7 +212,7 @@ private:
     uint8_t searchStringIndex_, letterIndex_;
     char searchString_[21];
     bool updateSetting_;
-    void checkKeypad();
+    uint8_t checkKeypad();
     bool checkThrottle();
     bool readBrake();
     bool readHorn();
