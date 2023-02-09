@@ -81,3 +81,25 @@ openmrnpath.mk
 #Mac OS X file system artifacts
 .DS_Store
 
+## Kicad backup files
+*.bak
+*-bak
+*.dcm
+*.bck
+*.net
+
+# 3D printer files
+*.stl
+
+# Additional build artifacts
+build
+build.sh
+config.sh
+clean.sh
+flash.sh
+monitor.sh
+compile_cdi
+cdidata.hxx
+log
+make.log
+Revision.hxxout
