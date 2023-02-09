@@ -1,0 +1,361 @@
+EESchema Schematic File Version 2
+LIBS:power
+LIBS:device
+LIBS:switches
+LIBS:relays
+LIBS:motors
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+LIBS:mechanical
+LIBS:graphic_symbols
+LIBS:esp32_s3_wroom
+LIBS:lm2574n-5
+LIBS:mcp73871
+LIBS:gct_usb4105
+LIBS:USBLC6-2SC6
+LIBS:tca8418
+LIBS:sw_push_small_gnd
+LIBS:ESP32_mini
+LIBS:ESP32-T7S3-ControlStand-cache
+EELAYER 25 0
+EELAYER END
+$Descr USLetter 11000 8500
+encoding utf-8
+Sheet 6 7
+Title "ESP32-T7S3-ControlStand"
+Date "2022-07-25"
+Rev "1.0"
+Comp "Deepwoods Software"
+Comment1 "Processor Section"
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L +3.3V #PWR060
+U 1 1 62DF2399
+P 4575 1400
+F 0 "#PWR060" H 4575 1250 50  0001 C CNN
+F 1 "+3.3V" H 4575 1540 50  0000 C CNN
+F 2 "" H 4575 1400 50  0001 C CNN
+F 3 "" H 4575 1400 50  0001 C CNN
+	1    4575 1400
+	1    0    0    -1  
+$EndComp
+Text HLabel 4725 1975 0    60   Input ~ 0
+CAN_RX
+Text HLabel 4725 4175 0    60   Input ~ 0
+SCL
+Text HLabel 4725 1875 0    60   BiDi ~ 0
+SDA
+$Comp
+L R R27
+U 1 1 62DF23B1
+P 4575 1600
+F 0 "R27" V 4655 1600 50  0000 C CNN
+F 1 "2.4K" V 4575 1600 50  0000 C CNN
+F 2 "Resistors_SMD:R_0402" V 4505 1600 50  0001 C CNN
+F 3 "" H 4575 1600 50  0001 C CNN
+F 4 "71-CRCW06032K40JNEAC" V 4575 1600 60  0001 C CNN "Mouser Part Number"
+	1    4575 1600
+	1    0    0    -1  
+$EndComp
+$Comp
+L R R30
+U 1 1 62DF23B2
+P 4550 4300
+F 0 "R30" V 4630 4300 50  0000 C CNN
+F 1 "2.4K" V 4550 4300 50  0000 C CNN
+F 2 "Resistors_SMD:R_0402" V 4480 4300 50  0001 C CNN
+F 3 "" H 4550 4300 50  0001 C CNN
+F 4 "71-CRCW06032K40JNEAC" V 4550 4300 60  0001 C CNN "Mouser Part Number"
+	1    4550 4300
+	0    1    1    0   
+$EndComp
+Text Label 2900 2250 0    60   ~ 0
+IO48(Act1)
+Text Label 2500 2250 2    60   ~ 0
+IO38(Act2)
+$Comp
+L LED D29
+U 1 1 62DF23B4
+P 2900 2100
+F 0 "D29" H 2900 2200 50  0000 C CNN
+F 1 "ACT1" H 2900 2000 50  0000 C CNN
+F 2 "LEDs:LED_0402" H 2900 2100 50  0001 C CNN
+F 3 "" H 2900 2100 50  0001 C CNN
+F 4 "710-150040GS73220" H 2900 2100 60  0001 C CNN "Mouser Part Number"
+	1    2900 2100
+	0    -1   -1   0   
+$EndComp
+$Comp
+L LED D28
+U 1 1 62DF23B5
+P 2500 2100
+F 0 "D28" H 2500 2200 50  0000 C CNN
+F 1 "ACT2" H 2500 2000 50  0000 C CNN
+F 2 "LEDs:LED_0402" H 2500 2100 50  0001 C CNN
+F 3 "" H 2500 2100 50  0001 C CNN
+F 4 "710-150040SS73220" H 2500 2100 60  0001 C CNN "Mouser Part Number"
+	1    2500 2100
+	0    -1   -1   0   
+$EndComp
+$Comp
+L R R25
+U 1 1 62DF23B6
+P 2900 1750
+F 0 "R25" V 2980 1750 50  0000 C CNN
+F 1 "270" V 2900 1750 50  0000 C CNN
+F 2 "Resistors_SMD:R_0402" V 2830 1750 50  0001 C CNN
+F 3 "" H 2900 1750 50  0001 C CNN
+F 4 "754-RR0510P-271D" V 2900 1750 60  0001 C CNN "Mouser Part Number"
+	1    2900 1750
+	1    0    0    -1  
+$EndComp
+$Comp
+L R R23
+U 1 1 62DF23B7
+P 2500 1750
+F 0 "R23" V 2580 1750 50  0000 C CNN
+F 1 "270" V 2500 1750 50  0000 C CNN
+F 2 "Resistors_SMD:R_0402" V 2430 1750 50  0001 C CNN
+F 3 "" H 2500 1750 50  0001 C CNN
+F 4 "754-RR0510P-271D" V 2500 1750 60  0001 C CNN "Mouser Part Number"
+	1    2500 1750
+	1    0    0    -1  
+$EndComp
+$Comp
+L +3.3V #PWR061
+U 1 1 62DF23B8
+P 2700 1500
+F 0 "#PWR061" H 2700 1350 50  0001 C CNN
+F 1 "+3.3V" H 2700 1640 50  0000 C CNN
+F 2 "" H 2700 1500 50  0001 C CNN
+F 3 "" H 2700 1500 50  0001 C CNN
+	1    2700 1500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2500 1600 2900 1600
+Wire Wire Line
+	2700 1500 2700 1600
+Connection ~ 2700 1600
+Wire Wire Line
+	2900 1900 2900 1950
+Wire Wire Line
+	2500 1900 2500 1950
+Text HLabel 4725 2075 0    60   Output ~ 0
+CAN_TX
+Text HLabel 4725 2975 0    60   Input ~ 0
+IO17/ADC2_6
+Text HLabel 4725 2875 0    60   Input ~ 0
+IO18/ADC2_7
+Text HLabel 5775 2275 2    60   BiDi ~ 0
+Reset
+Text HLabel 5775 2775 2    60   Output ~ 0
+IO11/STATUS_G
+Text HLabel 4725 2275 0    60   Output ~ 0
+IO10/STATUS_R
+Text HLabel 4725 3875 0    60   Input ~ 0
+IO8/BUTTON_C
+Text HLabel 4725 3175 0    60   Input ~ 0
+IO46/BUTTON_A
+Text HLabel 5775 3175 2    60   Input ~ 0
+IO7/BUTTON_B
+Text HLabel 4725 2175 0    60   Input ~ 0
+IO9/BUTTON_D
+Text HLabel 4725 4075 0    60   Input ~ 0
+IO16/ADC2_5
+Text HLabel 4725 3975 0    60   Input ~ 0
+IO12/THROTTLEA
+Text HLabel 4725 3675 0    60   Input ~ 0
+IO13/THROTTLEB
+Text HLabel 4725 3775 0    60   Input ~ 0
+IO14/L_OFF
+Text HLabel 4725 3475 0    60   Input ~ 0
+IO15/L_DIM
+Text HLabel 5775 2425 2    60   Input ~ 0
+IO21/L_BRIGHT
+Text HLabel 4725 3275 0    60   Input ~ 0
+IO45/L_DITCH
+$Comp
+L Mounting_Hole MK17
+U 1 1 62E6E1A3
+P 5575 4950
+F 0 "MK17" H 5575 5150 50  0000 C CNN
+F 1 "Mounting_Hole" H 5575 5075 50  0000 C CNN
+F 2 "Mounting_Holes:MountingHole_2.5mm" H 5575 4950 50  0001 C CNN
+F 3 "" H 5575 4950 50  0001 C CNN
+	1    5575 4950
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mounting_Hole MK18
+U 1 1 62E6E22C
+P 5900 4975
+F 0 "MK18" H 5900 5175 50  0000 C CNN
+F 1 "Mounting_Hole" H 5900 5100 50  0000 C CNN
+F 2 "Mounting_Holes:MountingHole_2.5mm" H 5900 4975 50  0001 C CNN
+F 3 "" H 5900 4975 50  0001 C CNN
+	1    5900 4975
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mounting_Hole MK19
+U 1 1 62E6E2A3
+P 4525 4925
+F 0 "MK19" H 4525 5125 50  0000 C CNN
+F 1 "Mounting_Hole" H 4525 5050 50  0000 C CNN
+F 2 "Mounting_Holes:MountingHole_2.5mm" H 4525 4925 50  0001 C CNN
+F 3 "" H 4525 4925 50  0001 C CNN
+	1    4525 4925
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mounting_Hole_PAD MK20
+U 1 1 62E6E35E
+P 5075 4975
+F 0 "MK20" H 5075 5225 50  0000 C CNN
+F 1 "Mounting_Hole_PAD" H 5075 5150 50  0000 C CNN
+F 2 "Mounting_Holes:MountingHole_2.5mm_Pad" H 5075 4975 50  0001 C CNN
+F 3 "" H 5075 4975 50  0001 C CNN
+	1    5075 4975
+	1    0    0    -1  
+$EndComp
+$Comp
+L +3V3 #PWR062
+U 1 1 6393CC73
+P 4400 4250
+F 0 "#PWR062" H 4400 4100 50  0001 C CNN
+F 1 "+3V3" H 4400 4390 50  0000 C CNN
+F 2 "" H 4400 4250 50  0001 C CNN
+F 3 "" H 4400 4250 50  0001 C CNN
+	1    4400 4250
+	1    0    0    -1  
+$EndComp
+Text HLabel 4725 3375 0    60   Input ~ 0
+IO47/BELL
+Text Label 4725 3575 2    60   ~ 0
+IO48(Act1)
+Text Label 4725 3075 2    60   ~ 0
+IO38(Act2)
+$Comp
+L TTGO-T7_S3-V1.1 U601
+U 1 1 63E40448
+P 5225 1675
+F 0 "U601" H 5500 -275 50  0000 C CNN
+F 1 "TTGO-T7_S3-V1.1" H 5325 -1000 50  0000 C CNN
+F 2 "ESP32_mini:ESP32_mini" H 5375 1775 50  0001 C CNN
+F 3 "" H 5375 1775 50  0001 C CNN
+	1    5225 1675
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4725 4175 4725 4300
+Wire Wire Line
+	4725 4300 4700 4300
+Wire Wire Line
+	4375 4250 4375 4300
+Wire Wire Line
+	4375 4300 4400 4300
+Wire Wire Line
+	4575 1750 4575 1875
+Wire Wire Line
+	4575 1875 4725 1875
+Wire Wire Line
+	4575 1450 4575 1400
+$Comp
+L +3.3V #PWR063
+U 1 1 63E41D75
+P 6025 1675
+F 0 "#PWR063" H 6025 1525 50  0001 C CNN
+F 1 "+3.3V" H 6025 1815 50  0000 C CNN
+F 2 "" H 6025 1675 50  0001 C CNN
+F 3 "" H 6025 1675 50  0001 C CNN
+	1    6025 1675
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6025 1675 6025 1875
+Wire Wire Line
+	6025 1875 5775 1875
+$Comp
+L GND #PWR064
+U 1 1 63E41DD0
+P 6025 2000
+F 0 "#PWR064" H 6025 1750 50  0001 C CNN
+F 1 "GND" H 6025 1850 50  0000 C CNN
+F 2 "" H 6025 2000 50  0001 C CNN
+F 3 "" H 6025 2000 50  0001 C CNN
+	1    6025 2000
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	5775 1975 5775 2175
+Connection ~ 5775 2075
+Wire Wire Line
+	5775 1975 6025 1975
+Wire Wire Line
+	6025 1975 6025 2000
+$Comp
+L GND #PWR065
+U 1 1 63E42E2A
+P 5075 5175
+F 0 "#PWR065" H 5075 4925 50  0001 C CNN
+F 1 "GND" H 5075 5025 50  0000 C CNN
+F 2 "" H 5075 5175 50  0001 C CNN
+F 3 "" H 5075 5175 50  0001 C CNN
+	1    5075 5175
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5075 5175 5075 5075
+$Comp
+L +5V #PWR066
+U 1 1 63E5A8D8
+P 5775 1700
+F 0 "#PWR066" H 5775 1550 50  0001 C CNN
+F 1 "+5V" H 5775 1840 50  0000 C CNN
+F 2 "" H 5775 1700 50  0001 C CNN
+F 3 "" H 5775 1700 50  0001 C CNN
+	1    5775 1700
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5775 1700 5775 1775
+NoConn ~ 4725 1775
+NoConn ~ 4725 2375
+NoConn ~ 4725 2475
+NoConn ~ 4725 2575
+NoConn ~ 4725 2675
+NoConn ~ 4725 2775
+NoConn ~ 5775 2525
+NoConn ~ 5775 3075
+NoConn ~ 5775 2875
+NoConn ~ 5775 2975
+$EndSCHEMATC

@@ -192,7 +192,7 @@ F 4 "71-CRCW06032K40JNEAC" V 5750 4550 60  0001 C CNN "Mouser Part Number"
 	0    1    1    0   
 $EndComp
 Text Label 3850 3150 0    60   ~ 0
-IO37(Act1)
+IO48(Act1)
 Text Label 3450 3150 2    60   ~ 0
 IO38(Act2)
 $Comp
@@ -277,8 +277,8 @@ Text HLabel 6325 4550 3    60   Output ~ 0
 IO10/STATUS_R
 Text HLabel 5575 4050 0    60   Input ~ 0
 IO8/BUTTON_C
-Text HLabel 5575 3450 0    60   Input ~ 0
-IO6/BUTTON_A
+Text HLabel 6125 4550 3    60   Input ~ 0
+IO46/BUTTON_A
 Text HLabel 5575 3550 0    60   Input ~ 0
 IO7/BUTTON_B
 Text HLabel 6225 4550 3    60   Input ~ 0
@@ -295,8 +295,8 @@ Text HLabel 5575 3650 0    60   Input ~ 0
 IO15/L_DIM
 Text HLabel 6825 4550 3    60   Input ~ 0
 IO21/L_BRIGHT
-Text HLabel 7575 4150 2    60   Input ~ 0
-IO35/L_DITCH
+Text HLabel 7125 4550 3    60   Input ~ 0
+IO45/L_DITCH
 $Comp
 L Mounting_Hole MK17
 U 1 1 62E6E1A3
@@ -632,10 +632,10 @@ F 3 "" H 8100 4350 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	8100 4250 8100 4350
-Text HLabel 7575 4050 2    60   Input ~ 0
-IO36/BELL
-Text Label 7575 3950 0    60   ~ 0
-IO37(Act1)
+Text HLabel 6925 4550 3    60   Input ~ 0
+IO47/BELL
+Text Label 7025 4550 3    60   ~ 0
+IO48(Act1)
 Text Label 7575 3850 0    60   ~ 0
 IO38(Act2)
 NoConn ~ 7575 3750
@@ -644,8 +644,8 @@ NoConn ~ 7575 3550
 NoConn ~ 7575 3450
 NoConn ~ 7575 3350
 NoConn ~ 7575 3250
-NoConn ~ 6125 4550
-NoConn ~ 6925 4550
-NoConn ~ 7025 4550
-NoConn ~ 7125 4550
+NoConn ~ 7575 3950
+NoConn ~ 5575 3450
+NoConn ~ 7575 4150
+NoConn ~ 7575 4050
 $EndSCHEMATC

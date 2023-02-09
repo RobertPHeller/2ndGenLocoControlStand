@@ -40,13 +40,14 @@ LIBS:gct_usb4105
 LIBS:USBLC6-2SC6
 LIBS:tca8418
 LIBS:sw_push_small_gnd
-LIBS:ESP32-S3-WROOM-ControlStand-cache
+LIBS:ESP32_mini
+LIBS:ESP32-T7S3-ControlStand-cache
 EELAYER 25 0
 EELAYER END
 $Descr USLetter 11000 8500
 encoding utf-8
 Sheet 1 7
-Title "ESP32-S3-WROOM-ControlStand"
+Title "ESP32-T7S3-ControlStand"
 Date "2022-07-25"
 Rev "1.0"
 Comp "Deepwoods Software"

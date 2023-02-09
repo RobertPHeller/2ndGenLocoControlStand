@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Dec 12 13:38:08 2022
-//  Last Modified : <221227.1057>
+//  Last Modified : <230102.0921>
 //
 //  Description	
 //
@@ -399,6 +399,7 @@ void app_main()
 #if CONFIG_OLCB_PRINT_ALL_PACKETS
         stack.print_all_packets();
 #endif
+        nvs.register_virtual_memory_spaces(&stack);
         openlcb::MemoryConfigClient memory_client(stack.node(), stack.memory_config_handler());
         LOG(INFO, "[esp32s3controlstand] MemoryConfigClient done.");
 #ifdef CONFIG_ESP32_WIFI_ENABLED

@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Dec 12 12:18:47 2022
-//  Last Modified : <221214.1106>
+//  Last Modified : <230209.1043>
 //
 //  Description	
 //
@@ -53,7 +53,7 @@
 // Digital pins:
 
 // Buttons
-GPIO_PIN(BUTTON_A, GpioInputPU, GPIO_NUM_6);
+GPIO_PIN(BUTTON_A, GpioInputPU, GPIO_NUM_46);
 GPIO_PIN(BUTTON_B, GpioInputPU, GPIO_NUM_7);
 GPIO_PIN(BUTTON_C, GpioInputPU, GPIO_NUM_8);
 GPIO_PIN(BUTTON_D, GpioInputPU, GPIO_NUM_9);
@@ -70,10 +70,10 @@ GPIO_PIN(THROTTLEB, GpioInputPU, GPIO_NUM_13);
 GPIO_PIN(L_OFF,    GpioInputPU, GPIO_NUM_14);
 GPIO_PIN(L_DIM,    GpioInputPU, GPIO_NUM_15);
 GPIO_PIN(L_BRIGHT, GpioInputPU, GPIO_NUM_21);
-GPIO_PIN(L_DITCH,  GpioInputPU, GPIO_NUM_35);
+GPIO_PIN(L_DITCH,  GpioInputPU, GPIO_NUM_45);
 
 // Bell
-GPIO_PIN(BELL, GpioInputPU, GPIO_NUM_36);
+GPIO_PIN(BELL, GpioInputPU, GPIO_NUM_47);
 
 // ADC Pins:
 
@@ -84,8 +84,8 @@ ADC_PIN(REVERSER, ADC2_CHANNEL_5, ADC_ATTEN_DB_11, ADC_WIDTH_BIT_12);
 
 // On-board LEDs:
 
-GPIO_PIN(ACT1, GpioInputNP, GPIO_NUM_37);
-GPIO_PIN(ACT2, GpioInputNP, GPIO_NUM_38);
+GPIO_PIN(ACT1, GpioOutputSafeHigh, GPIO_NUM_48);
+GPIO_PIN(ACT2, GpioOutputSafeHigh, GPIO_NUM_38);
 
 
 /// GPIO Pin initializer.
