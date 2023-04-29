@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Fri Dec 16 10:47:59 2022
-//  Last Modified : <221218.1334>
+//  Last Modified : <230429.1332>
 //
 //  Description	
 //
@@ -117,19 +117,34 @@ public:
     inline const char *station_ssid() {return config_.station_ssid;}
     inline void station_ssid(const char *ssid)
     {
-        strncpy(config_.station_ssid,ssid,sizeof(config_.station_ssid)-1);
+        int i;
+        const char *s = ssid;
+        char *d = config_.station_ssid;
+        for (i = 0; i <= sizeof(config_.station_ssid) && *s != '\0';i++)
+            *d++ = *s++;
+        *d = '\0';
         need_persist_ = true;
     }
     inline const char *station_pass() {return config_.station_pass;}
     inline void station_pass(const char *password)
     {
-        strncpy(config_.station_pass,password,sizeof(config_.station_pass)-1);
+        int i;
+        const char *s = password;
+        char *d = config_.station_pass;
+        for (i = 0; i <= sizeof(config_.station_pass) && *s != '\0';i++)
+            *d++ = *s++;
+        *d = '\0';
         need_persist_ = true;
     }
     inline const char *hostname_prefix() {return config_.hostname_prefix;}
     inline void hostname_prefix(const char *hostname)
     {
-        strncpy(config_.hostname_prefix,hostname,sizeof(config_.hostname_prefix)-1);
+        int i;
+        const char *s = hostname;
+        char *d = config_.hostname_prefix;
+        for (i = 0; i <= sizeof(config_.hostname_prefix) && *s != '\0';i++)
+            *d++ = *s++;
+        *d = '\0';
         need_persist_ = true;
     }
     NvsManager() : need_persist_(false) 

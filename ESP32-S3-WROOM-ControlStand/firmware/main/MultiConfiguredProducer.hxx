@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Sep 12 13:04:11 2022
-//  Last Modified : <220912.1532>
+//  Last Modified : <230429.1348>
 //
 //  Description	
 //
@@ -45,7 +45,7 @@
 
 #include "openlcb/ConfigRepresentation.hxx"
 #include "openlcb/ConfiguredProducer.hxx"
-#include "utils/Debouncer.hxx"
+//#include "utils/Debouncer.hxx"
 #include "utils/format_utils.hxx"
 
 /// Version of the @ref ConfiguredProducer class that can handle many GPIO pins

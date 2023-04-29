@@ -5,11 +5,11 @@ set(deps
     spiffs
     OpenMRNIDF
     graphics
-    I2CDriver
     TCA8418
     NvsManager
     Config
     json
+    esp_timer
     )
                             
 idf_component_register(SRCS esp32s3controlstand.cpp fs.cpp

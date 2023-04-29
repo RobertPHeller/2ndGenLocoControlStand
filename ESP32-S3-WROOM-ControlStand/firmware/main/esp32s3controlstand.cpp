@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Dec 12 13:38:08 2022
-//  Last Modified : <230102.0921>
+//  Last Modified : <230429.1355>
 //
 //  Description	
 //
@@ -71,10 +71,11 @@ static const char rcsid[] = "@(#) : $Id$";
 #include <openlcb/RefreshLoop.hxx>
 #include <openlcb/SimpleStack.hxx>
 #include <openlcb/MultiConfiguredConsumer.hxx>
+#include <openlcb/MultiConfiguredPC.hxx>
 #include "MultiConfiguredProducer.hxx"
 #include <utils/constants.hxx>
 #include <utils/format_utils.hxx>
-#include "Esp32HardwareI2C.hxx"
+#include "freertos_drivers/esp32/Esp32HardwareI2C.hxx"
 #include "MCP23017Gpio.hxx"
 #include "Adafruit_TCA8418.hxx"
 #include "NvsManager.hxx"
@@ -89,7 +90,7 @@ OVERRIDE_CONST(can_rx_buffer_size, 64);
 
 esp32s3controlstand::ConfigDef cfg(0);
 Esp32HardwareTwai twai(CONFIG_TWAI_RX_PIN, CONFIG_TWAI_TX_PIN);
-Esp32HardwareI2C i2c0(CONFIG_SDA_PIN, CONFIG_SCL_PIN, 0, "/dev/i2c/i2c0");
+Esp32HardwareI2C i2c("/dev/i2c");
 
 
 namespace openlcb
@@ -317,7 +318,7 @@ constexpr const static Gpio *const Button1_set[] = {
 /// Application main entry point.
 void app_main()
 {
-    const esp_app_desc_t *app_data = esp_ota_get_app_description();
+    const esp_app_desc_t *app_data = esp_app_get_description();
     LOG(INFO, "\n\nESP32 2ndGen Loco Control Stand (a LCC Throttle) starting up...");
     LOG(INFO, "Compiled on %s %s using IDF %s", app_data->date, app_data->time,
         app_data->idf_ver);
@@ -337,8 +338,7 @@ void app_main()
     bool run_bootloader = false;
     bool cleanup_config_tree = false;
     GpioInit::hw_init();
-    Esp32HardwareI2C::Mount("/dev/i2c");
-    i2c0.hw_init();
+    i2c.hw_init(CONFIG_SDA_PIN,CONFIG_SCL_PIN,400000,I2C_NUM_0);
     
     esp32s3controlstand::NvsManager nvs;
     nvs.init(reset_reason);
@@ -413,9 +413,9 @@ void app_main()
                                       nvs.hostname_prefix());
         wifi_manager.set_status_led(ACT2_Pin::instance());
 #endif
-        esp32s3controlstand::FactoryResetHelper factory_reset_helper();
+        esp32s3controlstand::FactoryResetHelper factory_reset_helper;
         LOG(INFO, "[esp32s3controlstand] FactoryResetHelper done.");
-        esp32s3controlstand::EventBroadcastHelper event_helper();
+        esp32s3controlstand::EventBroadcastHelper event_helper;
         LOG(INFO, "[esp32s3controlstand] EventBroadcastHelper done.");
         esp32s3controlstand::DelayRebootHelper delayed_reboot(stack.service());
         LOG(INFO, "[esp32s3controlstand] DelayRebootHelper done.");

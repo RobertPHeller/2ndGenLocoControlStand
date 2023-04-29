@@ -8,7 +8,7 @@
 //  Author        : $Author$
 //  Created By    : Robert Heller
 //  Created       : Mon Oct 7 18:47:11 2019
-//  Last Modified : <221227.1140>
+//  Last Modified : <230429.1336>
 //
 //  Description	
 //
@@ -310,8 +310,8 @@ void ESP32ControlStand::pollMenu()
             {
                 uint8_t key = checkKeypad();
                 if (key == 0) break;
-                bool pressed = (key & 0x80) == 0;
-                char k = key & 0x7f;
+                //bool pressed = (key & 0x80) == 0;
+                //char k = key & 0x7f;
             }
             break;
         }
@@ -424,8 +424,8 @@ void ESP32ControlStand::pollMenu()
             {
                 uint8_t key = checkKeypad();
                 if (key == 0) break;
-                bool pressed = (key & 0x80) == 0;
-                char k = key & 0x7f;
+                //bool pressed = (key & 0x80) == 0;
+                //char k = key & 0x7f;
             }
             break;
         }
@@ -486,8 +486,8 @@ void ESP32ControlStand::pollMenu()
             {
                 uint8_t key = checkKeypad();
                 if (key == 0) break;
-                bool pressed = (key & 0x80) == 0;
-                char k = key & 0x7f;
+                //bool pressed = (key & 0x80) == 0;
+                //char k = key & 0x7f;
             }
             break;
         }
