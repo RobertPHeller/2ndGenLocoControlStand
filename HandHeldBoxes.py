@@ -8,7 +8,7 @@
 #  Author        : $Author$
 #  Created By    : Robert Heller
 #  Created       : Sun Aug 7 12:10:55 2022
-#  Last Modified : <221227.0942>
+#  Last Modified : <230430.1428>
 #
 #  Description	
 #
@@ -156,7 +156,7 @@ class HandHeldBoxNoLEDBottons(HandHeldBoxCommon):
             s = self._mainboard.standoff(i,origin.z+self._wallThick,sheight)
             self._bottom = self._bottom.fuse(s)
         self._bottom = self._bottom.cut(self._mainboard.PowerSwitchCutout(self._wallThick))
-        self._bottom = self._bottom.cut(self._mainboard.USBCutout(self._wallThick))
+        #self._bottom = self._bottom.cut(self._mainboard.USBCutout(self._wallThick))
         self._bottom = self._bottom.cut(self._mainboard.PowerJackCutout(self._wallThick))
         
         toporig = origin.add(Base.Vector(0,0,self._totalOuterHeight-self._wallThick))
@@ -191,14 +191,22 @@ class HandHeldBoxNoLEDBottons(HandHeldBoxCommon):
                                                  dispY,\
                                                  -(self._wallThick+5.08)))
         self._dispboard = NewButtonDisplayBoard(name+"_display",disboardorigin)
-        self._top = self._top.cut(self._dispboard.DisplayCutoutHole(toporig.z,self._wallThick))
+        #self._dispboard.DisplayCutoutHole(toporig.z,self._wallThick))
+        #for i in range(1,5):
+        #    self._top = self._top.cut(self._dispboard.DisplayMountingHole(i,toporig.z,self._wallThick))
+        oledX,oledY = self._dispboard.DisplayCutoutHoleXY()
+        oledX += (NewButtonDisplayBoard.DisplayCutoutHoleWidth()-OLED128x32.Length())/2.0
+        oledY += (NewButtonDisplayBoard.DisplayCutoutHoleLength()-OLED128x32.Width())/2.0
+        displayOrigin = Base.Vector(oledX,oledY,toporig.z-OLED128x32.BoardThick())
+        self._oled = OLED128x32(name+"_oled",displayOrigin)
+        self._top = self._top.cut(self._oled.makeDisplay(toporig.z,self._wallThick))
         for i in range(1,5):
-            self._top = self._top.cut(self._dispboard.DisplayMountingHole(i,toporig.z,self._wallThick))
+            self._top = self._top.cut(self._oled.mountingHole(i,toporig.z,self._wallThick))
         for i in range(1,5):
             s = self._dispboard.standoff(i,toporig.z-5.08,5.08)
             self._top = self._top.fuse(s)
         self._top = self._top.cut(self._mainboard.PowerSwitchCutout(self._wallThick))
-        self._top = self._top.cut(self._mainboard.USBCutout(self._wallThick))
+        #self._top = self._top.cut(self._mainboard.USBCutout(self._wallThick))
         self._top = self._top.cut(self._mainboard.PowerJackCutout(self._wallThick))
         self._plungers = list()
         for i in range(1,6):
@@ -367,6 +375,7 @@ class HandHeldBoxNoLEDBottons(HandHeldBoxCommon):
         self._brakePot.show()
         self._brakeLever.show()
         self._hornButton.show()
+        self._oled.show()
     def _bottomPost(self,i):
         centerX,centerY = self._postsXY[i-1]
         postbottom = self.origin.add(Base.Vector(centerX,centerY,\

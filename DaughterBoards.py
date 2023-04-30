@@ -8,7 +8,7 @@
 #  Author        : $Author$
 #  Created By    : Robert Heller
 #  Created       : Tue Dec 22 00:56:49 2020
-#  Last Modified : <221221.1141>
+#  Last Modified : <230430.1416>
 #
 #  Description	
 #
@@ -143,6 +143,61 @@ class ButtonDisplayBoard(object):
                                                    holebottom)))\
                         .extrude(Base.Vector(0,0,height))
 
+class OLED128x32(object):
+    @staticmethod
+    def Length():
+        return 1.30*25.4
+    @staticmethod
+    def Width():
+        return .85*25.4
+    @staticmethod
+    def BoardThick():
+        return 1.5875
+    _boardMHXY = [(2.54, 2.54), (30.44, 2.54), (30.44, 19.05), (2.54, 19.05)]
+    _holeDiameter = .1*25.4
+    _displayCornerXY = (.76, 5.08)
+    _displayLength   = 1.18*25.4
+    _displayWidth    = .45*25.4
+    _displayThick    = 1.5875
+    def __init__(self,name,origin):
+        self.name = name
+        if not isinstance(origin,Base.Vector):
+            raise RuntimeError("origin is not a Vector!")
+        self.origin = origin
+        self._board = Part.makePlane(self.Length(),self.Width(),origin)\
+                    .extrude(Base.Vector(0,0,self.BoardThick()))
+        Z = self.origin.z
+        for i in range(1,5):
+            self._board = self._board.cut(self.mountingHole(i,Z,self.BoardThick()))
+        self._display = self.makeDisplay(Z+self.BoardThick(),self._displayThick)
+    def show(self):
+        doc = App.activeDocument()
+        obj = doc.addObject("Part::Feature",self.name+"_board")
+        obj.Shape=self._board
+        obj.Label=self.name+"_board"
+        obj.ViewObject.ShapeColor=tuple([0.0,0.0,1.0])
+        obj = doc.addObject("Part::Feature",self.name+"_display")
+        obj.Shape=self._display
+        obj.Label=self.name+"_display"
+        obj.ViewObject.ShapeColor=tuple([0.0,0.0,0.0])
+    def mountingHole(self,i,base,height):
+        holeX,holeY = self._boardMHXY[i-1]
+        holeX+=self.origin.x
+        holeY+=self.origin.y
+        holebottom=Base.Vector(holeX,holeY,base)
+        return  Part.Face(Part.Wire(Part.makeCircle(self._holeDiameter/2.0,\
+                                                   holebottom)))\
+                        .extrude(Base.Vector(0,0,height))
+    def makeDisplay(self,baseZ,ZHeight):
+        dX,dY = self._displayCornerXY
+        dorig = Base.Vector(self.origin.x+dX,self.origin.y+dY,baseZ)
+        d = Part.makePlane(self._displayLength,self._displayWidth,dorig)\
+                .extrude(Base.Vector(0,0,ZHeight))
+        return d
+        
+                    
+
+
 class NewButtonDisplayBoard(object):
     @staticmethod
     def Length():
@@ -157,8 +212,14 @@ class NewButtonDisplayBoard(object):
     _boardMHXY = [(5.08, 3.81), (46.99, 3.81), (46.990, 60.96), (5.08, 60.96)]
     _holeDiameter = 2.5
     _displayCutoutCornerXY = (8.128, 30.353)
-    _displayCutoutCornerWidth = 1.36*25.4
-    _displayCutoutCornerLength = 0.91*25.4
+    _displayCutoutCornerWidth = 34.544
+    @staticmethod
+    def DisplayCutoutHoleWidth():
+        return NewButtonDisplayBoard._displayCutoutCornerWidth
+    _displayCutoutCornerLength = 23.114
+    @staticmethod
+    def DisplayCutoutHoleLength():
+        return NewButtonDisplayBoard._displayCutoutCornerLength    
     _displayMountingHolesXY = [(10.16, 27.94), (10.16, 55.88), (40.64, 55.88), (40.64, 27.94)]
     _displayMountingHoleDiameter = 2.54
     _buttonHolesXY = [(13.97, 20.32), (21.59, 20.32), (29.21, 20.32), (36.83, 20.32), (25.4, 10.16)]
@@ -293,6 +354,9 @@ class NewButtonDisplayBoard(object):
                                               base))
         body = Part.makePlane(bodyW,bodyL,borigin).extrude(Base.Vector(0,0,bodyH))
         return body
+    def DisplayCutoutHoleXY(self):
+        X,Y = self._displayCutoutCornerXY
+        return (self.origin.x+X, self.origin.y+Y)
     def DisplayCutoutHole(self,base,height):
         cornerX,cornerY = self._displayCutoutCornerXY
         cornerX+=self.origin.x
@@ -660,6 +724,9 @@ class KeypadBoard(object):
                                              self._lsize,0.0)[0])
         return (temp.translate(baseOrig))\
                     .extrude(Base.Vector(0,0,self._lheight))
+
+
+
 
 if __name__ == '__main__':
     App.ActiveDocument=App.newDocument("Temp")
