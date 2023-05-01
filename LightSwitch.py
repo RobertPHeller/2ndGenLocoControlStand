@@ -8,7 +8,7 @@
 #  Author        : $Author$
 #  Created By    : Robert Heller
 #  Created       : Wed Dec 23 10:39:05 2020
-#  Last Modified : <201223.1140>
+#  Last Modified : <230501.1603>
 #
 #  Description	
 #
@@ -101,4 +101,5 @@ class Grayhill_56A36_01_1_04N(object):
         obj.Shape=self._shaft
         obj.Label=self.name+"_shaft"
         obj.ViewObject.ShapeColor=tuple([0.85,0.85,0.85])
-
+    def Bushing(self):
+        return self._bushing

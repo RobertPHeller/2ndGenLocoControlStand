@@ -8,7 +8,7 @@
 #  Author        : $Author$
 #  Created By    : Robert Heller
 #  Created       : Sun Aug 7 12:10:55 2022
-#  Last Modified : <230430.1428>
+#  Last Modified : <230501.1616>
 #
 #  Description	
 #
@@ -106,7 +106,7 @@ class HandHeldBoxCommon(object):
                             
 
 class HandHeldBoxNoLEDBottons(HandHeldBoxCommon):
-    _length = NewMainBoard.Length()+50.8+KeypadBoard.Length()
+    _length = NewMainBoard.Length()+50.8+KeypadBoard.Length()+25.4
     _postsXY = [(5.08, 5.08), (HandHeldBoxCommon._outerWidth-5.08, 5.08), \
                  (5.08, (NewMainBoard.Length()+50.8+KeypadBoard.Length())-5.08), \
                  ((HandHeldBoxCommon._outerWidth-5.08, \
@@ -340,18 +340,23 @@ class HandHeldBoxNoLEDBottons(HandHeldBoxCommon):
             self._top = self._top.cut(self.keypad.mountingHole(i,toporig.z,self._wallThick))
             s = self.keypad.standoff(i,toporig.z-5.08,5.08)
             self._top = self._top.fuse(s)
+        lightswitchOrigin = toporig.add(Base.Vector(self._wallThick+12.7,\
+                                                    25.4+17+12.7,
+                                                    -(self._wallThick)))
+        self._lightswitch = Grayhill_56A36_01_1_04N(name+"_light",lightswitchOrigin)
+        self._top = self._top.cut(self._lightswitch.Bushing())
     def show(self):
         doc = App.activeDocument()
         obj = doc.addObject("Part::Feature",self.name+"_bottom")
         obj.Shape=self._bottom
         obj.Label=self.name+"_bottom"
         obj.ViewObject.ShapeColor=tuple([1.0,1.0,0.0])
-        obj.ViewObject.Transparency=30
+        obj.ViewObject.Transparency=70
         obj = doc.addObject("Part::Feature",self.name+"_top")
         obj.Shape=self._top
         obj.Label=self.name+"_top"
         obj.ViewObject.ShapeColor=tuple([0.0,1.0,1.0])
-        obj.ViewObject.Transparency=30
+        obj.ViewObject.Transparency=70
         obj = doc.addObject("Part::Feature",self.name+"_statusLense");
         obj.Shape=self._statusLense
         obj.Label=self.name+"_statusLense"
@@ -376,6 +381,7 @@ class HandHeldBoxNoLEDBottons(HandHeldBoxCommon):
         self._brakeLever.show()
         self._hornButton.show()
         self._oled.show()
+        self._lightswitch.show()
     def _bottomPost(self,i):
         centerX,centerY = self._postsXY[i-1]
         postbottom = self.origin.add(Base.Vector(centerX,centerY,\
