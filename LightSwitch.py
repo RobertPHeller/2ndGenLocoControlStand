@@ -8,7 +8,7 @@
 #  Author        : $Author$
 #  Created By    : Robert Heller
 #  Created       : Wed Dec 23 10:39:05 2020
-#  Last Modified : <230501.1603>
+#  Last Modified : <230502.0854>
 #
 #  Description	
 #
@@ -53,8 +53,17 @@ import datetime
 class Grayhill_56A36_01_1_04N(object):
     _shaftDiameter   = 3.18
     _shaftLength     = 9.53
+    @staticmethod
+    def ShaftDiameter():
+        return Grayhill_56A36_01_1_04N._shaftDiameter
+    @staticmethod
+    def ShaftLength():
+        return Grayhill_56A36_01_1_04N._shaftLength
     _bushingDiameter = (1.0/4.0)*25.4
     _bushingLength   = 6.35
+    @staticmethod
+    def BushingLength():
+        return Grayhill_56A36_01_1_04N._bushingLength
     _bodyDiameter    = 12.7
     _bodyDepth       = 12.19-3.18
     _terminalDepth   = 3.18

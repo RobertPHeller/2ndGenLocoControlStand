@@ -8,7 +8,7 @@
 #  Author        : $Author$
 #  Created By    : Robert Heller
 #  Created       : Sun Aug 7 12:10:55 2022
-#  Last Modified : <230501.1616>
+#  Last Modified : <230502.0858>
 #
 #  Description	
 #
@@ -343,8 +343,11 @@ class HandHeldBoxNoLEDBottons(HandHeldBoxCommon):
         lightswitchOrigin = toporig.add(Base.Vector(self._wallThick+12.7,\
                                                     25.4+17+12.7,
                                                     -(self._wallThick)))
-        self._lightswitch = Grayhill_56A36_01_1_04N(name+"_light",lightswitchOrigin)
+        self._lightswitch = Grayhill_56A36_01_1_04N(name+"_lightswitch",lightswitchOrigin)
         self._top = self._top.cut(self._lightswitch.Bushing())
+        self._knob = Grayhill_11K5019_JCNB(name+"_lightswitchKnob",
+                                           lightswitchOrigin.add(Base.Vector(0,0,\
+                                           Grayhill_56A36_01_1_04N.BushingLength())))
     def show(self):
         doc = App.activeDocument()
         obj = doc.addObject("Part::Feature",self.name+"_bottom")
@@ -382,6 +385,7 @@ class HandHeldBoxNoLEDBottons(HandHeldBoxCommon):
         self._hornButton.show()
         self._oled.show()
         self._lightswitch.show()
+        self._knob.show()
     def _bottomPost(self,i):
         centerX,centerY = self._postsXY[i-1]
         postbottom = self.origin.add(Base.Vector(centerX,centerY,\
