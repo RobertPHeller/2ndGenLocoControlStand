@@ -8,7 +8,7 @@
 #  Author        : $Author$
 #  Created By    : Robert Heller
 #  Created       : Sun Aug 7 12:10:55 2022
-#  Last Modified : <230502.0858>
+#  Last Modified : <240218.1429>
 #
 #  Description	
 #
@@ -107,10 +107,11 @@ class HandHeldBoxCommon(object):
 
 class HandHeldBoxNoLEDBottons(HandHeldBoxCommon):
     _length = NewMainBoard.Length()+50.8+KeypadBoard.Length()+25.4
-    _postsXY = [(5.08, 5.08), (HandHeldBoxCommon._outerWidth-5.08, 5.08), \
-                 (5.08, (NewMainBoard.Length()+50.8+KeypadBoard.Length())-5.08), \
-                 ((HandHeldBoxCommon._outerWidth-5.08, \
-                  (NewMainBoard.Length()+50.8+KeypadBoard.Length())-5.08))]
+    _postsXY = [(5.08, 5.08), \
+                (HandHeldBoxCommon._outerWidth-5.08, 5.08), \
+                (5.08, ((NewMainBoard.Length()+50.8+KeypadBoard.Length()+25.4)-5.08)), \
+                (HandHeldBoxCommon._outerWidth-5.08, \
+                  ((NewMainBoard.Length()+50.8+KeypadBoard.Length()+25.4)-5.08))]
     _postdiameter = 6.0
     _postholediameter = 2.5
     def __init__(self,name,origin):
