@@ -1747,7 +1747,7 @@
     (property "Value" "A" (id 1) (at 29.21 35.0266 0)
       (effects (font (size 0.762 0.762)))
     )
-    (property "Footprint" "Buttons_Switches_SMD:SW_SPST_EVQQ2" (id 2) (at 29.21 33.02 0)
+    (property "Footprint" "Button_Switch_SMD:SW_SPST_EVQQ2" (id 2) (at 29.21 33.02 0)
       (effects (font (size 1.524 1.524)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 29.21 33.02 0)
@@ -1769,7 +1769,7 @@
     (property "Value" "B" (id 1) (at 29.21 42.6466 0)
       (effects (font (size 0.762 0.762)))
     )
-    (property "Footprint" "Buttons_Switches_SMD:SW_SPST_EVQQ2" (id 2) (at 29.21 40.64 0)
+    (property "Footprint" "Button_Switch_SMD:SW_SPST_EVQQ2" (id 2) (at 29.21 40.64 0)
       (effects (font (size 1.524 1.524)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 29.21 40.64 0)
@@ -1791,7 +1791,7 @@
     (property "Value" "C" (id 1) (at 29.21 48.9966 0)
       (effects (font (size 0.762 0.762)))
     )
-    (property "Footprint" "Buttons_Switches_SMD:SW_SPST_EVQQ2" (id 2) (at 29.21 46.99 0)
+    (property "Footprint" "Button_Switch_SMD:SW_SPST_EVQQ2" (id 2) (at 29.21 46.99 0)
       (effects (font (size 1.524 1.524)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 29.21 46.99 0)
@@ -1813,7 +1813,7 @@
     (property "Value" "D" (id 1) (at 29.21 55.3466 0)
       (effects (font (size 0.762 0.762)))
     )
-    (property "Footprint" "Buttons_Switches_SMD:SW_SPST_EVQQ2" (id 2) (at 29.21 53.34 0)
+    (property "Footprint" "Button_Switch_SMD:SW_SPST_EVQQ2" (id 2) (at 29.21 53.34 0)
       (effects (font (size 1.524 1.524)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 29.21 53.34 0)
@@ -1835,7 +1835,7 @@
     (property "Value" "Bell" (id 1) (at 29.21 62.9666 0)
       (effects (font (size 0.762 0.762)))
     )
-    (property "Footprint" "Buttons_Switches_SMD:SW_SPST_EVQQ2" (id 2) (at 29.21 60.96 0)
+    (property "Footprint" "Button_Switch_SMD:SW_SPST_EVQQ2" (id 2) (at 29.21 60.96 0)
       (effects (font (size 1.524 1.524)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 29.21 60.96 0)
@@ -1951,7 +1951,7 @@
     (property "Value" "220 Ohms" (id 1) (at 81.2546 46.8122 90)
       (effects (font (size 1.016 1.016)))
     )
-    (property "Footprint" "Resistors_SMD:R_0603" (id 2) (at 81.28 48.768 90)
+    (property "Footprint" "Resistor_SMD:R_0603_1608Metric" (id 2) (at 81.28 48.768 90)
       (effects (font (size 0.762 0.762)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 81.28 46.99 0)
@@ -1973,7 +1973,7 @@
     (property "Value" "220 Ohms" (id 1) (at 81.2546 49.3522 90)
       (effects (font (size 1.016 1.016)))
     )
-    (property "Footprint" "Resistors_SMD:R_0603" (id 2) (at 81.28 51.308 90)
+    (property "Footprint" "Resistor_SMD:R_0603_1608Metric" (id 2) (at 81.28 51.308 90)
       (effects (font (size 0.762 0.762)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 81.28 49.53 0)
@@ -2013,7 +2013,7 @@
     (property "Value" "100K Ohms" (id 1) (at 198.0946 114.1222 90)
       (effects (font (size 1.016 1.016)))
     )
-    (property "Footprint" "Resistors_SMD:R_0402" (id 2) (at 198.12 116.078 90)
+    (property "Footprint" "Resistor_SMD:R_0402_1005Metric" (id 2) (at 198.12 116.078 90)
       (effects (font (size 0.762 0.762)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 198.12 114.3 0)
@@ -2035,7 +2035,7 @@
     (property "Value" "100K Ohms" (id 1) (at 198.0946 124.2822 90)
       (effects (font (size 1.016 1.016)))
     )
-    (property "Footprint" "Resistors_SMD:R_0402" (id 2) (at 198.12 126.238 90)
+    (property "Footprint" "Resistor_SMD:R_0402_1005Metric" (id 2) (at 198.12 126.238 90)
       (effects (font (size 0.762 0.762)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 198.12 124.46 0)
@@ -2057,7 +2057,7 @@
     (property "Value" "100K Ohms" (id 1) (at 181.5846 124.2822 90)
       (effects (font (size 1.016 1.016)))
     )
-    (property "Footprint" "Resistors_SMD:R_0402" (id 2) (at 181.61 126.238 90)
+    (property "Footprint" "Resistor_SMD:R_0402_1005Metric" (id 2) (at 181.61 126.238 90)
       (effects (font (size 0.762 0.762)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 181.61 124.46 0)
@@ -2079,7 +2079,7 @@
     (property "Value" "100K Ohms" (id 1) (at 171.6278 125.7046 90)
       (effects (font (size 1.016 1.016)))
     )
-    (property "Footprint" "Resistors_SMD:R_0402" (id 2) (at 169.672 125.73 90)
+    (property "Footprint" "Resistor_SMD:R_0402_1005Metric" (id 2) (at 169.672 125.73 90)
       (effects (font (size 0.762 0.762)) hide)
     )
     (property "Datasheet" "~" (id 3) (at 171.45 125.73 0)
@@ -2151,7 +2151,7 @@
     (uuid 00000000-0000-0000-0000-000062e14860)
     (property "Reference" "J3" (id 0) (at 209.55 152.4 0))
     (property "Value" "Display" (id 1) (at 209.55 165.1 0))
-    (property "Footprint" "Connectors_JST:JST_PH_B4B-PH-SM4-TB_04x2.00mm_Straight" (id 2) (at 209.55 157.48 0)
+    (property "Footprint" "Connector_JST:JST_PH_B4B-PH-K_1x04_P2.00mm_Vertical" (id 2) (at 209.55 157.48 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "" (id 3) (at 209.55 157.48 0)
@@ -2620,9 +2620,6 @@
     (path "/00000000-0000-0000-0000-000062df1eba/00000000-0000-0000-0000-000063938c9e"
       (reference "#PWR070") (unit 1) (value "GND") (footprint "")
     )
-    (path "/00000000-0000-0000-0000-000062df1eba/00000000-0000-0000-0000-000063938cf8"
-      (reference "#PWR071") (unit 1) (value "VBUS") (footprint "")
-    )
     (path "/00000000-0000-0000-0000-000062df1eba/00000000-0000-0000-0000-000063938d52"
       (reference "#PWR072") (unit 1) (value "VBUS") (footprint "")
     )
@@ -2631,9 +2628,6 @@
     )
     (path "/00000000-0000-0000-0000-000062df1eba/00000000-0000-0000-0000-000063938e20"
       (reference "#PWR074") (unit 1) (value "GND") (footprint "")
-    )
-    (path "/00000000-0000-0000-0000-000062df1eba/00000000-0000-0000-0000-000063938e94"
-      (reference "#PWR075") (unit 1) (value "GND") (footprint "")
     )
     (path "/00000000-0000-0000-0000-000062df1eba/00000000-0000-0000-0000-000063939197"
       (reference "#PWR076") (unit 1) (value "GND") (footprint "")
@@ -2702,16 +2696,16 @@
       (reference "#PWR097") (unit 1) (value "GND") (footprint "")
     )
     (path "/00000000-0000-0000-0000-000062df043f/00000000-0000-0000-0000-000062e32f89"
-      (reference "C6") (unit 1) (value "10uf") (footprint "Capacitors_SMD:CP_Elec_4x5.7")
+      (reference "C6") (unit 1) (value "10uf") (footprint "Capacitor_SMD:CP_Elec_4x5.7")
     )
     (path "/00000000-0000-0000-0000-000062df043f/00000000-0000-0000-0000-000062e36848"
       (reference "C7") (unit 1) (value ".1uf") (footprint "Capacitors_SMD:C_0402")
     )
     (path "/00000000-0000-0000-0000-000062df043f/00000000-0000-0000-0000-000062e33fef"
-      (reference "C9") (unit 1) (value "4.7uf") (footprint "Capacitors_SMD:CP_Elec_4x5.7")
+      (reference "C9") (unit 1) (value "4.7uf") (footprint "Capacitor_SMD:CP_Elec_4x5.7")
     )
     (path "/00000000-0000-0000-0000-000062df043f/00000000-0000-0000-0000-000062e34034"
-      (reference "C10") (unit 1) (value "4.7uf") (footprint "Capacitors_SMD:CP_Elec_4x5.7")
+      (reference "C10") (unit 1) (value "4.7uf") (footprint "Capacitor_SMD:CP_Elec_4x5.7")
     )
     (path "/00000000-0000-0000-0000-000062df043f/00000000-0000-0000-0000-000062e36d6d"
       (reference "C11") (unit 1) (value "470pf") (footprint "Capacitors_SMD:C_0402")
@@ -2729,7 +2723,7 @@
       (reference "C602") (unit 1) (value "22pf") (footprint "Capacitors_SMD:C_0402")
     )
     (path "/00000000-0000-0000-0000-00006394c805/00000000-0000-0000-0000-00006394e80d"
-      (reference "C701") (unit 1) (value ".1uf") (footprint "Capacitors_SMD:C_0603")
+      (reference "C701") (unit 1) (value ".1uf") (footprint "Capacitor_SMD:C_0603_1608Metric")
     )
     (path "/00000000-0000-0000-0000-000062df0437"
       (reference "D1") (unit 1) (value "Status") (footprint "APHB1608CGKSURKC:APHB1608CGKSURKC")
@@ -2774,10 +2768,10 @@
       (reference "FD3") (unit 1) (value "FidMark") (footprint "Fiducials:Fiducial_1mm_Dia_2.54mm_Outer_CopperTop")
     )
     (path "/00000000-0000-0000-0000-000062df1eba/00000000-0000-0000-0000-000063929e94"
-      (reference "IC601") (unit 1) (value "USBLC6-2SC6") (footprint "TO_SOT_Packages_SMD:SOT-23-6")
+      (reference "IC601") (unit 1) (value "USBLC6-2SC6") (footprint "Package_TO_SOT_SMD:SOT-23-6")
     )
     (path "/00000000-0000-0000-0000-000062e14860"
-      (reference "J3") (unit 1) (value "Display") (footprint "Connectors_JST:JST_PH_B4B-PH-SM4-TB_04x2.00mm_Straight")
+      (reference "J3") (unit 1) (value "Display") (footprint "Connector_JST:JST_PH_B4B-PH-K_1x04_P2.00mm_Vertical")
     )
     (path "/00000000-0000-0000-0000-000062df041e"
       (reference "J4") (unit 1) (value "Horn") (footprint "Pin_Headers:Pin_Header_Straight_1x03_Pitch2.54mm")
@@ -2798,13 +2792,13 @@
       (reference "J11") (unit 1) (value "Barrel_Jack") (footprint "Connectors:BARREL_JACK")
     )
     (path "/00000000-0000-0000-0000-000062df043f/00000000-0000-0000-0000-000062e2db1c"
-      (reference "J12") (unit 1) (value "Battery") (footprint "Connectors_JST:JST_PH_B2B-PH-SM4-TB_02x2.00mm_Straight")
+      (reference "J12") (unit 1) (value "Battery") (footprint "Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical")
     )
     (path "/00000000-0000-0000-0000-00006394b610"
       (reference "J101") (unit 1) (value "Keypad Panel") (footprint "Pin_Headers:Pin_Header_Straight_1x05_Pitch2.54mm")
     )
     (path "/00000000-0000-0000-0000-000062df1eba/00000000-0000-0000-0000-000063929d84"
-      (reference "J601") (unit 1) (value "GCT_USB4105") (footprint "GCT_USB:GCT_USB4105-GF-A")
+      (reference "J601") (unit 1) (value "GCT_USB4105") (footprint "Connector_USB:USB_C_Receptacle_GCT_USB4105-xx-A_16P_TopMnt_Horizontal")
     )
     (path "/00000000-0000-0000-0000-000062e6f103"
       (reference "MK1") (unit 1) (value "Mounting_Hole") (footprint "Mounting_Holes:MountingHole_2.5mm")
@@ -2879,22 +2873,22 @@
       (reference "P701") (unit 1) (value "To Main Board") (footprint "Pin_Headers:Pin_Header_Angled_1x05_Pitch2.54mm")
     )
     (path "/00000000-0000-0000-0000-000062df043b"
-      (reference "R1") (unit 1) (value "220 Ohms") (footprint "Resistors_SMD:R_0603")
+      (reference "R1") (unit 1) (value "220 Ohms") (footprint "Resistor_SMD:R_0603_1608Metric")
     )
     (path "/00000000-0000-0000-0000-000062df043c"
-      (reference "R2") (unit 1) (value "220 Ohms") (footprint "Resistors_SMD:R_0603")
+      (reference "R2") (unit 1) (value "220 Ohms") (footprint "Resistor_SMD:R_0603_1608Metric")
     )
     (path "/00000000-0000-0000-0000-000062df0453"
-      (reference "R3") (unit 1) (value "100K Ohms") (footprint "Resistors_SMD:R_0402")
+      (reference "R3") (unit 1) (value "100K Ohms") (footprint "Resistor_SMD:R_0402_1005Metric")
     )
     (path "/00000000-0000-0000-0000-000062df0452"
-      (reference "R4") (unit 1) (value "100K Ohms") (footprint "Resistors_SMD:R_0402")
+      (reference "R4") (unit 1) (value "100K Ohms") (footprint "Resistor_SMD:R_0402_1005Metric")
     )
     (path "/00000000-0000-0000-0000-000062df0450"
-      (reference "R5") (unit 1) (value "100K Ohms") (footprint "Resistors_SMD:R_0402")
+      (reference "R5") (unit 1) (value "100K Ohms") (footprint "Resistor_SMD:R_0402_1005Metric")
     )
     (path "/00000000-0000-0000-0000-000062df0451"
-      (reference "R6") (unit 1) (value "100K Ohms") (footprint "Resistors_SMD:R_0402")
+      (reference "R6") (unit 1) (value "100K Ohms") (footprint "Resistor_SMD:R_0402_1005Metric")
     )
     (path "/00000000-0000-0000-0000-000062df043f/00000000-0000-0000-0000-000062e3173f"
       (reference "R12") (unit 1) (value "330K") (footprint "Resistors_SMD:R_0402")
@@ -2945,7 +2939,7 @@
       (reference "R602") (unit 1) (value "5.1K") (footprint "Resistors_SMD:R_0402")
     )
     (path "/00000000-0000-0000-0000-00006394c805/00000000-0000-0000-0000-00006394e9de"
-      (reference "R701") (unit 1) (value "10K") (footprint "Resistors_SMD:R_0603")
+      (reference "R701") (unit 1) (value "10K") (footprint "Resistor_SMD:R_0603_1608Metric")
     )
     (path "/00000000-0000-0000-0000-000062df041a"
       (reference "RV1") (unit 1) (value "100K Ohms") (footprint "")
@@ -2954,19 +2948,19 @@
       (reference "RV2") (unit 1) (value "100K Ohms") (footprint "")
     )
     (path "/00000000-0000-0000-0000-000062df0432"
-      (reference "SW1") (unit 1) (value "A") (footprint "Buttons_Switches_SMD:SW_SPST_EVQQ2")
+      (reference "SW1") (unit 1) (value "A") (footprint "Button_Switch_SMD:SW_SPST_EVQQ2")
     )
     (path "/00000000-0000-0000-0000-000062df0433"
-      (reference "SW2") (unit 1) (value "B") (footprint "Buttons_Switches_SMD:SW_SPST_EVQQ2")
+      (reference "SW2") (unit 1) (value "B") (footprint "Button_Switch_SMD:SW_SPST_EVQQ2")
     )
     (path "/00000000-0000-0000-0000-000062df0434"
-      (reference "SW3") (unit 1) (value "C") (footprint "Buttons_Switches_SMD:SW_SPST_EVQQ2")
+      (reference "SW3") (unit 1) (value "C") (footprint "Button_Switch_SMD:SW_SPST_EVQQ2")
     )
     (path "/00000000-0000-0000-0000-000062df0435"
-      (reference "SW4") (unit 1) (value "D") (footprint "Buttons_Switches_SMD:SW_SPST_EVQQ2")
+      (reference "SW4") (unit 1) (value "D") (footprint "Button_Switch_SMD:SW_SPST_EVQQ2")
     )
     (path "/00000000-0000-0000-0000-000062df0436"
-      (reference "SW5") (unit 1) (value "Bell") (footprint "Buttons_Switches_SMD:SW_SPST_EVQQ2")
+      (reference "SW5") (unit 1) (value "Bell") (footprint "Button_Switch_SMD:SW_SPST_EVQQ2")
     )
     (path "/00000000-0000-0000-0000-000062df0424"
       (reference "SW6") (unit 1) (value "LIGHT_SWITCH") (footprint "")
@@ -2975,13 +2969,13 @@
       (reference "SW23") (unit 1) (value "On/Off") (footprint "Buttons_Switches_SMD:SW_SPDT_CK-JS102011SAQN")
     )
     (path "/00000000-0000-0000-0000-000062df1eba/00000000-0000-0000-0000-000062df2390"
-      (reference "SW24") (unit 1) (value "RESET") (footprint "Buttons_Switches_SMD:SW_SPST_PTS810")
+      (reference "SW24") (unit 1) (value "RESET") (footprint "Button_Switch_SMD:SW_SPST_PTS810")
     )
     (path "/00000000-0000-0000-0000-000062df1eba/00000000-0000-0000-0000-00006393d29a"
       (reference "SW601") (unit 1) (value "BOOT") (footprint "Buttons_Switches_SMD:SW_SPST_PTS810")
     )
     (path "/00000000-0000-0000-0000-00006394c805/00000000-0000-0000-0000-00006394eacd"
-      (reference "SW701") (unit 1) (value "\"1\"") (footprint "Buttons_Switches_SMD:SW_SPST_B3U-1100P-B")
+      (reference "SW701") (unit 1) (value "\"1\"") (footprint "Button_Switch_SMD:SW_SPST_B3U-1100P-B")
     )
     (path "/00000000-0000-0000-0000-00006394c805/00000000-0000-0000-0000-000063950c6a"
       (reference "SW702") (unit 1) (value "\"4\"") (footprint "Buttons_Switches_SMD:SW_SPST_B3U-1100P-B")
@@ -3017,16 +3011,16 @@
       (reference "SW712") (unit 1) (value "\"#\"") (footprint "Buttons_Switches_SMD:SW_SPST_B3U-1100P-B")
     )
     (path "/00000000-0000-0000-0000-000062df043f/00000000-0000-0000-0000-000062e2ec9d"
-      (reference "U6") (unit 1) (value "MCP73871") (footprint "Housings_DFN_QFN:QFN-20-1EP_4x4mm_Pitch0.5mm")
+      (reference "U6") (unit 1) (value "MCP73871") (footprint "Package_DFN_QFN:QFN-20-1EP_4x4mm_P0.5mm_EP2.5x2.5mm_ThermalVias")
     )
     (path "/00000000-0000-0000-0000-000062df043f/00000000-0000-0000-0000-000062e1190f"
-      (reference "U8") (unit 1) (value "TC1263-3.3VOATR") (footprint "Housings_SOIC:SO-8_5.3x6.2mm_Pitch1.27mm")
+      (reference "U8") (unit 1) (value "TC1263-3.3VOATR") (footprint "Package_SO:SOIC-8W_5.3x5.3mm_P1.27mm")
     )
     (path "/00000000-0000-0000-0000-000062df1eba/00000000-0000-0000-0000-000063929ccd"
       (reference "U601") (unit 1) (value "ESP32_S3_WROOM-1") (footprint "ESP32-WROOM:ESP32_S3_WROOM-1")
     )
     (path "/00000000-0000-0000-0000-00006394c805/00000000-0000-0000-0000-00006394e6f1"
-      (reference "U701") (unit 1) (value "TCA8418") (footprint "Housings_DFN_QFN:QFN-24-1EP_4x4mm_Pitch0.5mm")
+      (reference "U701") (unit 1) (value "TCA8418") (footprint "Package_DFN_QFN:QFN-24-1EP_4x4mm_P0.5mm_EP2.7x2.7mm_ThermalVias")
     )
   )
 )
