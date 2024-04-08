@@ -1,0 +1,10 @@
+(sym_lib_table
+  (lib (name "ESP32-S3-WROOM-ControlStand-rescue")(type "Legacy")(uri "${KIPRJMOD}/ESP32-S3-WROOM-ControlStand-rescue.lib")(options "")(descr ""))
+  (lib (name "esp32_s3_wroom")(type "Legacy")(uri "${KIPRJMOD}/esp32_s3_wroom.lib")(options "")(descr ""))
+  (lib (name "lm2574n-5")(type "Legacy")(uri "${KIPRJMOD}/lm2574n-5.lib")(options "")(descr ""))
+  (lib (name "mcp73871")(type "Legacy")(uri "${KIPRJMOD}/mcp73871.lib")(options "")(descr ""))
+  (lib (name "gct_usb4105")(type "Legacy")(uri "${KIPRJMOD}/gct_usb4105.lib")(options "")(descr ""))
+  (lib (name "USBLC6-2SC6")(type "Legacy")(uri "${KIPRJMOD}/USBLC6-2SC6.lib")(options "")(descr ""))
+  (lib (name "tca8418")(type "Legacy")(uri "${KIPRJMOD}/tca8418.lib")(options "")(descr ""))
+  (lib (name "sw_push_small_gnd")(type "Legacy")(uri "${KIPRJMOD}/sw_push_small_gnd.lib")(options "")(descr ""))
+)
