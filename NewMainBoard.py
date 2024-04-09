@@ -8,7 +8,7 @@
 #  Author        : $Author$
 #  Created By    : Robert Heller
 #  Created       : Sun Aug 7 09:20:02 2022
-#  Last Modified : <230430.1206>
+#  Last Modified : <240409.0948>
 #
 #  Description	
 #
@@ -64,10 +64,10 @@ class NewMainBoard(object):
     @staticmethod
     def BoardThickness():
         return NewMainBoard._boardThick
-    _notchY0 = 64.770
-    _notchY1 = 67.310
-    _notchXA = 13.271
-    _notchXB = 28.575
+    #_notchY0 = 64.770
+    #_notchY1 = 67.310
+    #_notchXA = 13.271
+    #_notchXB = 28.575
     _powerJackXOff = 50.8-11.176
     _powerJackL    = 14
     _powerJackYOff = 74.803
@@ -81,12 +81,12 @@ class NewMainBoard(object):
     _powerSwitchLeverYRange = (2.75,6.25)
     _powerSwitchLeverWH = 1.5
     _powerSwitchLeverL  = 2.0
-    #_usbCXoff         = 0.0
-    #_usbCYoff         = 30.099-(8.94/2.0)
-    #_usbCW            = 7.35
-    #_usbCL            = 8.94
-    #_usbCH            = 3.31
-    #_usbotbclearance    = 3.19
+    _usbCXoff         = 0.0
+    _usbCYoff         = 30.099-(8.94/2.0)
+    _usbCW            = 7.35
+    _usbCL            = 8.94
+    _usbCH            = 3.31
+    _usbotbclearance    = 3.19
     def __init__(self,name,origin):
         self.name = name
         if not isinstance(origin,Base.Vector):
@@ -99,19 +99,19 @@ class NewMainBoard(object):
         Z = self.origin.z
         for i in range(1,5):
             self._board = self._board.cut(self.mountingHole(i,Z,self._boardThick))
-        notchWidth = self._notchY1 - self._notchY0
-        notch = Part.makePlane(self._notchXA,notchWidth,\
-                               origin.add(Base.Vector(0,self._notchY0,0)))\
-                              .extrude(Base.Vector(0,0,self._boardThick))
-        self._board = self._board.cut(notch)
-        notch = Part.makePlane(NewMainBoard.Width()-self._notchXB,notchWidth,\
-                               origin.add(Base.Vector(self._notchXB,
-                                                      self._notchY0,0)))\
-                              .extrude(Base.Vector(0,0,self._boardThick))
-        self._board = self._board.cut(notch)
+        #notchWidth = self._notchY1 - self._notchY0
+        #notch = Part.makePlane(self._notchXA,notchWidth,\
+        #                       origin.add(Base.Vector(0,self._notchY0,0)))\
+        #                      .extrude(Base.Vector(0,0,self._boardThick))
+        #self._board = self._board.cut(notch)
+        #notch = Part.makePlane(NewMainBoard.Width()-self._notchXB,notchWidth,\
+        #                       origin.add(Base.Vector(self._notchXB,
+        #                                              self._notchY0,0)))\
+        #                      .extrude(Base.Vector(0,0,self._boardThick))
+        #self._board = self._board.cut(notch)
         self._powerjack = self._makepowerjack()
         self._powerswitch = self._makepowerswitch()
-        #self._usbC = self._makeusbC()
+        self._usbC = self._makeusbC()
     def show(self):
         doc = App.activeDocument()
         obj = doc.addObject("Part::Feature",self.name+"_board")
@@ -126,10 +126,10 @@ class NewMainBoard(object):
         obj.Shape=self._powerswitch
         obj.Label=self.name+"_powerswitch"
         obj.ViewObject.ShapeColor=tuple([0.0,0.0,0.0])
-        #obj = doc.addObject("Part::Feature",self.name+"_usbC")
-        #obj.Shape=self._usbC
-        #obj.Label=self.name+"_usbC"
-        #obj.ViewObject.ShapeColor=tuple([.75,.75,.75])
+        obj = doc.addObject("Part::Feature",self.name+"_usbC")
+        obj.Shape=self._usbC
+        obj.Label=self.name+"_usbC"
+        obj.ViewObject.ShapeColor=tuple([.75,.75,.75])
     def mountingHole(self,i,base,height):
         holeX,holeY = self._boardMHXY[i-1]
         holeX+=self.origin.x
@@ -181,19 +181,19 @@ class NewMainBoard(object):
         return Part.makePlane(self._powerSwitchLeverL,leverY1-leverY0,\
                               lorigin)\
                              .extrude(Base.Vector(0,0,thickness))        
-    #def _makeusbC(self):
-    #    usborigin = self.origin.add(Base.Vector(self._usbCXoff,\
-    #                                            self._usbCYoff,\
-    #                                            self._boardThick))
-    #    return Part.makePlane(self._usbCW,self._usbCL,usborigin)\
-    #                         .extrude(Base.Vector(0,0,self._usbCH))
-    #
-    #def USBCutout(self,thickness):
-    #    cutorig = self.origin.add(Base.Vector(-thickness,\
-    #                                          self._usbCYoff-self._usbotbclearance,\
-    #                                          self._boardThick-self._usbotbclearance))
-    #    return Part.makePlane(thickness,self._usbCL+(2*self._usbotbclearance),cutorig)\
-    #                         .extrude(Base.Vector(0,0,self._usbCH+(2*self._usbotbclearance)))
+    def _makeusbC(self):
+        usborigin = self.origin.add(Base.Vector(self._usbCXoff,\
+                                                self._usbCYoff,\
+                                                self._boardThick))
+        return Part.makePlane(self._usbCW,self._usbCL,usborigin)\
+                             .extrude(Base.Vector(0,0,self._usbCH))
+    
+    def USBCutout(self,thickness):
+        cutorig = self.origin.add(Base.Vector(-thickness,\
+                                              self._usbCYoff-self._usbotbclearance,\
+                                              self._boardThick-self._usbotbclearance))
+        return Part.makePlane(thickness,self._usbCL+(2*self._usbotbclearance),cutorig)\
+                             .extrude(Base.Vector(0,0,self._usbCH+(2*self._usbotbclearance)))
 
 
 if __name__ == '__main__':

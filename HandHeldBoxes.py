@@ -8,7 +8,7 @@
 #  Author        : $Author$
 #  Created By    : Robert Heller
 #  Created       : Sun Aug 7 12:10:55 2022
-#  Last Modified : <240218.1429>
+#  Last Modified : <240409.1647>
 #
 #  Description	
 #
@@ -60,6 +60,7 @@ from Levers import *
 from Knobs import *
 from LightSwitch import *
 from MechEncoders import *
+from Battery import *
 
 from abc import ABCMeta, abstractmethod, abstractproperty
 
@@ -105,7 +106,7 @@ class HandHeldBoxCommon(object):
                       (((3/8)*25.4)+((1/16)*25.4)+NewMainBoard.BoardThickness())
                             
 
-class HandHeldBoxNoLEDBottons(HandHeldBoxCommon):
+class HandHeldBoxNoLEDButtons(HandHeldBoxCommon):
     _length = NewMainBoard.Length()+50.8+KeypadBoard.Length()+25.4
     _postsXY = [(5.08, 5.08), \
                 (HandHeldBoxCommon._outerWidth-5.08, 5.08), \
@@ -157,7 +158,7 @@ class HandHeldBoxNoLEDBottons(HandHeldBoxCommon):
             s = self._mainboard.standoff(i,origin.z+self._wallThick,sheight)
             self._bottom = self._bottom.fuse(s)
         self._bottom = self._bottom.cut(self._mainboard.PowerSwitchCutout(self._wallThick))
-        #self._bottom = self._bottom.cut(self._mainboard.USBCutout(self._wallThick))
+        self._bottom = self._bottom.cut(self._mainboard.USBCutout(self._wallThick))
         self._bottom = self._bottom.cut(self._mainboard.PowerJackCutout(self._wallThick))
         
         toporig = origin.add(Base.Vector(0,0,self._totalOuterHeight-self._wallThick))
@@ -207,7 +208,7 @@ class HandHeldBoxNoLEDBottons(HandHeldBoxCommon):
             s = self._dispboard.standoff(i,toporig.z-5.08,5.08)
             self._top = self._top.fuse(s)
         self._top = self._top.cut(self._mainboard.PowerSwitchCutout(self._wallThick))
-        #self._top = self._top.cut(self._mainboard.USBCutout(self._wallThick))
+        self._top = self._top.cut(self._mainboard.USBCutout(self._wallThick))
         self._top = self._top.cut(self._mainboard.PowerJackCutout(self._wallThick))
         self._plungers = list()
         for i in range(1,6):
@@ -349,6 +350,42 @@ class HandHeldBoxNoLEDBottons(HandHeldBoxCommon):
         self._knob = Grayhill_11K5019_JCNB(name+"_lightswitchKnob",
                                            lightswitchOrigin.add(Base.Vector(0,0,\
                                            Grayhill_56A36_01_1_04N.BushingLength())))
+        center = self._outerWidth/2.0
+        BattXoff = center - ICR18650_4400mAh.Width()/2.0
+        BattYoff = mborigin.y+NewMainBoard.Length()+5
+        BattZoff = self._wallThick
+        battery_Origin = origin.add(Base.Vector(BattXoff,BattYoff,BattZoff))
+        self._battery = ICR18650_4400mAh(name+"_battery",battery_Origin)
+        batteryPostsXY = [(5.08, BattYoff+5.08), \
+                          (HandHeldBoxCommon._outerWidth-5.08, BattYoff+5.08), \
+                          (5.08, BattYoff+(ICR18650_4400mAh.Length()-5.08)), \
+                          (HandHeldBoxCommon._outerWidth-5.08, \
+                           BattYoff+(ICR18650_4400mAh.Length()-5.08))]
+        for i in range(0,4):
+            centerX,centerY = batteryPostsXY[i]
+            pbottom = self.origin.add(Base.Vector(centerX,centerY,\
+                                                  self._wallThick))
+            post = Part.Face(Part.Wire(Part.makeCircle(self._postdiameter/2.0,\
+                                                       pbottom)))\
+                        .extrude(Base.Vector(0,0,ICR18650_4400mAh.Thick()/2))
+            post = post.cut(\
+                    Part.Face(Part.Wire(Part.makeCircle((self._postholediameter*.9)/2.0,\
+                        pbottom)))\
+                        .extrude(Base.Vector(0,0,ICR18650_4400mAh.Thick()/2)))
+            self._bottom = self._bottom.fuse(post)
+        batteryCoverOrigin = origin.add(Base.Vector(self._wallThick,BattYoff,BattZoff+ICR18650_4400mAh.Thick()/2))
+        self._batteryCover = Part.makePlane(self._innerWidth,ICR18650_4400mAh.Length(),batteryCoverOrigin)\
+                .extrude(Base.Vector(0,0,(ICR18650_4400mAh.Thick()/2)*1.5))
+        self._batteryCover = self._batteryCover.cut(self._battery._battery)
+        for i in range(0,4):
+            centerX,centerY = batteryPostsXY[i]
+            pbottom = self.origin.add(Base.Vector(centerX,centerY,\
+                                                  self._wallThick+ICR18650_4400mAh.Thick()/2))
+            self._batteryCover = self._batteryCover.cut(\
+                    Part.Face(Part.Wire(Part.makeCircle((self._postholediameter)/2.0,\
+                        pbottom)))\
+                        .extrude(Base.Vector(0,0,ICR18650_4400mAh.Thick()*.75)))
+        
     def show(self):
         doc = App.activeDocument()
         obj = doc.addObject("Part::Feature",self.name+"_bottom")
@@ -365,6 +402,11 @@ class HandHeldBoxNoLEDBottons(HandHeldBoxCommon):
         obj.Shape=self._statusLense
         obj.Label=self.name+"_statusLense"
         obj.ViewObject.ShapeColor=tuple([1.0,1.0,1.0])
+        obj.ViewObject.Transparency=60
+        obj = doc.addObject("Part::Feature",self.name+"_batteryCover");
+        obj.Shape=self._batteryCover
+        obj.Label=self.name+"_batteryCover"
+        obj.ViewObject.ShapeColor=tuple([.75,.75,.75])
         obj.ViewObject.Transparency=60
         self._mainboard.show()
         self._dispboard.show()
@@ -387,6 +429,7 @@ class HandHeldBoxNoLEDBottons(HandHeldBoxCommon):
         self._oled.show()
         self._lightswitch.show()
         self._knob.show()
+        self._battery.show()
     def _bottomPost(self,i):
         centerX,centerY = self._postsXY[i-1]
         postbottom = self.origin.add(Base.Vector(centerX,centerY,\
@@ -442,11 +485,19 @@ class HandHeldBoxNoLEDBottons(HandHeldBoxCommon):
             objs=[]
             objs.append(doc.getObject(self.name+"_button_"+bname))
             Mesh.export(objs,filenameFMT % bname)
+    def MakeBatteryCoverSTL(self,filename):
+        objs=[]
+        doc = App.activeDocument()
+        obj = doc.addObject("Part::Feature","temp")
+        obj.Shape=self._batteryCover.copy().rotate(Base.Vector(0,0,0),Base.Vector(0,1,0),180)
+        objs.append(obj)
+        Mesh.export(objs,filename)
+        doc.removeObject(obj.Label)
 
 if __name__ == '__main__':
     App.ActiveDocument=App.newDocument("Temp")
     doc = App.activeDocument()
-    box = HandHeldBoxNoLEDBottons("box",Base.Vector(0,0,0))
+    box = HandHeldBoxNoLEDButtons("box",Base.Vector(0,0,0))
     box.show()
     Gui.SendMsgToActiveView("ViewFit")
     Gui.activeDocument().activeView().viewTop()
@@ -457,7 +508,7 @@ if __name__ == '__main__':
     box.MakeReverserLeverSTL("HandHeldBoxNoLEDButtons_reverserLever.stl")
     box.MakeBrakeLeverSTL("HandHeldBoxNoLEDButtons_brakeLever.stl")
     box.KeypadButtonsSTL("HandHeldBoxNoLEDButtons_%s_button.stl")
-
+    box.MakeBatteryCoverSTL("HandHeldBoxNoLEDButtons_batteryCover.stl")
 
 
 
