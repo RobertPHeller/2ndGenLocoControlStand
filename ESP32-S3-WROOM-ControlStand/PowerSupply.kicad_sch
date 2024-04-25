@@ -1436,7 +1436,7 @@
     (property "Datasheet" "" (id 3) (at 120.65 148.59 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "Manufaturer_Name" "JST" (id 4) (at 120.65 148.59 0)
+    (property "Manufacturer_Name" "JST" (id 4) (at 120.65 148.59 0)
       (effects (font (size 1.524 1.524)) hide)
     )
     (property "Manufacturer_Part_Number" "B2B-PH-SM4-TB" (id 5) (at 120.65 148.59 0)
